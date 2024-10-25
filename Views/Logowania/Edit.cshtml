@@ -1,0 +1,60 @@
+﻿@model GetLogowanieDto
+
+<div class="dodawanieHeader">
+    <span class="titleHeader">Edytowanie istniejącej pozycji</span>
+</div>
+<hr />
+
+<form method="post" asp-action="Edit" asp-controller="Logowania">
+    <input type="hidden" asp-for="LogowanieId" />
+
+
+    <table>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="DataLogowania"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="DataLogowania" />
+                    <span asp-validation-for="DataLogowania" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="DataWylogowania"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="DataWylogowania" />
+                    <span asp-validation-for="DataWylogowania" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Email"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="Email" />
+                    <span asp-validation-for="Email" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+
+    <div class="w-100 df-sb mt-30 mb-40">
+        <a asp-action="Index" asp-controller="Logowania" class="buttonWstecz w-100px">Wstecz</a>
+        <div class="df">
+            <input type="submit" value="Zapisz" class="buttonEdit w-100px" />
+            <a asp-action="Index" asp-controller="Logowania" class="buttonAnuluj w-100px ml-2">Anuluj</a>
+        </div>
+    </div>
+</form>
+
+
+<!-- Zwraca komunikat błędu, o ile takowy się pojawi -->
+<span class="c-red">@ViewData["ErrorMessage"]</span>

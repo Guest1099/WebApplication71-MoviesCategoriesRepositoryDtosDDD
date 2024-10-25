@@ -1,0 +1,22 @@
+﻿@using WebApplication71
+@using WebApplication71.Models
+@using WebApplication71.Services
+@using WebApplication71.Data
+@using WebApplication71.DTOs
+@using WebApplication71.DTOs.Account
+@using WebApplication71.DTOs.Roles
+@using WebApplication71.DTOs.Users
+@using WebApplication71.DTOs.Categories
+@using WebApplication71.DTOs.Movies
+@using WebApplication71.DTOs.Logowania
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authorization
+
+@inject ApplicationDbContext Context
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+ 

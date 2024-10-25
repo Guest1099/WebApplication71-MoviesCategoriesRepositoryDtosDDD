@@ -1,0 +1,86 @@
+﻿@model CreateMovieDto
+
+<div class="dodawanieHeader">
+    <span class="titleHeader">Dodawanie nowej pozycji</span>
+</div>
+<hr />
+
+<form method="post" asp-action="Create" asp-controller="Movies">
+
+    <table>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Title"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="Title" />
+                    <span asp-validation-for="Title" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Description"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <textarea asp-for="Description" class="textArea"></textarea>
+                    <span asp-validation-for="Description" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Photo"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="Photo" />
+                    <span asp-validation-for="Photo" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Price"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="Price" />
+                    <span asp-validation-for="Price" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="CategoryId">Kategoria</label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <select asp-for="CategoryId" asp-items="Model.CategoriesList" class="w-200px form-input2"></select>
+                    <span asp-validation-for="CategoryId" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+    </table> 
+     
+
+    <div class="w-100 df-sb mt-30 mb-40"> 
+        <a asp-action="Index" asp-controller="Movies" class="buttonWstecz w-100px">Wstecz</a>
+        <div class="df">
+            <input type="submit" value="Zapisz" class="buttonEdit w-100px" />
+            <a asp-action="Index" asp-controller="Movies" class="buttonAnuluj w-100px ml-2">Anuluj</a>
+        </div>
+    </div>
+</form>
+
+
+<!-- Zwraca komunikat błędu, o ile takowy się pojawi -->
+<span class="c-red">@ViewData["ErrorMessage"]</span>
+
+
+
+
+
+

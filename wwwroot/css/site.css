@@ -1,0 +1,863 @@
+﻿
+html {
+    font-size: 13px;
+}
+
+body {
+    background-color: rgb(250,250,250);
+}
+
+hr {
+    border: 1px solid rgb(170,170,170);
+    margin-bottom: 30px;
+}
+
+
+
+a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+a {
+    color: #0366d6;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+
+
+.border-top {
+    border-top: 1px solid #e5e5e5;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+}
+
+
+html {
+    position: relative;
+    min-height: 100%;
+    margin: 0px;
+}
+
+body {
+    margin-bottom: 60px;
+    height: 100%;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px;
+}
+
+
+
+/* Left navigation ----------------------------------------------------------------------------------- */
+
+
+
+.leftNavigation {
+    width: 250px;
+    height: 100%;
+    position: fixed;
+    background-color: rgb(240,240,240);
+}
+
+    .leftNavigation ul {
+        list-style: none;
+        padding: 0 15px;
+    }
+
+        .leftNavigation ul li {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+            .leftNavigation ul li a {
+                border-radius: 7px;
+                background-color: white;
+                padding: 10px 15px;
+                margin-top: 10px;
+                color: black;
+            }
+
+                .leftNavigation ul li a:hover {
+                    text-decoration: none;
+                    color: white; 
+                }
+
+
+/* Card ----------------------------------------------------------------------------------- */
+
+.card {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border-radius: 10px;
+    background-color: #fff; 
+}
+
+.textContainer {
+    margin-left: 20px;
+    margin-right: 15px;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.description {
+    font-size: 12px;
+    margin-bottom: 20px;
+}
+
+.price {
+    font-style: italic;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.buttonsContainer {
+    width: 200px; 
+    padding: 15px;
+}
+.buttonEdit {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+    .buttonEdit:hover {
+        background-color: #45a049;
+    }
+
+.buttonAnuluj {
+    background-color: rgb(200,200,200);
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+    .buttonAnuluj:hover {
+        background-color: rgb(180,180,180);
+    }
+
+.buttonWstecz {
+    background-color: rgb(200,200,200);
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+    .buttonWstecz:hover {
+        background-color: rgb(180,180,180);
+    }
+
+.buttonDelete {
+    background-color: #7CDF10;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+    .buttonDelete:hover {
+        background-color: #45a049;
+    }
+
+
+.buttonCreate {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+    .buttonCreate:hover {
+        background-color: #45a049;
+        color: white;
+        text-decoration: none;
+    }
+
+
+
+.leftColumn {
+    min-width: 200px;
+    font-weight: bold; 
+    padding-left: 15px;
+    justify-content: start;
+    align-items: center; 
+}
+
+
+.columnContainer {
+    margin-bottom: 15px;
+}
+
+.rightColumn {
+    width: 100%;
+}
+    .rightColumn input {
+        border: 1px solid rgb(180,180,180);
+        padding: 10px;
+        background-color: white;
+        outline: none;
+        width: 95%;
+    }
+
+    .rightColumn .textArea {
+        border: 1px solid rgb(180,180,180);
+        padding: 10px;
+        background-color: white;
+        outline: none;
+        width: 95%;
+        height: 200px;
+    }
+
+
+
+.dodawanieHeader { 
+    margin-bottom: 20px;
+}
+.dodawanieHeader .titleHeader {
+    font-size: 19px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+
+
+/* Tabela ----------------------------------------------------------------------------------- */
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background: linear-gradient(to bottom, #f7f7f7, #e0e0e0);
+    font-weight: bold;
+    color: #333;
+}
+
+tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+
+.firstColumn {
+    width: 50px;
+}
+
+
+
+/* Paginator ----------------------------------------------------------------------------------- */
+
+
+.paginator { 
+}
+
+.paginator-item {
+    margin: 0 5px;
+    padding: 8px 12px;
+    background-color: #3498db;
+    color: black;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+    .paginator-item:hover {
+        background-color: #2980b9;
+    }
+
+.paginator-prev,
+.paginator-next {
+    background-color: #2ecc71;
+}
+
+    .paginator-prev:hover,
+    .paginator-next:hover {
+        background-color: #27ae60;
+    }
+
+
+.paginatorButton {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+    .paginatorButton:hover {
+        background-color: #45a049;
+        text-decoration: none;
+        color: white;
+    }
+
+
+.selectOptionButton {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+    .selectOptionButton:hover {
+        background-color: #45a049;
+    }
+
+
+
+
+
+
+.searchInput {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px 5px 5px 5px;
+    margin: 0px 5px;
+    background-color: rgb(255,255,255);
+    outline: none;
+}
+
+.searchButton {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid rgb(220,220,220);
+    border-radius: 5px 5px 5px 5px;
+    margin: 0px 5px;
+    background-color: rgb(230,230,230);
+    cursor: pointer;
+}
+    .searchButton:hover {
+        background-color: rgb(220,220,220);
+    }
+
+
+.selectOption {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px 5px 5px 5px;
+    margin: 0px 10px;
+    width: 100px;
+}
+
+
+
+/* Logowanie ----------------------------------------------------------------------------------- */
+
+
+.login-container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 300px;
+}
+
+.login-container h2 {
+    color: #4CAF50;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.form-input {
+    margin: 10px 0;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #333;
+    transition: border-color 0.3s;
+}
+
+    .form-input:focus {
+        border-color: #4CAF50; /* dostosowano kolor obramowania dla stanu aktywnego na podstawie ogólnego wyglądu */
+    }
+
+.form-input2 {
+    margin: 10px 0;
+    padding: 10px 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #333;
+    transition: border-color 0.3s;
+}
+
+    .form-input2:focus {
+        border-color: #4CAF50;
+    }
+
+
+.login-btn,
+.register-btn {
+    margin-top: 20px;
+    padding: 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #fff;
+    background-color: #4CAF50;
+    transition: background-color 0.3s;
+}
+
+    .login-btn:hover,
+    .register-btn:hover {
+        background-color: #45a049; /* dostosowano kolor przycisku przy najechaniu myszką na podstawie ogólnego wyglądu */
+    }
+
+.forgot-password {
+    margin-top: 20px;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    transition: color 0.3s;
+}
+
+    .forgot-password:hover {
+        color: #4CAF50; /* dostosowano kolor linku przy najechaniu myszką na podstawie ogólnego wyglądu */
+    }
+
+
+
+.formContainer {
+    margin: 0px 50px 0px 50px; 
+}
+
+.alert {
+    color: firebrick;
+    margin-top: 10px;
+}
+
+
+
+.enable-link {
+    pointer-events: none;
+    text-decoration: none; /* Opcjonalne: usuwa podkreślenie linku */
+    color: inherit; /* Opcjonalne: zachowuje kolor tekstu oryginalnego linku */
+    cursor: not-allowed; /* Opcjonalne: zmiana kursora na "not-allowed" */
+}
+.disable-link {
+    pointer-events: none;
+    text-decoration: none; /* Opcjonalne: usuwa podkreślenie linku */
+    color: inherit; /* Opcjonalne: zachowuje kolor tekstu oryginalnego linku */
+    cursor: not-allowed; /* Opcjonalne: zmiana kursora na "not-allowed" */
+}
+
+
+/* Details ----------------------------------------------------------------------------------- */
+
+
+.parallax {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+}
+
+    .parallax img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(70%) contrast(120%);
+        transform: scale(1.1);
+        transition: transform 0.3s ease-in-out;
+    }
+
+        .parallax img:hover {
+            transform: scale(1.2);
+        }
+
+.overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: white;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.7);
+}
+
+    .overlay h2 {
+        font-size: 2em;
+        margin-bottom: 10px;
+    }
+
+    .overlay p {
+        font-size: 1.5em;
+    }
+
+.content {
+    padding: 20px;
+    text-align: justify;
+}
+
+    /* Dodatkowy efekt parallax dla tekstu */
+    .content:before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        background: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+        z-index: -1;
+    }
+
+
+.long-text {
+    font-size: 16px;
+    line-height: 1.6;
+    text-align: justify;
+}
+
+    .long-text p {
+        margin-bottom: 15px;
+    }
+
+    .long-text blockquote {
+        border-left: 2px solid #555;
+        padding-left: 15px;
+        color: #777;
+    }
+
+    .long-text a {
+        color: #0066cc;
+        text-decoration: underline;
+    }
+
+        .long-text a:hover {
+            color: #004080;
+        }
+
+    .long-text img {
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 15px;
+    }
+
+    .long-text code {
+        background-color: #f8f8f8;
+        border: 1px solid #ddd;
+        padding: 2px 4px;
+        color: #333;
+        font-family: 'Courier New', monospace;
+    }
+
+    .long-text pre {
+        background-color: #f8f8f8;
+        border: 1px solid #ddd;
+        padding: 10px;
+        overflow-x: auto;
+    }
+
+    .long-text hr {
+        border-top: 1px solid #ddd;
+        margin: 20px 0;
+    }
+
+    .long-text .important-text {
+        font-weight: bold;
+        color: #cc0000;
+    }
+
+    .long-text .highlight-text {
+        background-color: #ffffcc;
+        padding: 2px;
+    }
+
+
+/* Rozwijany przycisk ----------------------------------------------------------------------------------- */
+
+.menu-container {
+    position: relative;
+    display: inline-block;
+}
+
+button {
+    padding: 7px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    background-color: rgb(220,220,220);
+    color: black;
+    border: none;
+    border-radius: 5px; 
+}
+
+    button:hover {
+        background-color: #45a049;
+        color: white;
+    }
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 5px;
+    overflow: hidden;
+    width: 70px;
+    text-align: center;
+}
+
+    .dropdown-content a {
+        display: block;
+        padding: 5px 10px;
+        text-decoration: none;
+        font-size: 12px;
+        color: #333;
+        transition: background-color 0.3s; 
+    }
+
+        .dropdown-content a:hover {
+            background-color: #ddd; 
+        }
+
+.show {
+    display: block;
+}
+
+
+
+/* Create, edit ----------------------------------------------------------------------------------- */
+
+
+.row {
+    background-color: rgb(250,250,250);
+    margin: 0px;
+    padding: 10px 10px;
+    border-top: 1px solid rgb(220,220,220);
+    display: flex;
+}
+
+    .row .fieldName {
+        min-width: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: start;
+    }
+
+    .row .fieldNameShort {
+        min-width: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: start;
+    }
+
+    .row .fieldEdit {
+        width: 100%;
+    }
+
+        .row .fieldEdit input {
+            min-width: 300px;
+        }
+
+        .row .fieldEdit textarea {
+            min-width: 300px;
+            height: 100px;
+        }
+
+
+
+/* Różne ----------------------------------------------------------------------------------- */
+
+
+
+hr {
+    margin-bottom: 30px;
+    border: 1px solid rgb(160,160,160);
+}
+
+.form-group-col {
+    display: flex;
+    flex-direction: column;
+}
+
+    .form-group-col span {
+        margin-bottom: 10px;
+        font-size: 11px;
+    }
+
+    .form-group-col input {
+        width: 100%;
+        margin-right: 30px;
+        background-color: white;
+        border: 1px solid rgb(160,160,160);
+        border-radius: 2px;
+        padding: 4px;
+        outline: none;
+        font-size: 12px;
+    }
+
+    .form-group-col textarea {
+        width: 100%;
+        margin-right: 30px;
+        background-color: white;
+        border: 1px solid rgb(160,160,160);
+        border-radius: 2px;
+        padding: 4px;
+        height: 100px;
+        outline: none;
+        font-size: 12px;
+    }
+
+    .form-group-col select {
+        width: 100%;
+        background-color: white;
+        border: 1px solid rgb(160,160,160);
+        border-radius: 2px;
+        padding: 4px;
+        outline: none;
+        font-size: 12px;
+    }
+
+
+.rightColumnMessages {
+    width: 100%;
+    padding-left: 30px;
+}
+
+
+.iw {
+    width: 40px;
+}
+
+    .iw span {
+        color: rgb(100,100,100);
+    }
+
+.aw {
+    width: 70px;
+}
+
+.pw {
+    min-width: 70px;
+}
+
+.bottom-bar-options {
+    padding: 20px;
+    box-shadow: 2px 2px 4px rgba(0,0,0,.2);
+    background-color: rgb(255, 255, 255);
+    border: 1px solid rgb(225, 225, 225);
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 30px;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+}
+
+.dHeader {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+
+
+.form-check {
+    width: 150px;
+    margin: 2px;
+    border-radius: 100px;
+    display: flex;
+}
+
+.form-check-label {
+    background-color: white;
+    border-radius: 2px;
+    width: 150px;
+    padding: 5px 10px;
+    margin: 2px;
+}
+
+    .form-check-label:hover {
+        cursor: pointer;
+    }
+
+.form-check-input {
+    padding: 0px;
+    margin-right: 10px;
+}
