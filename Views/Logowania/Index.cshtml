@@ -14,16 +14,42 @@
         <div></div>
 
         <div class="df-sb mt-20 mb-20">
-            <!-- Wyszukiwarka -->
-            <div class="df">
-                <input asp-for="q" class="searchInput" />
-                <input type="submit" value="Szukaj" class="searchButton" />
+
+            <!-- Przedział czasu logowań -->
+            <div class="db">
+                <span>Przedział czasu</span>
+                <div class="df">
+                    <!-- Data od -->
+                    <div class="df">
+                        <span>Od</span>
+                        <input asp-for="DataZalogowaniaOd" class="searchInput" />
+                    </div>
+                    <!-- Data do -->
+                    <div class="df">
+                        <span>Do</span>
+                        <input asp-for="DataZalogowaniaDo" class="searchInput" />
+                    </div>
+                </div>
             </div>
 
+
+            <!-- Wyszukiwarka -->
+            <div class="db">
+                <span>Szukana fraza</span>
+                <div class="df">
+                    <input asp-for="q" class="searchInput" />
+                    <input type="submit" value="Szukaj" class="searchButton" />
+                </div>
+            </div>
+
+
             <!-- Sortowanie -->
-            <div class="df">
-                <select asp-for="SortowanieOption" asp-items='@new SelectList(new List<string>() {"Tytuł A-Z", "Tytuł Z-A", "Kategoria A-Z", "Kategoria Z-A"})' class="selectOption"></select>
-                <input type="submit" value="Sortuj" class="searchButton" />
+            <div class="db">
+                <span>Sortowanie</span>
+                <div class="df">
+                    <select asp-for="SortowanieOption" asp-items='@new SelectList(new List<string>() {"Tytuł A-Z", "Tytuł Z-A", "Kategoria A-Z", "Kategoria Z-A"})' class="selectOption"></select>
+                    <input type="submit" value="Sortuj" class="searchButton" />
+                </div>
             </div>
         </div>
 
@@ -74,8 +100,9 @@
                             if (!string.IsNullOrEmpty(logowanie.DataLogowania) && string.IsNullOrEmpty(logowanie.DataWylogowania))
                             {
                                 var dataZalogowania = DateTime.Parse(logowanie.DataLogowania);
-                                var dataWylogowania = DateTime.Parse(logowanie.DataWylogowania);
+                                var dataWylogowania = DateTime.Now;
                                 var czasPracy = dataWylogowania - dataZalogowania;
+                                czasPracy = new TimeSpan(czasPracy.Days, czasPracy.Hours, czasPracy.Minutes, czasPracy.Seconds);
                                 <span>@czasPracy</span>
                             }
                             else

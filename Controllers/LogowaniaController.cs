@@ -45,7 +45,9 @@ namespace WebApplication71.Controllers
                     End = model.End,
                     q = model.q,
                     SearchOption = model.SearchOption,
-                    SortowanieOption = model.SortowanieOption
+                    SortowanieOption = model.SortowanieOption,
+                    DataZalogowaniaOd = DateTime.Now.ToString(),
+                    DataZalogowaniaDo = DateTime.Now.ToString()
                 });
             }
             catch (Exception ex)
@@ -75,8 +77,30 @@ namespace WebApplication71.Controllers
                 // Wyszukiwanie
                 if (!string.IsNullOrEmpty(model.q))
                 {
-                    logowania = logowania.Where(w => w.Email.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
+                    logowania = logowania.Where(
+                        w => 
+                            w.Email.Contains(model.q, StringComparison.OrdinalIgnoreCase)
+                        ).ToList();
                 }
+
+
+                // Data logowania od
+                logowania = logowania.Where(
+                    w =>
+                        DateTime.Parse(w.DataLogowania).Year >= DateTime.Parse(model.DataZalogowaniaOd).Year &&
+                        DateTime.Parse(w.DataLogowania).Month >= DateTime.Parse(model.DataZalogowaniaOd).Month &&
+                        DateTime.Parse(w.DataLogowania).Day >= DateTime.Parse(model.DataZalogowaniaOd).Day
+                    ).ToList();
+
+                // Data logowania do
+                logowania = logowania.Where(
+                    w =>
+                        DateTime.Parse(w.DataLogowania).Year <= DateTime.Parse(model.DataZalogowaniaDo).Year &&
+                        DateTime.Parse(w.DataLogowania).Month <= DateTime.Parse(model.DataZalogowaniaDo).Month &&
+                        DateTime.Parse(w.DataLogowania).Day <= DateTime.Parse(model.DataZalogowaniaDo).Day
+                    ).ToList();
+
+
 
 
                 // Sortowanie

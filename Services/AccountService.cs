@@ -937,7 +937,7 @@ namespace WebApplication71.Services
         {
 
             // jeżeli pole DataWylogowania jest puste oraz rekordów jest więcej niż 1 wtedy one są usuwane, zostaje tylko pierwszy
-            var logowaniaUzytkownika = await _context.Logowania
+            /*var logowaniaUzytkownika = await _context.Logowania
                 .Include(i => i.User)
                 .OrderByDescending(o => o.DataLogowania)
                 .Where(w => w.User.Email == userEmail)
@@ -953,7 +953,7 @@ namespace WebApplication71.Services
                         await _context.SaveChangesAsync();
                     }
                 }
-            }
+            }*/
 
 
 
