@@ -1,16 +1,20 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using WebApplication71.Models.Enums;
+using WebApplication71.Services;
 
-namespace WebApplication71.DTOs.Users
+namespace WebApplication71.DTOs.Account
 {
-    public class CreateUserDto
+    public class CreateAccountDto
     {
         [Required]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
-        [Required]
+
+        [Required(ErrorMessage = "*")]
+        [StringLength(10, ErrorMessage = "Hasło musi mieć co najmniej 10 znaków")]
         [DataType(DataType.Password)]
+        [PasswordRequirements]
         public string Password { get; set; }
 
 

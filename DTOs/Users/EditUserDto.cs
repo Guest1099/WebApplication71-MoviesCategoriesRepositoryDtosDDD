@@ -28,6 +28,9 @@ namespace WebApplication71.DTOs.Users
         public string Wojewodztwo { get; set; }
 
         [Required]
+        public string KodPocztowy { get; set; }
+
+        [Required]
         public string Pesel { get; set; }
 
         [Required]

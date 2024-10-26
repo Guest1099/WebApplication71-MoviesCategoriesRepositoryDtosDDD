@@ -11,6 +11,7 @@ namespace WebApplication71.Models
         public string Nazwisko { get; private set; }
         public string Ulica { get; private set; }
         public string Miejscowosc { get; private set; }
+        public string KodPocztowy { get; private set; }
         public string Wojewodztwo { get; private set; }
         public string Pesel { get; private set; }
         public string DataUrodzenia { get; private set; }
@@ -31,7 +32,7 @@ namespace WebApplication71.Models
 
 
 
-        public ApplicationUser(string email, string imie, string nazwisko, string ulica, string miejscowosc, string wojewodztwo, string pesel, string dataUrodzenia, Plec plec, string telefon, string photo)
+        public ApplicationUser(string email, string imie, string nazwisko, string ulica, string miejscowosc, string wojewodztwo, string kodPocztowy, string pesel, string dataUrodzenia, Plec plec, string telefon, string photo)
         {
             Id = Guid.NewGuid().ToString();
 
@@ -46,6 +47,7 @@ namespace WebApplication71.Models
             Ulica = ulica;
             Miejscowosc = miejscowosc;
             Wojewodztwo = wojewodztwo;
+            KodPocztowy = kodPocztowy;
             Pesel = pesel;
             DataUrodzenia = dataUrodzenia;
             Plec = plec;
@@ -58,7 +60,7 @@ namespace WebApplication71.Models
 
 
 
-        public ApplicationUser(string email, string imie, string nazwisko, string ulica, string miejscowosc, string wojewodztwo, string pesel, string dataUrodzenia, Plec plec, string telefon, string photo, string password)
+        public ApplicationUser(string email, string imie, string nazwisko, string ulica, string miejscowosc, string kodPocztowy, string wojewodztwo, string pesel, string dataUrodzenia, Plec plec, string telefon, string photo, string password)
         {
             Id = Guid.NewGuid().ToString();
 
@@ -73,6 +75,7 @@ namespace WebApplication71.Models
             Ulica = ulica;
             Miejscowosc = miejscowosc;
             Wojewodztwo = wojewodztwo;
+            KodPocztowy = kodPocztowy;
             Pesel = pesel;
             DataUrodzenia = dataUrodzenia;
             Plec = plec;
@@ -88,13 +91,14 @@ namespace WebApplication71.Models
 
 
 
-        public void Update(string imie, string nazwisko, string ulica, string miejscowosc, string wojewodztwo, string pesel, string dataUrodzenia, Plec plec, string telefon, string photo)
+        public void Update(string imie, string nazwisko, string ulica, string miejscowosc, string wojewodztwo, string kodPocztowy, string pesel, string dataUrodzenia, Plec plec, string telefon, string photo)
         {
             Imie = imie;
             Nazwisko = nazwisko;
             Ulica = ulica;
             Miejscowosc = miejscowosc;
             Wojewodztwo = wojewodztwo;
+            KodPocztowy = kodPocztowy;
             Pesel = pesel;
             DataUrodzenia = dataUrodzenia;
             Plec = plec;
@@ -102,6 +106,13 @@ namespace WebApplication71.Models
             Photo = photo;
         }
 
+        public void UpdateEmail(string email)
+        {
+            Email = email;
+            UserName = email; 
+            NormalizedUserName = email.ToUpper();
+            NormalizedEmail = email.ToUpper();
+        }
 
 
         public void IloscZalogowanUpdate(int iloscZalogowan)

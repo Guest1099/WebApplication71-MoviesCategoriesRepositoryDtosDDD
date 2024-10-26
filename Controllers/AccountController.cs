@@ -1,7 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Account;
+using WebApplication71.DTOs.Logowania;
+using WebApplication71.DTOs.Users;
+using WebApplication71.Models.Enums;
 using WebApplication71.Services;
 
 namespace WebApplication71.Controllers
@@ -34,13 +39,20 @@ namespace WebApplication71.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginDto model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var result = await _accountService.Login(model);
-                if (result.Success)
-                    return RedirectToAction("Index", "Categories");
+                if (ModelState.IsValid)
+                {
+                    var result = await _accountService.Login(model);
+                    if (result.Success)
+                        return RedirectToAction("Index", "Categories");
+                }
+                return View(model);
             }
-            return View(model);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
 
@@ -130,11 +142,18 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> Logout()
         {
-            // zalogowany użytkownik
-            string email = HttpContext.User.Identity.Name;
+            try
+            {
+                // zalogowany użytkownik
+                string email = HttpContext.User.Identity.Name;
 
-            await _accountService.Logout(email);
-            return RedirectToAction("Index", "Home");
+                await _accountService.Logout(email);
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
 
@@ -286,6 +305,185 @@ namespace WebApplication71.Controllers
                         return View(model);
                 }
         */
+
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> Edit()
+        {
+            try
+            {
+                var result = await _accountService.GetUserByEmail(User.Identity.Name);
+                if (result == null || !result.Success)
+                    return View("NotFound");
+
+                var user = result.Object;
+                if (user == null)
+                    return View("NotFound");
+
+
+                return View(new GetUserDto()
+                {
+                    Email = user.Email,
+                    Imie = user.Imie,
+                    Nazwisko = user.Nazwisko,
+                    Ulica = user.Ulica,
+                    Miejscowosc = user.Miejscowosc,
+                    Wojewodztwo = user.Wojewodztwo,
+                    KodPocztowy = user.KodPocztowy,
+                    Pesel = user.Pesel,
+                    DataUrodzenia = user.DataUrodzenia,
+                    Plec = user.Plec,
+                    Telefon = user.Telefon,
+                    Photo = user.Photo
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(GetUserDto model)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(model.Email))
+                    return View("NotFound");
+
+
+                if (ModelState.IsValid)
+                {
+                    var result = await _accountService.UpdateAccount(new UpdateAccountDto ()
+                    {
+                        Email = model.Email,
+                        Imie = model.Imie,
+                        Nazwisko = model.Nazwisko,
+                        Ulica = model.Ulica,
+                        Miejscowosc = model.Miejscowosc,
+                        Wojewodztwo = model.Wojewodztwo,
+                        KodPocztowy = model.KodPocztowy,
+                        Pesel = model.Pesel,
+                        DataUrodzenia = model.DataUrodzenia,
+                        Plec = model.Plec,
+                        Telefon = model.Telefon,
+                        Photo = model.Photo
+                    });
+                    if (result != null && result.Success)
+                        return RedirectToAction("Edit", "Account");
+                }
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+
+        [HttpGet]
+        public IActionResult ChangeEmail()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeEmail(ChangeEmailDto model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    model.Email = User.Identity.Name; 
+                    var result = await _accountService.ChangeEmail(model);
+                    if (result != null && result.Success)
+                        return RedirectToAction("Index", "Home");
+                }
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDto model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    model.Email = User.Identity.Name;
+                    var result = await _accountService.ChangePassword (model);
+                    if (result != null && result.Success)
+                        return RedirectToAction("Index", "Home");
+                }
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+
+
+        [HttpGet]
+        public IActionResult DeleteAccount(string id)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id))
+                    return View("NotFound");
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+        [HttpPost]
+        [ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAccountConfirmed(string id)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id))
+                    return View("NotFound");
+
+                await _accountService.DeleteAccountByEmail(User.Identity.Name);
+
+                return RedirectToAction("Index", "Account");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
 
 
     }

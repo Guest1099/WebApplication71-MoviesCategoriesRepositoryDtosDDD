@@ -1,18 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using WebApplication71.Models.Enums;
+using WebApplication71.Services;
 
-namespace WebApplication71.DTOs.Users
+namespace WebApplication71.DTOs.Account
 {
-    public class CreateUserDto
+    public class UpdateAccountDto
     {
-        [Required]
-        [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
-
-        [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
-
 
 
         [Required]
@@ -28,10 +22,10 @@ namespace WebApplication71.DTOs.Users
         public string Miejscowosc { get; set; }
 
         [Required]
-        public string Wojewodztwo { get; set; }
+        public string KodPocztowy { get; set; }
 
         [Required]
-        public string KodPocztowy { get; set; }
+        public string Wojewodztwo { get; set; }
 
         [Required]
         public string Pesel { get; set; }

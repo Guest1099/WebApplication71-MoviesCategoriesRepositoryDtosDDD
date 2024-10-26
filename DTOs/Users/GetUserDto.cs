@@ -1,4 +1,5 @@
-﻿using WebApplication71.Models.Enums;
+﻿using System.ComponentModel.DataAnnotations;
+using WebApplication71.Models.Enums;
 
 namespace WebApplication71.DTOs.Users
 {
@@ -10,6 +11,7 @@ namespace WebApplication71.DTOs.Users
         public string Ulica { get; set; }
         public string Miejscowosc { get; set; }
         public string Wojewodztwo { get; set; }
+        public string KodPocztowy { get; set; }
         public string Pesel { get; set; }
         public string DataUrodzenia { get; set; }
         public Plec Plec { get; set; }
