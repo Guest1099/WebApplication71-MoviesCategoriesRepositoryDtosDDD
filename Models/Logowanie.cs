@@ -59,7 +59,7 @@ namespace WebApplication71.Models
             CzasPracy = czasPracy.ToString();
         }
 
-        public void DodajDateWylogowania (string dataWylogowania)
+        public void DodajDateWylogowania(string dataWylogowania)
         {
             DataWylogowania = dataWylogowania;
 
@@ -68,7 +68,7 @@ namespace WebApplication71.Models
             var dz = DateTime.Parse(DataLogowania);
             var dw = DateTime.Parse(dataWylogowania);
             var czasPracy = dw - dz;
-            CzasPracy = czasPracy.ToString ();
+            CzasPracy = czasPracy.ToString();
         }
 
 

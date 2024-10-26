@@ -26,7 +26,7 @@ namespace WebApplication71.Repos
             try
             {
                 var categories = await _context.Categories
-                    .Include (i=> i.Movies)
+                    .Include(i => i.Movies)
                     .ToListAsync();
                 if (categories != null)
                 {

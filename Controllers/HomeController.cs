@@ -1,21 +1,17 @@
 ﻿using Application.Services.Abs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Threading.Tasks;
-using WebApplication71.Models;
 using WebApplication71.Repos.Abs;
 using WebApplication71.Services.Abs;
 
 namespace WebApplication71.Controllers
 {
-    [Authorize(Roles = "Administrator")]
+    [Authorize]
     public class HomeController : Controller
-    { 
+    {
         private readonly IUsersService _usersService;
         private readonly IRolesService _rolesService;
         private readonly ICategoriesRepository _categoriesRepostiory;
@@ -30,20 +26,23 @@ namespace WebApplication71.Controllers
             _categoriesRepostiory = categoriesRepostiory;
             _moviesRepository = moviesRepository;
             _logowaniaRepository = logowaniaRepository;
+
+
+            StatystykiDictionary = new Dictionary<string, int> ();
         }
 
 
 
         [HttpGet]
-        public async Task <IActionResult> Index()
+        public async Task<IActionResult> Index()
         {
             try
             {
                 var users = await _usersService.GetAll();
-                var roles = await _rolesService.GetAll ();
-                var categories = await _categoriesRepostiory.GetAll ();
-                var movies = await _moviesRepository.GetAll ();
-                var logowania = await _logowaniaRepository.GetAll ();
+                var roles = await _rolesService.GetAll();
+                var categories = await _categoriesRepostiory.GetAll();
+                var movies = await _moviesRepository.GetAll();
+                var logowania = await _logowaniaRepository.GetAll();
 
                 if (users != null && users.Success &&
                     roles != null && roles.Success &&
@@ -64,15 +63,15 @@ namespace WebApplication71.Controllers
                     return View(StatystykiDictionary);
                 }
 
-                return View ();
+                return View();
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-         
-         
+
+
 
 
 

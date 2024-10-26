@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace WebApplication71.Services
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
     public class PasswordRequirementsAttribute : ValidationAttribute
     {
-        public PasswordRequirementsAttribute () : base("Hasło musi zawierać co najmniej jedną małą literę, jedną dużą literę, jedną cyfrę i jeden znak specjalny.")
+        public PasswordRequirementsAttribute() : base("Hasło musi zawierać co najmniej jedną małą literę, jedną dużą literę, jedną cyfrę i jeden znak specjalny.")
         {
         }
 
-        protected override ValidationResult IsValid (object value, ValidationContext validationContext)
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             if (value != null)
             {
@@ -43,22 +41,22 @@ namespace WebApplication71.Services
             return ValidationResult.Success;
         }
 
-        private bool ContainsLowercase (string password)
+        private bool ContainsLowercase(string password)
         {
             return password.Any(char.IsLower);
         }
 
-        private bool ContainsUppercase (string password)
+        private bool ContainsUppercase(string password)
         {
             return password.Any(char.IsUpper);
         }
 
-        private bool ContainsDigit (string password)
+        private bool ContainsDigit(string password)
         {
             return password.Any(char.IsDigit);
         }
 
-        private bool ContainsSpecialCharacter (string password)
+        private bool ContainsSpecialCharacter(string password)
         {
             return password.Any(ch => !char.IsLetterOrDigit(ch));
         }

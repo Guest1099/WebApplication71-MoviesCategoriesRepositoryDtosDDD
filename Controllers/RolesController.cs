@@ -3,42 +3,42 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApplication71.DTOs.Categories;
-using WebApplication71.Repos.Abs;
+using WebApplication71.DTOs.Roles;
 using WebApplication71.Services;
+using WebApplication71.Services.Abs;
 
 namespace WebApplication71.Controllers
 {
-    [Authorize]
-    public class CategoriesController : Controller
+    [Authorize(Roles = "Administrator")]
+    public class RolesController : Controller
     {
-        private readonly ICategoriesRepository _categoriesRepository;
+        private readonly IRolesService _rolesService;
 
-        public CategoriesController(ICategoriesRepository categoriesRepository)
+        public RolesController(IRolesService rolesService)
         {
-            _categoriesRepository = categoriesRepository;
+            _rolesService = rolesService;
         }
 
 
         [HttpGet]
-        public async Task<IActionResult> Index(GetCategoriesDto model)
+        public async Task<IActionResult> Index(GetRolesDto model)
         {
             try
             {
-                var result = await _categoriesRepository.GetAll();
+                var result = await _rolesService.GetAll();
 
                 if (result == null || !result.Success)
                     return View("NotFound");
 
-                var categories = result.Object;
+                var roles = result.Object;
 
-                if (categories == null)
+                if (roles == null)
                     return View("NotFound");
 
 
-                return View(new GetCategoriesDto()
+                return View(new GetRolesDto()
                 {
-                    Paginator = Paginator<GetCategoryDto>.CreateAsync(categories, model.PageIndex, model.PageSize),
+                    Paginator = Paginator<GetRoleDto>.CreateAsync(roles, model.PageIndex, model.PageSize),
                     PageIndex = model.PageIndex,
                     PageSize = model.PageSize,
                     Start = model.Start,
@@ -57,39 +57,39 @@ namespace WebApplication71.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(string s, GetCategoriesDto model)
+        public async Task<IActionResult> Index(string s, GetRolesDto model)
         {
             try
             {
-                var result = await _categoriesRepository.GetAll();
+                var result = await _rolesService.GetAll();
 
                 if (result == null || !result.Success)
                     return View("NotFound");
 
-                var categories = result.Object;
-                if (categories == null)
+                var roles = result.Object;
+                if (roles == null)
                     return View("NotFound");
 
 
                 // Wyszukiwanie
                 if (!string.IsNullOrEmpty(model.q))
                 {
-                    categories = categories.Where(w => w.Name.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
+                    roles = roles.Where(w => w.Name.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
 
                 // Sortowanie
                 switch (model.SortowanieOption)
                 {
-                    case "Nazwa A-Z":
-                        categories = categories.OrderBy(o => o.Name).ToList();
+                    case "Name A-Z":
+                        roles = roles.OrderBy(o => o.Name).ToList();
                         break;
 
-                    case "Nazwa Z-A":
-                        categories = categories.OrderByDescending(o => o.Name).ToList();
+                    case "Name Z-A":
+                        roles = roles.OrderByDescending(o => o.Name).ToList();
                         break;
                 }
 
-                model.Paginator = Paginator<GetCategoryDto>.CreateAsync(categories, model.PageIndex, model.PageSize);
+                model.Paginator = Paginator<GetRoleDto>.CreateAsync(roles, model.PageIndex, model.PageSize);
                 return View(model);
             }
             catch (Exception ex)
@@ -106,15 +106,15 @@ namespace WebApplication71.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateCategoryDto model)
+        public async Task<IActionResult> Create(CreateRoleDto model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _categoriesRepository.Create(model);
+                    var result = await _rolesService.Create(model);
                     if (result != null && result.Success)
-                        return RedirectToAction("Index", "Categories");
+                        return RedirectToAction("Index", "Roles");
 
 
                     // zwraca komunikat błędu związanego z tworzeniem rekordu
@@ -135,25 +135,25 @@ namespace WebApplication71.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> Edit(string categoryId)
+        public async Task<IActionResult> Edit(string roleId)
         {
             try
             {
-                if (string.IsNullOrEmpty(categoryId))
+                if (string.IsNullOrEmpty(roleId))
                     return View("NotFound");
 
-                var result = await _categoriesRepository.Get(categoryId);
+                var result = await _rolesService.Get(roleId);
 
                 if (result == null || !result.Success)
                     return View("NotFound");
 
 
-                var category = result.Object;
-                if (category == null)
+                var role = result.Object;
+                if (role == null)
                     return View("NotFound");
 
 
-                return View(category);
+                return View(role);
             }
             catch (Exception ex)
             {
@@ -163,19 +163,18 @@ namespace WebApplication71.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(GetCategoryDto model)
+        public async Task<IActionResult> Edit(GetRoleDto model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _categoriesRepository.Update(new EditCategoryDto()
+                    var result = await _rolesService.Update(new EditRoleDto()
                     {
-                        CategoryId = model.CategoryId,
                         Name = model.Name
                     });
                     if (result != null && result.Success)
-                        return RedirectToAction("Index", "Categories");
+                        return RedirectToAction("Index", "Roles");
 
 
                     // zwraca komunikat błędu związanego z aktualizacją rekordu
@@ -219,18 +218,17 @@ namespace WebApplication71.Controllers
                 if (string.IsNullOrEmpty(id))
                     return View("NotFound");
 
-                var result = await _categoriesRepository.Delete(id);
+                var result = await _rolesService.Delete(id);
                 if (result == null || !result.Success)
                     return View("NotFound");
 
-                return RedirectToAction("Index", "Categories");
+                return RedirectToAction("Index", "Roles");
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-
 
     }
 }

@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Account;
-using WebApplication71.DTOs.Logowania;
 using WebApplication71.DTOs.Users;
-using WebApplication71.Models.Enums;
 using WebApplication71.Services;
 
 namespace WebApplication71.Controllers
@@ -25,135 +22,6 @@ namespace WebApplication71.Controllers
         public IActionResult Index()
         {
             return View();
-        }
-
-
-        [AllowAnonymous]
-        [HttpGet]
-        public IActionResult Login()
-            => View(new LoginDto() { LoginResult = "" });
-
-
-        [AllowAnonymous]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginDto model)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    var result = await _accountService.Login(model);
-                    if (result.Success)
-                        return RedirectToAction("Index", "Categories");
-                }
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
-
-
-        /*
-                [AllowAnonymous]
-                [HttpPost]
-                [ValidateAntiForgeryToken]
-                public async Task<IActionResult> Login(LoginDto model)
-                {
-                    if (ModelState.IsValid)
-                    {
-                        var user = await _userManager.FindByEmailAsync(model.Email);
-                        if (user != null)
-                        {
-                            var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
-                            if (result.Succeeded)
-                            {
-
-                                *//*user.IloscZalogowanUpdate(user.IloscZalogowan + 1);
-
-
-                                await _userManager.UpdateAsync(user);*/
-        /*
-                                Logowanie logowanie = new Logowanie(
-                                    dataLogowania: DateTime.Now,
-                                    userId: user.Id
-                                    );
-                                _context.Logowania.Add(logowanie);
-                                await _context.SaveChangesAsync();*//*
-
-                                return RedirectToAction("Index", "Categories");
-                            }
-                            else
-                            {
-                                model.LoginResult = "Błędny login lub hasło";
-                                return View(model);
-                            }
-                        }
-                        else
-                        {
-                            model.LoginResult = "User is null";
-                        }
-                    }
-                    return View(model);
-                }*/
-
-
-
-        /*
-                public async Task<IActionResult> Login(LoginDto model)
-                {
-                    if (ModelState.IsValid)
-                    {
-                        var user = await _userManager.FindByEmailAsync(model.Email);
-                        if (user != null)
-                        {
-                            var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
-                            if (result.Succeeded)
-                            {
-
-                                user.IloscZalogowanUpdate(user.IloscZalogowan + 1);
-                                await _userManager.UpdateAsync(user);
-
-                                Logowanie logowanie = new Logowanie(
-                                    dataLogowania: DateTime.Now,
-                                    userId: user.Id
-                                    );
-                                _context.Logowania.Add(logowanie);
-                                await _context.SaveChangesAsync();
-
-                                return RedirectToAction("Index", "Categories");
-                            }
-                            else
-                            {
-                                model.LoginResult = "Błędny login lub hasło";
-                                return View(model);
-                            }
-                        }
-                    }
-                    return View (model);
-                }
-        */
-
-
-
-
-        [HttpGet]
-        public async Task<IActionResult> Logout()
-        {
-            try
-            {
-                // zalogowany użytkownik
-                string email = HttpContext.User.Identity.Name;
-
-                await _accountService.Logout(email);
-                return RedirectToAction("Index", "Home");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
         }
 
 
@@ -359,7 +227,7 @@ namespace WebApplication71.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    var result = await _accountService.UpdateAccount(new UpdateAccountDto ()
+                    var result = await _accountService.UpdateAccount(new UpdateAccountDto()
                     {
                         Email = model.Email,
                         Imie = model.Imie,
@@ -402,7 +270,7 @@ namespace WebApplication71.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    model.Email = User.Identity.Name; 
+                    model.Email = User.Identity.Name;
                     var result = await _accountService.ChangeEmail(model);
                     if (result != null && result.Success)
                         return RedirectToAction("Index", "Home");
@@ -433,7 +301,7 @@ namespace WebApplication71.Controllers
                 if (ModelState.IsValid)
                 {
                     model.Email = User.Identity.Name;
-                    var result = await _accountService.ChangePassword (model);
+                    var result = await _accountService.ChangePassword(model);
                     if (result != null && result.Success)
                         return RedirectToAction("Index", "Home");
                 }
@@ -484,6 +352,59 @@ namespace WebApplication71.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+
+
+
+
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult Login()
+            => View(new LoginDto() { LoginResult = "" });
+
+
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginDto model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var result = await _accountService.Login(model);
+                    if (result.Success)
+                        return RedirectToAction("Index", "Home");
+                }
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            try
+            {
+                // zalogowany użytkownik
+                string email = HttpContext.User.Identity.Name;
+
+                await _accountService.Logout(email);
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
 
 
     }

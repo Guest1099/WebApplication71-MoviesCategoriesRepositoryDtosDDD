@@ -1,9 +1,19 @@
-﻿
-@{
-    var movies = Context.Movies.ToList ();
-    var categories = Context.Categories.ToList ();
-    var logowania = Context.Logowania.ToList ();
+﻿@{
+    var users = await Context.Users.ToListAsync();
+    var roles = await Context.Roles.ToListAsync();
+    var categories = await Context.Categories.ToListAsync();
+    var movies = await Context.Movies.ToListAsync();
+    var logowania = await Context.Logowania.ToListAsync();
+
+
+    ApplicationUser zalogowanyUser = new ApplicationUser();
+    if (User != null && User.Identity != null)
+    {
+        zalogowanyUser = users.FirstOrDefault(f => f.Email == User.Identity.Name);
+    }
 }
+
+
 
 <div class="w-250px pr">
     <div class="w-250px">
@@ -18,11 +28,25 @@
                 <li>
                     <a asp-action="Index" asp-controller="Home" class="buttonEdit">Home</a>
                 </li>
-                <li>
-                    <a asp-action="Index" asp-controller="Movies" class="buttonDelete">Movies (@movies.Count)</a>
-                </li>
+
+                @* Linki wyświetlane tylko dla administratora systemu *@
+
+                @if (await UserManager.IsInRoleAsync(zalogowanyUser, "Administrator"))
+                {
+                    <li>
+                        <a asp-action="Index" asp-controller="Users" class="buttonDelete">Users (@users.Count)</a>
+                    </li>
+                    <li>
+                        <a asp-action="Index" asp-controller="Roles" class="buttonDelete">Roles (@roles.Count)</a>
+                    </li>
+                }
+
+
                 <li>
                     <a asp-action="Index" asp-controller="Categories" class="buttonEdit">Categories (@categories.Count)</a>
+                </li>
+                <li>
+                    <a asp-action="Index" asp-controller="Movies" class="buttonDelete">Movies (@movies.Count)</a>
                 </li>
                 <li>
                     <a asp-action="Index" asp-controller="Logowania" class="buttonEdit">Historia logowań (@logowania.Count)</a>
@@ -49,4 +73,3 @@
     </div>
 </div>
 
- 

@@ -64,6 +64,7 @@ namespace WebApplication71.Data
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
                 photo: "",
+                roleName: "Administrator",
                 password: "SDG%$@5423sdgagSDert"
                 );
             IdentityUserRole<string> identityUserRoleAdmin = new IdentityUserRole<string>()
@@ -85,6 +86,7 @@ namespace WebApplication71.Data
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
                 photo: "",
+                roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
             IdentityUserRole<string> identityUserRoleUser = new IdentityUserRole<string>()
@@ -107,6 +109,7 @@ namespace WebApplication71.Data
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
                 photo: "",
+                roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
             IdentityUserRole<string> identityUserRoleUserAaa = new IdentityUserRole<string>()
@@ -130,6 +133,7 @@ namespace WebApplication71.Data
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
                 photo: "",
+                roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
             IdentityUserRole<string> identityUserRoleUserBbb = new IdentityUserRole<string>()
@@ -152,6 +156,7 @@ namespace WebApplication71.Data
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
                 photo: "",
+                roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
             IdentityUserRole<string> identityUserRoleUserCcc = new IdentityUserRole<string>()
@@ -174,6 +179,7 @@ namespace WebApplication71.Data
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
                 photo: "",
+                roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
             IdentityUserRole<string> identityUserRoleUserDdd = new IdentityUserRole<string>()

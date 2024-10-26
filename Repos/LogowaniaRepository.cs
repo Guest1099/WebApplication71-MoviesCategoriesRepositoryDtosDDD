@@ -27,8 +27,8 @@ namespace WebApplication71.Repos
             try
             {
                 var logowania = await _context.Logowania
-                    .Include (i=> i.User)
-                    .OrderByDescending (o=> o.DataLogowania)
+                    .Include(i => i.User)
+                    .OrderByDescending(o => o.DataLogowania)
                     .ToListAsync();
 
                 if (logowania != null)
@@ -36,13 +36,13 @@ namespace WebApplication71.Repos
                     resultViewModel.Success = true;
                     resultViewModel.Object = logowania.Select(
                         s => new GetLogowanieDto()
-                            {
-                                LogowanieId = s.LogowanieId,
-                                DataLogowania = s.DataLogowania,
-                                DataWylogowania = s.DataWylogowania,
-                                CzasPracy = s.CzasPracy,
-                                Email = s.User.Email
-                            })
+                        {
+                            LogowanieId = s.LogowanieId,
+                            DataLogowania = s.DataLogowania,
+                            DataWylogowania = s.DataWylogowania,
+                            CzasPracy = s.CzasPracy,
+                            Email = s.User.Email
+                        })
                             .ToList();
                 }
                 else

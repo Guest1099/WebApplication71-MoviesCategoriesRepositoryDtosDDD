@@ -1,0 +1,44 @@
+﻿@model GetRoleDto
+
+<div class="dodawanieHeader">
+    <span class="titleHeader">Dodawanie nowej pozycji</span>
+</div>
+<hr />
+
+<form method="post" asp-action="Edit" asp-controller="Roles">
+    <input type="hidden" asp-for="Id" />
+
+
+    <table>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Name"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="Name" />
+                    <span asp-validation-for="Name" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+
+    <div class="w-100 df-sb mt-30 mb-40">
+        <a asp-action="Index" asp-controller="Roles" class="buttonWstecz w-100px">Wstecz</a>
+        <div class="df">
+            <input type="submit" value="Zapisz" class="buttonEdit w-100px" />
+            <a asp-action="Index" asp-controller="Roles" class="buttonAnuluj w-100px ml-2">Anuluj</a>
+        </div>
+    </div>
+</form>
+
+
+<!-- Zwraca komunikat błędu, o ile takowy się pojawi -->
+<span class="c-red">@ViewData["ErrorMessage"]</span>
+
+
+
+
+
+

@@ -1,15 +1,11 @@
-﻿using DataAutogenerator.NetCore;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Xml.Schema;
 using WebApplication71.Data;
 using WebApplication71.DTOs;
 using WebApplication71.DTOs.Account;
@@ -112,7 +108,7 @@ namespace WebApplication71.Services
 
 
 
-        public async Task<ResultViewModel<CreateAccountDto>> CreateAccount (CreateAccountDto model)
+        public async Task<ResultViewModel<CreateAccountDto>> CreateAccount(CreateAccountDto model)
         {
             var returnResult = new ResultViewModel<CreateAccountDto>() { Success = false, Message = "", Object = new CreateAccountDto() };
 
@@ -139,6 +135,7 @@ namespace WebApplication71.Services
                             plec: model.Plec,
                             telefon: model.Telefon,
                             photo: model.Photo,
+                            roleName: model.RoleName,
                             password: model.Password
                             );
 
@@ -261,7 +258,7 @@ namespace WebApplication71.Services
 
 
 
-        
+
 
 
         public async Task<ResultViewModel<bool>> DeleteAccountByEmail(string email)
@@ -595,11 +592,6 @@ namespace WebApplication71.Services
                     var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: true, lockoutOnFailure: false);
                     if (result.Succeeded)
                     {
-                        returnResult.Success = true;
-
-                        returnResult.Object = model;
-
-
                         // mówi o tym, kiedyu żytkownik się zalogował 
                         Logowanie logowanie = new Logowanie(
                             userId: user.Id
@@ -607,6 +599,9 @@ namespace WebApplication71.Services
                         _context.Logowania.Add(logowanie);
                         await _context.SaveChangesAsync();
 
+
+                        returnResult.Success = true;
+                        returnResult.Object = model;
                     }
                     else
                     {
@@ -783,7 +778,9 @@ namespace WebApplication71.Services
         public async Task Logout(string email)
         {
             try
-            {// wyszukuje najnowszy rekord logowania oraz dopisuje do niego datę wylogowania
+            {
+                
+                // wyszukuje najnowszy rekord logowania oraz dopisuje do niego datę wylogowania
                 var ostatnieLogowanieUzytkownika = await _context.Logowania
                     .Include(i => i.User)
                     .OrderByDescending(o => o.DataLogowania)
@@ -799,7 +796,7 @@ namespace WebApplication71.Services
 
 
 
-
+/*
                 // jeżeli jakiś rekord przypisany do tego użytkownika w polu DataWylogowania ma puste pole wtedy taki rekord jest usuwany
                 var logowaniaUzytkownika = await _context.Logowania
                     .Include(i => i.User)
@@ -815,7 +812,7 @@ namespace WebApplication71.Services
                         await _context.SaveChangesAsync();
                     }
                 }
-
+*/
 
 
                 // wylogowanie

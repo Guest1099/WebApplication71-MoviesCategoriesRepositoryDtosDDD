@@ -2,13 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApplication71.DTOs.Categories;
 using WebApplication71.DTOs.Movies;
-using WebApplication71.Models;
 using WebApplication71.Repos.Abs;
 using WebApplication71.Services;
 
@@ -35,7 +31,7 @@ namespace WebApplication71.Controllers
                 var result = await _moviesRepository.GetAll();
 
                 if (result == null || !result.Success)
-                    return View ("NotFound");
+                    return View("NotFound");
 
                 var movies = result.Object;
 
@@ -43,7 +39,7 @@ namespace WebApplication71.Controllers
                     return View("NotFound");
 
 
-                return View(new GetMoviesDto ()
+                return View(new GetMoviesDto()
                 {
                     Paginator = Paginator<GetMovieDto>.CreateAsync(movies, model.PageIndex, model.PageSize),
                     PageIndex = model.PageIndex,
@@ -111,7 +107,7 @@ namespace WebApplication71.Controllers
 
 
         [HttpGet]
-        public async Task <IActionResult> Create ()
+        public async Task<IActionResult> Create()
         {
             try
             {
@@ -266,7 +262,7 @@ namespace WebApplication71.Controllers
             try
             {
                 if (string.IsNullOrEmpty(id))
-                    return View ("NotFound");
+                    return View("NotFound");
 
                 var result = await _moviesRepository.Delete(id);
                 if (result == null || !result.Success)

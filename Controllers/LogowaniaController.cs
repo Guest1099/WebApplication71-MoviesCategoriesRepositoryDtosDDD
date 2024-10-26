@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
-using WebApplication71.DTOs.Categories;
+using System.Linq;
+using System.Threading.Tasks;
+using WebApplication71.DTOs.Logowania;
 using WebApplication71.Repos.Abs;
 using WebApplication71.Services;
-using WebApplication71.DTOs.Logowania;
-using System.Linq;
-using Microsoft.AspNetCore.Authorization;
 
 namespace WebApplication71.Controllers
 {
@@ -28,7 +27,7 @@ namespace WebApplication71.Controllers
                 var result = await _logowaniaRepository.GetAll();
 
                 if (result == null || !result.Success)
-                    return View ("NotFound");
+                    return View("NotFound");
 
                 var logowania = result.Object;
 
@@ -78,7 +77,7 @@ namespace WebApplication71.Controllers
                 if (!string.IsNullOrEmpty(model.q))
                 {
                     logowania = logowania.Where(
-                        w => 
+                        w =>
                             w.Email.Contains(model.q, StringComparison.OrdinalIgnoreCase)
                         ).ToList();
                 }
@@ -166,7 +165,7 @@ namespace WebApplication71.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _logowaniaRepository.Update(new EditLogowanieDto ()
+                    var result = await _logowaniaRepository.Update(new EditLogowanieDto()
                     {
                         LogowanieId = model.LogowanieId,
                         DataLogowania = model.DataLogowania,

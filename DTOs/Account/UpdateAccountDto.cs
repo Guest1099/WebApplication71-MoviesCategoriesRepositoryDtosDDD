@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using WebApplication71.Models.Enums;
-using WebApplication71.Services;
 
 namespace WebApplication71.DTOs.Account
 {

@@ -26,23 +26,23 @@ namespace WebApplication71.Repos
             try
             {
                 var movies = await _context.Movies
-                    .Include (i=> i.Category)
-                    .OrderByDescending (o=> o.DataDodania)
+                    .Include(i => i.Category)
+                    .OrderByDescending(o => o.DataDodania)
                     .ToListAsync();
                 if (movies != null)
                 {
                     returnResult.Success = true;
                     returnResult.Object = movies.Select(
                         s => new GetMovieDto()
-                            {
-                                MovieId = s.MovieId,
-                                Title = s.Title,
-                                Description = s.Description,
-                                Photo = s.Photo,
-                                Price = s.Price,
-                                CategoryId = s.CategoryId,
-                                Category = s.Category.Name
-                            })
+                        {
+                            MovieId = s.MovieId,
+                            Title = s.Title,
+                            Description = s.Description,
+                            Photo = s.Photo,
+                            Price = s.Price,
+                            CategoryId = s.CategoryId,
+                            Category = s.Category.Name
+                        })
                             .ToList();
                 }
                 else
@@ -117,7 +117,7 @@ namespace WebApplication71.Repos
                 try
                 {
                     // znajdź zalogowanego użytkownika, po to aby dodać jego id do filmu 
-                    var zalogowanyUser = await _context.Users.FirstOrDefaultAsync (f=> f.Email == model.Email);
+                    var zalogowanyUser = await _context.Users.FirstOrDefaultAsync(f => f.Email == model.Email);
                     if (zalogowanyUser != null)
                     {
                         Movie movie = new Movie(

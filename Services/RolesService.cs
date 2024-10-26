@@ -34,12 +34,23 @@ namespace WebApplication71.Services
                 var roles = await _context.Roles.ToListAsync();
                 if (roles != null)
                 {
-                    returnResult.Success = true;
-                    returnResult.Object = roles.Select(
-                        s => new GetRoleDto()
+
+                    // pobiera użytkowników przypisanych do danej roli
+                    List<GetRoleDto> rolesDto = new List<GetRoleDto>();
+                    foreach (var role in roles)
+                    {
+                        var usersDto = await UsersInRole (role.Name);
+                        GetRoleDto roleDto = new GetRoleDto ()
                         {
-                            Name = s.Name
-                        }).ToList();
+                            Id = role.Id,
+                            Name = role.Name,
+                            Users = usersDto
+                        };
+                        rolesDto.Add (roleDto);
+                    }
+
+                    returnResult.Success = true;
+                    returnResult.Object = rolesDto;
                 }
                 else
                 {
@@ -66,6 +77,7 @@ namespace WebApplication71.Services
                     returnResult.Success = true;
                     returnResult.Object = new GetRoleDto()
                     {
+                        Id = role.Id,
                         Name = role.Name
                     };
                 }
@@ -179,11 +191,19 @@ namespace WebApplication71.Services
                     var role = await _context.Roles.FirstOrDefaultAsync(f => f.Id == roleId);
                     if (role != null)
                     {
-                        _context.Roles.Remove(role);
-                        await _context.SaveChangesAsync();
+                        var users = await UsersInRole (role.Name);
+                        if (users.Any ())
+                        {
+                            _context.Roles.Remove(role);
+                            await _context.SaveChangesAsync();
 
-                        returnResult.Success = true;
-                        returnResult.Object = true;
+                            returnResult.Success = true;
+                            returnResult.Object = true;
+                        }
+                        else
+                        {
+                            returnResult.Message = "Nie można usunąć roli, ponieważ ma przypisanych doń użytkowników";
+                        }
                     }
                     else
                     {
@@ -225,5 +245,7 @@ namespace WebApplication71.Services
 
             return usersInRole;
         }
+
+
     }
 }

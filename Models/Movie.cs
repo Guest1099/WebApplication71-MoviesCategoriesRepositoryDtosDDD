@@ -53,7 +53,7 @@ namespace WebApplication71.Models
             UserId = userId;
             CategoryId = categoryId;
             Klikniecia = 0;
-            DataDodania = DateTime.Now.ToString (); 
+            DataDodania = DateTime.Now.ToString();
         }
 
 

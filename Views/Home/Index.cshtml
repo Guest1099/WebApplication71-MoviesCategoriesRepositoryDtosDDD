@@ -5,13 +5,16 @@
 
 <div class="df wrap">
 
-    @foreach(var statystyka in Model)
+    @if(Model != null)
     {
-        <div class="db centerx" style="display: flex; align-items: center; justify-content: center; width: 240px; height: 100px; text-align: center; border-radius: 10px; background-color: rgb(255,255,255); margin: 20px; padding: 15px;">
-            <span class="fs-12 b">@statystyka.Key</span>
-            <div class="lineStatystyki"></div>
-            <span class="fs-14">@statystyka.Value</span>
-        </div>
+        foreach (var statystyka in Model)
+        {
+            <div class="db centerx" style="display: flex; align-items: center; justify-content: center; width: 240px; height: 100px; text-align: center; border-radius: 10px; background-color: rgb(255,255,255); margin: 20px; padding: 15px;">
+                <span class="fs-12 b">@statystyka.Key</span>
+                <div class="lineStatystyki"></div>
+                <span class="fs-14">@statystyka.Value</span>
+            </div>
+        }
     }
 
 </div>

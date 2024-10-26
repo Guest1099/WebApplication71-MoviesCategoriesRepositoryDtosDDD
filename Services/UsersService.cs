@@ -1,4 +1,5 @@
 ﻿using Application.Services.Abs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -37,6 +38,7 @@ namespace WebApplication71.Services
                     returnResult.Object = users.Select(
                         s => new GetUserDto()
                         {
+                            Id = s.Id,
                             Email = s.Email,
                             Imie = s.Imie,
                             Nazwisko = s.Nazwisko,
@@ -47,7 +49,8 @@ namespace WebApplication71.Services
                             DataUrodzenia = s.DataUrodzenia,
                             Plec = s.Plec,
                             Telefon = s.Telefon,
-                            Photo = s.Photo
+                            Photo = s.Photo,
+                            RoleName = s.RoleName
                         }).ToList();
                 }
                 else
@@ -78,6 +81,7 @@ namespace WebApplication71.Services
                         returnResult.Success = true;
                         returnResult.Object = new GetUserDto()
                         {
+                            Id = user.Id,
                             Email = user.Email,
                             Imie = user.Imie,
                             Nazwisko = user.Nazwisko,
@@ -88,7 +92,8 @@ namespace WebApplication71.Services
                             DataUrodzenia = user.DataUrodzenia,
                             Plec = user.Plec,
                             Telefon = user.Telefon,
-                            Photo = user.Photo
+                            Photo = user.Photo,
+                            RoleName = user.RoleName
                         };
                     }
                     else
@@ -124,6 +129,7 @@ namespace WebApplication71.Services
                         returnResult.Success = true;
                         returnResult.Object = new GetUserDto()
                         {
+                            Id = user.Id,
                             Email = user.Email,
                             Imie = user.Imie,
                             Nazwisko = user.Nazwisko,
@@ -134,7 +140,8 @@ namespace WebApplication71.Services
                             DataUrodzenia = user.DataUrodzenia,
                             Plec = user.Plec,
                             Telefon = user.Telefon,
-                            Photo = user.Photo
+                            Photo = user.Photo,
+                            RoleName = user.RoleName
                         };
                     }
                     else
@@ -184,7 +191,8 @@ namespace WebApplication71.Services
                             dataUrodzenia: model.DataUrodzenia,
                             plec: model.Plec,
                             telefon: model.Telefon,
-                            photo: model.Photo
+                            photo: model.Photo,
+                            roleName: model.RoleName
                             );
 
 
@@ -198,14 +206,12 @@ namespace WebApplication71.Services
 
                             // dodanie nowozarejestrowanego użytkownika do ról 
 
-
                             await _userManager.AddToRoleAsync(user, "User");
                             await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
 
 
-
-                            returnResult.Message = "Zarejestrowano, sprawdź pocztę aby dokończyć rejestrację";
                             returnResult.Success = true;
+                            returnResult.Message = "Zarejestrowano, sprawdź pocztę aby dokończyć rejestrację";
                             returnResult.Object = model;
                         }
                         else
@@ -241,7 +247,7 @@ namespace WebApplication71.Services
             {
                 try
                 {
-                    var user = await _context.Users.FirstOrDefaultAsync(f => f.Email == model.Email);
+                    var user = await _context.Users.FirstOrDefaultAsync(f => f.Id == model.Id);
                     if (user != null)
                     {
                         user.Update(

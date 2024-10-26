@@ -20,6 +20,7 @@ namespace WebApplication71.Models
         public string Photo { get; private set; }
         public int IloscZalogowan { get; private set; }
         public string DataOstatniegoZalogowania { get; private set; }
+        public string RoleName { get; private set; }
         public string DataDodania { get; private set; }
 
 
@@ -32,7 +33,11 @@ namespace WebApplication71.Models
 
 
 
-        public ApplicationUser(string email, string imie, string nazwisko, string ulica, string miejscowosc, string wojewodztwo, string kodPocztowy, string pesel, string dataUrodzenia, Plec plec, string telefon, string photo)
+        public ApplicationUser()
+        {
+        }
+
+        public ApplicationUser(string email, string imie, string nazwisko, string ulica, string miejscowosc, string wojewodztwo, string kodPocztowy, string pesel, string dataUrodzenia, Plec plec, string telefon, string photo, string roleName)
         {
             Id = Guid.NewGuid().ToString();
 
@@ -55,12 +60,13 @@ namespace WebApplication71.Models
             Photo = photo;
             IloscZalogowan = 0;
             DataOstatniegoZalogowania = "";
-            DataDodania = DateTime.Now.ToString ();
+            RoleName = roleName;
+            DataDodania = DateTime.Now.ToString();
         }
 
 
 
-        public ApplicationUser(string email, string imie, string nazwisko, string ulica, string miejscowosc, string kodPocztowy, string wojewodztwo, string pesel, string dataUrodzenia, Plec plec, string telefon, string photo, string password)
+        public ApplicationUser(string email, string imie, string nazwisko, string ulica, string miejscowosc, string kodPocztowy, string wojewodztwo, string pesel, string dataUrodzenia, Plec plec, string telefon, string photo, string roleName, string password)
         {
             Id = Guid.NewGuid().ToString();
 
@@ -83,8 +89,9 @@ namespace WebApplication71.Models
             Photo = photo;
             IloscZalogowan = 0;
             DataOstatniegoZalogowania = "";
+            RoleName = roleName;
             PasswordHash = PasswordHashString(password);
-            DataDodania = DateTime.Now.ToString ();
+            DataDodania = DateTime.Now.ToString();
         }
 
 
@@ -109,7 +116,7 @@ namespace WebApplication71.Models
         public void UpdateEmail(string email)
         {
             Email = email;
-            UserName = email; 
+            UserName = email;
             NormalizedUserName = email.ToUpper();
             NormalizedEmail = email.ToUpper();
         }

@@ -1,44 +1,46 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Application.Services.Abs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Categories;
-using WebApplication71.Repos.Abs;
+using WebApplication71.DTOs.Users;
 using WebApplication71.Services;
 
 namespace WebApplication71.Controllers
 {
-    [Authorize]
-    public class CategoriesController : Controller
+    [Authorize(Roles = "Administrator")]
+    public class UsersController : Controller
     {
-        private readonly ICategoriesRepository _categoriesRepository;
+        private readonly IUsersService _usersService;
 
-        public CategoriesController(ICategoriesRepository categoriesRepository)
+        public UsersController(IUsersService usersService)
         {
-            _categoriesRepository = categoriesRepository;
+            _usersService = usersService;
         }
 
 
+
         [HttpGet]
-        public async Task<IActionResult> Index(GetCategoriesDto model)
+        public async Task<IActionResult> Index(GetUsersDto model)
         {
             try
             {
-                var result = await _categoriesRepository.GetAll();
+                var result = await _usersService.GetAll();
 
                 if (result == null || !result.Success)
                     return View("NotFound");
 
-                var categories = result.Object;
+                var users = result.Object;
 
-                if (categories == null)
+                if (users == null)
                     return View("NotFound");
 
 
-                return View(new GetCategoriesDto()
+                return View(new GetUsersDto()
                 {
-                    Paginator = Paginator<GetCategoryDto>.CreateAsync(categories, model.PageIndex, model.PageSize),
+                    Paginator = Paginator<GetUserDto>.CreateAsync(users, model.PageIndex, model.PageSize),
                     PageIndex = model.PageIndex,
                     PageSize = model.PageSize,
                     Start = model.Start,
@@ -57,39 +59,51 @@ namespace WebApplication71.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(string s, GetCategoriesDto model)
+        public async Task<IActionResult> Index(string s, GetUsersDto model)
         {
             try
             {
-                var result = await _categoriesRepository.GetAll();
+                var result = await _usersService.GetAll();
 
                 if (result == null || !result.Success)
                     return View("NotFound");
 
-                var categories = result.Object;
-                if (categories == null)
+                var users = result.Object;
+                if (users == null)
                     return View("NotFound");
 
 
                 // Wyszukiwanie
                 if (!string.IsNullOrEmpty(model.q))
                 {
-                    categories = categories.Where(w => w.Name.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
+                    users = users.Where(
+                        w =>
+                            w.Email.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
+                            w.Nazwisko.Contains(model.q, StringComparison.OrdinalIgnoreCase)
+                        ).ToList();
                 }
 
                 // Sortowanie
                 switch (model.SortowanieOption)
                 {
-                    case "Nazwa A-Z":
-                        categories = categories.OrderBy(o => o.Name).ToList();
+                    case "Email A-Z":
+                        users = users.OrderBy(o => o.Email).ToList();
                         break;
 
-                    case "Nazwa Z-A":
-                        categories = categories.OrderByDescending(o => o.Name).ToList();
+                    case "Email Z-A":
+                        users = users.OrderByDescending(o => o.Email).ToList();
+                        break;
+
+                    case "Nazwisko A-Z":
+                        users = users.OrderBy(o => o.Nazwisko).ToList();
+                        break;
+
+                    case "Nazwisko Z-A":
+                        users = users.OrderByDescending(o => o.Nazwisko).ToList();
                         break;
                 }
 
-                model.Paginator = Paginator<GetCategoryDto>.CreateAsync(categories, model.PageIndex, model.PageSize);
+                model.Paginator = Paginator<GetUserDto>.CreateAsync(users, model.PageIndex, model.PageSize);
                 return View(model);
             }
             catch (Exception ex)
@@ -100,21 +114,22 @@ namespace WebApplication71.Controllers
 
 
 
+
         [HttpGet]
         public IActionResult Create()
             => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateCategoryDto model)
+        public async Task<IActionResult> Create(CreateUserDto model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _categoriesRepository.Create(model);
+                    var result = await _usersService.Create(model);
                     if (result != null && result.Success)
-                        return RedirectToAction("Index", "Categories");
+                        return RedirectToAction("Index", "Users");
 
 
                     // zwraca komunikat błędu związanego z tworzeniem rekordu
@@ -135,25 +150,25 @@ namespace WebApplication71.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> Edit(string categoryId)
+        public async Task<IActionResult> Edit(string userId)
         {
             try
             {
-                if (string.IsNullOrEmpty(categoryId))
+                if (string.IsNullOrEmpty(userId))
                     return View("NotFound");
 
-                var result = await _categoriesRepository.Get(categoryId);
+                var result = await _usersService.GetUserById(userId);
 
                 if (result == null || !result.Success)
                     return View("NotFound");
 
 
-                var category = result.Object;
-                if (category == null)
+                var user = result.Object;
+                if (user == null)
                     return View("NotFound");
 
 
-                return View(category);
+                return View(user);
             }
             catch (Exception ex)
             {
@@ -163,19 +178,29 @@ namespace WebApplication71.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(GetCategoryDto model)
+        public async Task<IActionResult> Edit(GetUserDto model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _categoriesRepository.Update(new EditCategoryDto()
+                    var result = await _usersService.Update(new EditUserDto()
                     {
-                        CategoryId = model.CategoryId,
-                        Name = model.Name
+                        Imie = model.Imie,
+                        Nazwisko = model.Nazwisko,
+                        Ulica = model.Ulica,
+                        Miejscowosc = model.Miejscowosc,
+                        Wojewodztwo = model.Wojewodztwo,
+                        KodPocztowy = model.KodPocztowy,
+                        Pesel = model.Pesel,
+                        DataUrodzenia = model.DataUrodzenia,
+                        Plec = model.Plec,
+                        Telefon = model.Telefon,
+                        Photo = model.Photo,
                     });
+
                     if (result != null && result.Success)
-                        return RedirectToAction("Index", "Categories");
+                        return RedirectToAction("Index", "Users");
 
 
                     // zwraca komunikat błędu związanego z aktualizacją rekordu
@@ -219,18 +244,17 @@ namespace WebApplication71.Controllers
                 if (string.IsNullOrEmpty(id))
                     return View("NotFound");
 
-                var result = await _categoriesRepository.Delete(id);
+                var result = await _usersService.Delete(id);
                 if (result == null || !result.Success)
                     return View("NotFound");
 
-                return RedirectToAction("Index", "Categories");
+                return RedirectToAction("Index", "Users");
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-
 
     }
 }

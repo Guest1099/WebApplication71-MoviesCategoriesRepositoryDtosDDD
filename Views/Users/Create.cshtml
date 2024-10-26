@@ -1,0 +1,152 @@
+﻿@model CreateUserDto
+
+<div class="dodawanieHeader">
+    <span class="titleHeader">Dodawanie nowej pozycji</span>
+</div>
+<hr />
+
+<form method="post" asp-action="Create" asp-controller="Users">
+
+    <table>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Imie"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="Imie" />
+                    <span asp-validation-for="Imie" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Nazwisko"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="Nazwisko" />
+                    <span asp-validation-for="Nazwisko" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Ulica"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="Ulica" />
+                    <span asp-validation-for="Ulica" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Miejscowosc"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="Miejscowosc" />
+                    <span asp-validation-for="Miejscowosc" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Wojewodztwo"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="Wojewodztwo" />
+                    <span asp-validation-for="Wojewodztwo" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="KodPocztowy"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="KodPocztowy" />
+                    <span asp-validation-for="KodPocztowy" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Pesel"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="Pesel" />
+                    <span asp-validation-for="Pesel" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="DataUrodzenia"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="DataUrodzenia" />
+                    <span asp-validation-for="DataUrodzenia" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Plec"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="Plec" />
+                    <span asp-validation-for="Plec" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Telefon"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="Telefon" />
+                    <span asp-validation-for="Telefon" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Photo"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="Photo" />
+                    <span asp-validation-for="Photo" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+
+    <div class="w-100 df-sb mt-30 mb-40">
+        <a asp-action="Index" asp-controller="Users" class="buttonWstecz w-100px">Wstecz</a>
+        <div class="df">
+            <input type="submit" value="Zapisz" class="buttonEdit w-100px" />
+            <a asp-action="Index" asp-controller="Users" class="buttonAnuluj w-100px ml-2">Anuluj</a>
+        </div>
+    </div>
+</form>
+
+
+<!-- Zwraca komunikat błędu, o ile takowy się pojawi -->
+<span class="c-red">@ViewData["ErrorMessage"]</span>
+
+
+
+
+
+

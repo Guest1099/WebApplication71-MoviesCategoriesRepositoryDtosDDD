@@ -52,5 +52,8 @@ namespace WebApplication71.DTOs.Account
 
         [Required]
         public string Photo { get; set; }
+
+        [Required]
+        public string RoleName { get; set; }
     }
 }

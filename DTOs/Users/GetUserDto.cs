@@ -1,10 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-using WebApplication71.Models.Enums;
+﻿using WebApplication71.Models.Enums;
 
 namespace WebApplication71.DTOs.Users
 {
     public class GetUserDto
     {
+        public string Id { get; set; }
         public string Email { get; set; }
         public string Imie { get; set; }
         public string Nazwisko { get; set; }
@@ -17,5 +17,8 @@ namespace WebApplication71.DTOs.Users
         public Plec Plec { get; set; }
         public string Telefon { get; set; }
         public string Photo { get; set; }
+
+
+        public string RoleName { get; set; }
     }
 }

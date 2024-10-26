@@ -5,9 +5,7 @@ namespace WebApplication71.DTOs.Users
 {
     public class EditUserDto
     {
-        [Required]
-        [DataType(DataType.EmailAddress)]
-        public string Email { get; set; }
+        public string Id { get; set; }
 
 
 

@@ -11,18 +11,70 @@
 </head>
 <body>
 
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <div class="container df">
+            <partial name="_leftNavigation" />
+
+            <div class="w-100 p-20">
+                @RenderBody()
+            </div>
+        </div>
+    }
+    else
+    {
+        @RenderBody()
+    }
+
+
+@* 
     <div class="container df">
-
-
         @if (SignInManager.IsSignedIn(User))
         {
             <partial name="_leftNavigation" />
-        }
 
-        <div class="w-100 p-20">
+            <div class="w-100 p-20">
+                @RenderBody()
+            </div>
+        }
+        else
+        {
             @RenderBody()
-        </div>
+        }
     </div>
+ *@
+
+
+@* 
+    @if (SignInManager.IsSignedIn(User))
+    {
+
+        <div class="db">
+
+            <!-- main content -->
+            <div class="centerx">
+                <div class="w-900px">
+                    <div class="w-100 p-10">
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- left navigation -->
+            <div style="width: 230px;">
+                <div style="width: 230px">
+                    <partial name="_leftNavigation" />
+                </div>
+            </div>
+
+        </div>
+    }
+    else
+    {
+        @RenderBody()
+    }
+ *@
 
 
 

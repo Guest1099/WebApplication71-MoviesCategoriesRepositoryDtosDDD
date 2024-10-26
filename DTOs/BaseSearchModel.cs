@@ -19,6 +19,6 @@ namespace WebApplication71.DTOs
         public int IlePokazac { get; set; } = 0;
         public int Start { get; set; } = 0;
         public int End { get; set; } = 0;
-         
+
     }
 }
