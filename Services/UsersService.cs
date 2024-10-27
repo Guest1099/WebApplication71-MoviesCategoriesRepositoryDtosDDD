@@ -1,9 +1,11 @@
 ﻿using Application.Services.Abs;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -31,7 +33,10 @@ namespace WebApplication71.Services
 
             try
             {
-                var users = await _context.Users.ToListAsync();
+                var users = await _context.Users
+                    .OrderByDescending (o=> o.DataDodania)
+                    .ToListAsync();
+
                 if (users != null)
                 {
                     returnResult.Success = true;
@@ -45,12 +50,14 @@ namespace WebApplication71.Services
                             Ulica = s.Ulica,
                             Miejscowosc = s.Miejscowosc,
                             Wojewodztwo = s.Wojewodztwo,
+                            KodPocztowy = s.KodPocztowy,
                             Pesel = s.Pesel,
                             DataUrodzenia = s.DataUrodzenia,
                             Plec = s.Plec,
                             Telefon = s.Telefon,
                             Photo = s.Photo,
-                            RoleName = s.RoleName
+                            RoleName = s.RoleName,
+                            DataDodania = s.DataDodania
                         }).ToList();
                 }
                 else
@@ -88,12 +95,14 @@ namespace WebApplication71.Services
                             Ulica = user.Ulica,
                             Miejscowosc = user.Miejscowosc,
                             Wojewodztwo = user.Wojewodztwo,
+                            KodPocztowy = user.KodPocztowy,
                             Pesel = user.Pesel,
                             DataUrodzenia = user.DataUrodzenia,
                             Plec = user.Plec,
                             Telefon = user.Telefon,
                             Photo = user.Photo,
-                            RoleName = user.RoleName
+                            RoleName = user.RoleName,
+                            DataDodania = user.DataDodania
                         };
                     }
                     else
@@ -136,12 +145,14 @@ namespace WebApplication71.Services
                             Ulica = user.Ulica,
                             Miejscowosc = user.Miejscowosc,
                             Wojewodztwo = user.Wojewodztwo,
+                            KodPocztowy = user.KodPocztowy,
                             Pesel = user.Pesel,
                             DataUrodzenia = user.DataUrodzenia,
                             Plec = user.Plec,
                             Telefon = user.Telefon,
                             Photo = user.Photo,
-                            RoleName = user.RoleName
+                            RoleName = user.RoleName,
+                            DataDodania = user.DataDodania
                         };
                     }
                     else
@@ -178,7 +189,6 @@ namespace WebApplication71.Services
                     {
                         // jeżeli nie tworzy nowego użytkownika
 
-
                         var user = new ApplicationUser(
                             email: model.Email,
                             imie: model.Imie,
@@ -191,7 +201,7 @@ namespace WebApplication71.Services
                             dataUrodzenia: model.DataUrodzenia,
                             plec: model.Plec,
                             telefon: model.Telefon,
-                            photo: model.Photo,
+                            photo: await ChangeFileToBytes (model.PhotoData),
                             roleName: model.RoleName
                             );
 
@@ -206,8 +216,8 @@ namespace WebApplication71.Services
 
                             // dodanie nowozarejestrowanego użytkownika do ról 
 
-                            await _userManager.AddToRoleAsync(user, "User");
-                            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
+                            await _userManager.AddToRoleAsync(user, model.RoleName);
+                            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, model.RoleName));
 
 
                             returnResult.Success = true;
@@ -239,6 +249,8 @@ namespace WebApplication71.Services
 
 
 
+
+
         public async Task<ResultViewModel<EditUserDto>> Update(EditUserDto model)
         {
             var returnResult = new ResultViewModel<EditUserDto>() { Success = false, Message = "", Object = new EditUserDto() };
@@ -261,26 +273,28 @@ namespace WebApplication71.Services
                             dataUrodzenia: model.DataUrodzenia,
                             plec: model.Plec,
                             telefon: model.Telefon,
-                            photo: model.Photo
+                            photo: await ChangeFileToBytes (model.PhotoData),
+                            roleName: model.RoleName
                             );
 
 
                         // zaktualizowanie danych użytkownika
                         await _userManager.UpdateAsync(user);
 
-                        /*
-                                                // dodanie zdjęcia
-                                                await CreateNewPhoto(model.Files, user.Id);
-                        */
 
-                        /*
-                                                // usunięcie użytkownika z poprzedniej roli
-                                                await _userManager.RemoveFromRoleAsync (user, "User");
+                        // dodanie zdjęcia
+                        //await CreateNewPhoto(model.Files, user.Id);
 
-                                                // i przypisanie do kolejnej
-                                                await _userManager.AddToRoleAsync(user, "User");
-                                                await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
-                        */
+
+
+                        // usunięcie użytkownika z poprzednich ról
+                        var roles = _context.Roles.ToList().Select(s => s.Name).ToList();
+                        await _userManager.RemoveFromRolesAsync(user, roles);
+
+                        // i przypisanie do kolejnej
+                        await _userManager.AddToRoleAsync(user, model.RoleName);
+                        await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, model.RoleName));
+
 
 
                         returnResult.Message = "Dane zostały zaktualizowane poprawnie";
@@ -345,11 +359,41 @@ namespace WebApplication71.Services
             return returnResult;
         }
 
+
+
+
+
+
+        /// <summary>
+        /// Zamienia zdjęcie na bytes
+        /// </summary>
+        private async Task<byte[]> ChangeFileToBytes(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return null;
+            }
+
+            try
+            {
+                byte[] photoData;
+                using (var stream = new MemoryStream())
+                {
+                    await file.CopyToAsync(stream);
+                    photoData = stream.ToArray();
+                }
+
+                return photoData;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
+         
+
     }
-
-
-
-
-
 }
 

@@ -31,14 +31,17 @@
 
                 @* Linki wyświetlane tylko dla administratora systemu *@
 
-                @if (await UserManager.IsInRoleAsync(zalogowanyUser, "Administrator"))
+                @if(zalogowanyUser != null)
                 {
-                    <li>
-                        <a asp-action="Index" asp-controller="Users" class="buttonDelete">Users (@users.Count)</a>
-                    </li>
-                    <li>
-                        <a asp-action="Index" asp-controller="Roles" class="buttonDelete">Roles (@roles.Count)</a>
-                    </li>
+                    if (await UserManager.IsInRoleAsync(zalogowanyUser, "Administrator"))
+                    {
+                        <li>
+                            <a asp-action="Index" asp-controller="Users" class="buttonDelete">Users (@users.Count)</a>
+                        </li>
+                        <li>
+                            <a asp-action="Index" asp-controller="Roles" class="buttonDelete">Roles (@roles.Count)</a>
+                        </li>
+                    }
                 }
 
 
@@ -55,13 +58,13 @@
                     <div class="b mt-10">Ustawienia</div>
                 </li>
                 <li>
-                    <a asp-action="Logout" asp-controller="Account" class="buttonEdit b">Zmień adres email</a>
+                    <a asp-action="ChangeEmail" asp-controller="Account" class="buttonEdit b">Zmień adres email</a>
                 </li>
                 <li>
-                    <a asp-action="Logout" asp-controller="Account" class="buttonEdit b">Zmień hasło</a>
+                    <a asp-action="ChangePassword" asp-controller="Account" class="buttonEdit b">Zmień hasło</a>
                 </li>
                 <li>
-                    <a asp-action="Logout" asp-controller="Account" class="buttonEdit b">Zmień dane osobowe</a>
+                    <a asp-action="Edit" asp-controller="Account" class="buttonEdit b">Zmień dane osobowe</a>
                 </li>
 
                 <li>

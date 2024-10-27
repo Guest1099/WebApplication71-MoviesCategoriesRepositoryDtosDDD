@@ -17,7 +17,7 @@ namespace WebApplication71.Models
         public string DataUrodzenia { get; private set; }
         public Plec Plec { get; private set; }
         public string Telefon { get; private set; }
-        public string Photo { get; private set; }
+        public byte [] Photo { get; private set; }
         public int IloscZalogowan { get; private set; }
         public string DataOstatniegoZalogowania { get; private set; }
         public string RoleName { get; private set; }
@@ -37,14 +37,21 @@ namespace WebApplication71.Models
         {
         }
 
-        public ApplicationUser(string email, string imie, string nazwisko, string ulica, string miejscowosc, string wojewodztwo, string kodPocztowy, string pesel, string dataUrodzenia, Plec plec, string telefon, string photo, string roleName)
+
+        /// <summary>
+        /// Tworzenia użytkownika z bez hasła
+        /// </summary>
+        public ApplicationUser(string email, string imie, string nazwisko, string ulica, string miejscowosc, string wojewodztwo, string kodPocztowy, string pesel, string dataUrodzenia, Plec plec, string telefon, byte [] photo, string roleName)
         {
             Id = Guid.NewGuid().ToString();
 
             Email = email;
             UserName = email; // nazwa użytkowika taka sama jak email
-            NormalizedUserName = email.ToUpper();
-            NormalizedEmail = email.ToUpper();
+            if (!string.IsNullOrEmpty (email))
+            {
+                NormalizedUserName = email.ToUpper();
+                NormalizedEmail = email.ToUpper();
+            }
             SecurityStamp = Guid.NewGuid().ToString();
 
             Imie = imie;
@@ -65,15 +72,20 @@ namespace WebApplication71.Models
         }
 
 
-
-        public ApplicationUser(string email, string imie, string nazwisko, string ulica, string miejscowosc, string kodPocztowy, string wojewodztwo, string pesel, string dataUrodzenia, Plec plec, string telefon, string photo, string roleName, string password)
+        /// <summary>
+        /// Tworzenia użytkownika z hasłem
+        /// </summary>
+        public ApplicationUser(string email, string imie, string nazwisko, string ulica, string miejscowosc, string kodPocztowy, string wojewodztwo, string pesel, string dataUrodzenia, Plec plec, string telefon, byte [] photo, string roleName, string password)
         {
             Id = Guid.NewGuid().ToString();
 
             Email = email;
             UserName = email; // nazwa użytkowika taka sama jak email
-            NormalizedUserName = email.ToUpper();
-            NormalizedEmail = email.ToUpper();
+            if (!string.IsNullOrEmpty(email))
+            {
+                NormalizedUserName = email.ToUpper();
+                NormalizedEmail = email.ToUpper();
+            }
             SecurityStamp = Guid.NewGuid().ToString();
 
             Imie = imie;
@@ -90,7 +102,9 @@ namespace WebApplication71.Models
             IloscZalogowan = 0;
             DataOstatniegoZalogowania = "";
             RoleName = roleName;
+
             PasswordHash = PasswordHashString(password);
+
             DataDodania = DateTime.Now.ToString();
         }
 
@@ -98,7 +112,27 @@ namespace WebApplication71.Models
 
 
 
-        public void Update(string imie, string nazwisko, string ulica, string miejscowosc, string wojewodztwo, string kodPocztowy, string pesel, string dataUrodzenia, Plec plec, string telefon, string photo)
+        public void Update(string imie, string nazwisko, string ulica, string miejscowosc, string wojewodztwo, string kodPocztowy, string pesel, string dataUrodzenia, Plec plec, string telefon, byte[] photo, string roleName)
+        {
+            Imie = imie;
+            Nazwisko = nazwisko;
+            Ulica = ulica;
+            Miejscowosc = miejscowosc;
+            Wojewodztwo = wojewodztwo;
+            KodPocztowy = kodPocztowy;
+            Pesel = pesel;
+            DataUrodzenia = dataUrodzenia;
+            Plec = plec;
+            Telefon = telefon;
+            Photo = photo;
+            RoleName = roleName;
+        }
+
+
+        /// <summary>
+        /// Metoda do aktualizacji danych zalogowanego użytkownika, bez aktualizacji jego roli
+        /// </summary>
+        public void Update(string imie, string nazwisko, string ulica, string miejscowosc, string wojewodztwo, string kodPocztowy, string pesel, string dataUrodzenia, Plec plec, string telefon, byte[] photo)
         {
             Imie = imie;
             Nazwisko = nazwisko;

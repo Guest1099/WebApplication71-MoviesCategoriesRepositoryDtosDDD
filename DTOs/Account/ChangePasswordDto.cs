@@ -8,10 +8,10 @@ namespace WebApplication71.DTOs.Account
 
         [Required(ErrorMessage = "*")]
         [DataType(DataType.Password)]
-        public string OldPassword { get; set; }
+        public string Password { get; set; }
 
         [Required(ErrorMessage = "*")]
-        [StringLength(10, ErrorMessage = "Hasło musi mieć co najmniej 10 znaków")]
+        [MinLength(10, ErrorMessage = "Hasło musi mieć co najmniej 10 znaków")]
         [DataType(DataType.Password)]
         [PasswordRequirements]
         public string NewPassword { get; set; }

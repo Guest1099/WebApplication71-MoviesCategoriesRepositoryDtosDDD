@@ -51,7 +51,7 @@ namespace WebApplication71.DTOs.Account
         public string Telefon { get; set; }
 
         [Required]
-        public string Photo { get; set; }
+        public byte [] Photo { get; set; }
 
         [Required]
         public string RoleName { get; set; }

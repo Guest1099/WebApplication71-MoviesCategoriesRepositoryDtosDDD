@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using WebApplication71.Models.Enums;
 
 namespace WebApplication71.DTOs.Users
@@ -44,12 +47,17 @@ namespace WebApplication71.DTOs.Users
         public Plec Plec { get; set; }
 
         [Required]
-        public string Telefon { get; set; }
-
-        [Required]
-        public string Photo { get; set; }
+        public string Telefon { get; set; } 
+        public byte [] Photo { get; set; }
 
         [Required]
         public string RoleName { get; set; }
+        public string DataDodania { get; set; }
+
+
+
+
+        public IFormFile PhotoData { get; set; }
+        public SelectList RolesList { get; set; }
     }
 }

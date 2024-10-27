@@ -8,6 +8,9 @@ using WebApplication71.Services;
 
 namespace WebApplication71.Controllers
 {
+    /// <summary>
+    /// Akcje dla zalogowanego użytkownika
+    /// </summary>
     [Authorize]
     public class AccountController : Controller
     {
@@ -191,21 +194,7 @@ namespace WebApplication71.Controllers
                     return View("NotFound");
 
 
-                return View(new GetUserDto()
-                {
-                    Email = user.Email,
-                    Imie = user.Imie,
-                    Nazwisko = user.Nazwisko,
-                    Ulica = user.Ulica,
-                    Miejscowosc = user.Miejscowosc,
-                    Wojewodztwo = user.Wojewodztwo,
-                    KodPocztowy = user.KodPocztowy,
-                    Pesel = user.Pesel,
-                    DataUrodzenia = user.DataUrodzenia,
-                    Plec = user.Plec,
-                    Telefon = user.Telefon,
-                    Photo = user.Photo
-                });
+                return View(user);
             }
             catch (Exception ex)
             {
@@ -240,10 +229,11 @@ namespace WebApplication71.Controllers
                         DataUrodzenia = model.DataUrodzenia,
                         Plec = model.Plec,
                         Telefon = model.Telefon,
-                        Photo = model.Photo
+                        Photo = model.Photo,
+                        PhotoData = model.PhotoData
                     });
                     if (result != null && result.Success)
-                        return RedirectToAction("Edit", "Account");
+                        return RedirectToAction("Index", "Home");
                 }
 
                 return View(model);
@@ -257,9 +247,28 @@ namespace WebApplication71.Controllers
 
 
         [HttpGet]
-        public IActionResult ChangeEmail()
+        public async Task <IActionResult> ChangeEmail()
         {
-            return View();
+            try
+            {
+                var result = await _accountService.GetUserByEmail(User.Identity.Name);
+                if (result == null || !result.Success)
+                    return View("NotFound");
+
+                var user = result.Object;
+                if (user == null)
+                    return View("NotFound");
+
+
+                return View(new ChangeEmailDto()
+                {
+                    Email = user.Email,
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpPost]
@@ -273,7 +282,11 @@ namespace WebApplication71.Controllers
                     model.Email = User.Identity.Name;
                     var result = await _accountService.ChangeEmail(model);
                     if (result != null && result.Success)
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Logout", "Account");
+
+
+                    // zwraca komunikat błędu związanego z aktualizacją rekordu
+                    ViewData["ErrorMessage"] = result.Message;
                 }
                 return View(model);
             }
@@ -287,9 +300,7 @@ namespace WebApplication71.Controllers
 
         [HttpGet]
         public IActionResult ChangePassword()
-        {
-            return View();
-        }
+            => View ();
 
 
         [HttpPost]
@@ -303,7 +314,11 @@ namespace WebApplication71.Controllers
                     model.Email = User.Identity.Name;
                     var result = await _accountService.ChangePassword(model);
                     if (result != null && result.Success)
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Logout", "Account");
+
+
+                    // zwraca komunikat błędu związanego z aktualizacją rekordu
+                    ViewData["ErrorMessage"] = result.Message;
                 }
                 return View(model);
             }
@@ -317,7 +332,7 @@ namespace WebApplication71.Controllers
 
 
         [HttpGet]
-        public IActionResult DeleteAccount(string id)
+        public IActionResult Delete(string id)
         {
             try
             {
@@ -336,16 +351,18 @@ namespace WebApplication71.Controllers
         [HttpPost]
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteAccountConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
             try
             {
                 if (string.IsNullOrEmpty(id))
                     return View("NotFound");
 
-                await _accountService.DeleteAccountByEmail(User.Identity.Name);
+                var result = await _accountService.DeleteAccountByEmail(User.Identity.Name);
+                if (result != null && result.Success)
+                    return RedirectToAction("Index", "Account");
 
-                return RedirectToAction("Index", "Account");
+                return RedirectToAction ("Delete", "Account", new { id = id });
             }
             catch (Exception ex)
             {

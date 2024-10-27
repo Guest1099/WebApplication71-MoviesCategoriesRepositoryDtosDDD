@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -41,17 +42,21 @@ namespace WebApplication71.Services
                     returnResult.Success = true;
                     returnResult.Object = new GetUserDto()
                     {
+                        Id = user.Id,
                         Email = user.Email,
                         Imie = user.Imie,
                         Nazwisko = user.Nazwisko,
                         Ulica = user.Ulica,
                         Miejscowosc = user.Miejscowosc,
                         Wojewodztwo = user.Wojewodztwo,
+                        KodPocztowy = user.KodPocztowy,
                         Pesel = user.Pesel,
                         DataUrodzenia = user.DataUrodzenia,
                         Plec = user.Plec,
                         Telefon = user.Telefon,
-                        Photo = user.Photo
+                        Photo = user.Photo,
+                        RoleName = user.RoleName,
+                        DataDodania = user.DataDodania
                     };
                 }
                 else
@@ -80,17 +85,21 @@ namespace WebApplication71.Services
                     returnResult.Success = true;
                     returnResult.Object = new GetUserDto()
                     {
+                        Id = user.Id,
                         Email = user.Email,
                         Imie = user.Imie,
                         Nazwisko = user.Nazwisko,
                         Ulica = user.Ulica,
                         Miejscowosc = user.Miejscowosc,
                         Wojewodztwo = user.Wojewodztwo,
+                        KodPocztowy = user.KodPocztowy,
                         Pesel = user.Pesel,
                         DataUrodzenia = user.DataUrodzenia,
                         Plec = user.Plec,
                         Telefon = user.Telefon,
-                        Photo = user.Photo
+                        Photo = user.Photo,
+                        RoleName = user.RoleName,
+                        DataDodania = user.DataDodania
                     };
                 }
                 else
@@ -143,7 +152,7 @@ namespace WebApplication71.Services
                         if (result.Succeeded)
                         {
                             // przypisanie roli użytkownikowi
-                            await _userManager.AddToRoleAsync(user, "User");
+                            await _userManager.AddToRoleAsync(user, model.RoleName);
 
 
                             returnResult.Success = true;
@@ -204,7 +213,7 @@ namespace WebApplication71.Services
                             dataUrodzenia: model.DataUrodzenia,
                             plec: model.Plec,
                             telefon: model.Telefon,
-                            photo: model.Photo
+                            photo: await ChangeFileToBytes (model.PhotoData)
                             );
 
 
@@ -214,15 +223,15 @@ namespace WebApplication71.Services
                             // dodanie zdjęcia
                             //await CreateNewPhoto (model.Files, user.Id);
 
-
+/*
                             // usunięcie użytkownika z rół i przypisanie na nowo
                             var userRoles = await _userManager.GetRolesAsync(user);
                             await _userManager.RemoveFromRolesAsync(user, userRoles);
 
                             // przypisanie użytkownika do nowej roli
-                            await _userManager.AddToRoleAsync(user, "User");
-                            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
-
+                            await _userManager.AddToRoleAsync(user, model.RoleName);
+                            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, model.RoleName));
+*/
 
 
 
@@ -370,7 +379,7 @@ namespace WebApplication71.Services
                     ApplicationUser user = await _context.Users.FirstOrDefaultAsync(f => f.Email == model.Email);
                     if (user != null)
                     {
-                        IdentityResult result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                        IdentityResult result = await _userManager.ChangePasswordAsync(user, model.Password, model.NewPassword);
                         if (result.Succeeded)
                         {
                             returnResult.Success = true;
@@ -830,10 +839,6 @@ namespace WebApplication71.Services
 
 
 
-
-
-
-
         private async Task CreateNewPhoto(List<IFormFile> files, string userId)
         {
             /*try
@@ -865,6 +870,41 @@ namespace WebApplication71.Services
             }
             catch { }*/
         }
+
+
+
+
+
+
+        /// <summary>
+        /// Zamienia zdjęcie na bytes
+        /// </summary>
+        private async Task<byte[]> ChangeFileToBytes(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return null;
+            }
+
+            try
+            {
+                byte[] photoData;
+                using (var stream = new MemoryStream())
+                {
+                    await file.CopyToAsync(stream);
+                    photoData = stream.ToArray();
+                }
+
+                return photoData;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
+
 
     }
 }

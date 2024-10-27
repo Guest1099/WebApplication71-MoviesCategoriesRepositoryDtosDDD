@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using WebApplication71.Models;
 using WebApplication71.Models.Enums;
 
@@ -63,7 +66,7 @@ namespace WebApplication71.Data
                 dataUrodzenia: dataUrodzenia,
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                photo: "",
+                photo: new byte[0],
                 roleName: "Administrator",
                 password: "SDG%$@5423sdgagSDert"
                 );
@@ -85,7 +88,7 @@ namespace WebApplication71.Data
                 dataUrodzenia: dataUrodzenia,
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                photo: "",
+                photo: new byte[0],
                 roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
@@ -108,7 +111,7 @@ namespace WebApplication71.Data
                 dataUrodzenia: dataUrodzenia,
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                photo: "",
+                photo: new byte[0],
                 roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
@@ -132,7 +135,7 @@ namespace WebApplication71.Data
                 dataUrodzenia: dataUrodzenia,
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                photo: "",
+                photo: new byte[0],
                 roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
@@ -155,7 +158,7 @@ namespace WebApplication71.Data
                 dataUrodzenia: dataUrodzenia,
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                photo: "",
+                photo: new byte[0],
                 roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
@@ -178,7 +181,7 @@ namespace WebApplication71.Data
                 dataUrodzenia: dataUrodzenia,
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                photo: "",
+                photo: new byte[0],
                 roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
@@ -191,6 +194,9 @@ namespace WebApplication71.Data
 
             builder.Entity<ApplicationUser>().HasData(administratorUser, userUser, aaaUser, bbbUser, cccUser, dddUser);
             builder.Entity<IdentityUserRole<string>>().HasData(identityUserRoleAdmin, identityUserRoleUser, identityUserRoleUserAaa, identityUserRoleUserBbb, identityUserRoleUserCcc, identityUserRoleUserDdd);
+
+            //builder.Entity<ApplicationUser>().HasData(administratorUser);
+            //builder.Entity<IdentityUserRole<string>>().HasData(identityUserRoleAdmin);
 
 
 
@@ -255,7 +261,7 @@ namespace WebApplication71.Data
             }
 
 
-
+/*
             for (var j = 0; j < rand.Next(1, 10); j++)
             {
                 var dataZalogowania = DateTime.Now.AddDays(-rand.Next(10, 100));
@@ -266,11 +272,41 @@ namespace WebApplication71.Data
                     );
                 builder.Entity<Logowanie>().HasData(logowanie);
             }
-
+*/
 
 
 
             base.OnModelCreating(builder);
+        }
+
+
+
+
+        /// <summary>
+        /// Zamienia zdjęcie na bytes
+        /// </summary>
+        private async Task<byte[]> CreateNewPhoto(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return null;
+            }
+
+            try
+            {
+                byte[] photoData;
+                using (var stream = new MemoryStream())
+                {
+                    await file.CopyToAsync(stream);
+                    photoData = stream.ToArray();
+                }
+
+                return photoData;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
 

@@ -1,10 +1,4 @@
-﻿@model CreateUserDto
-
-@{
-    string password = "SDG%$@5423sdgagSDert";
-}
-<h5>@password</h5>
-
+﻿@model GetUserDto
 
 
 <div class="dodawanieHeader">
@@ -12,37 +6,23 @@
 </div>
 <hr />
 
-<form method="post" asp-action="Create" asp-controller="Users" enctype="multipart/form-data">
+<form method="post" asp-action="Edit" asp-controller="Account" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Email" />
 
 
-    
     <table>
-        <tr>
+        @* <tr>
             <td class="leftColumn">
                 <label asp-for="Email"></label>
             </td>
             <td class="rightColumn">
                 <div class="db">
-                    <input asp-for="Email" />
+                    <input asp-for="Email" disabled />
                     <span asp-validation-for="Email" class="c-red"></span>
                 </div>
             </td>
-        </tr>
-        <tr>
-            <td class="leftColumn">
-                <label asp-for="Password"></label>
-            </td>
-            <td class="rightColumn">
-                <div class="db">
-                    <input asp-for="Password" />
-                    <span asp-validation-for="Password" class="c-red"></span>
-                </div>
-            </td>
-        </tr>
-    </table>
-
-
-    <table>
+        </tr> *@
         <tr>
             <td class="leftColumn">
                 <label asp-for="Imie"></label>
@@ -147,15 +127,17 @@
                 <label asp-for="Photo"></label>
             </td>
             <td class="rightColumn">
-                <div class="db">
-                    <input asp-for="PhotoData" id="fileInput" accept="image/*" onchange="previewImage(event); saveFiles();" />
+                <div class="image w-200px">
+                    <!-- wyświetla zdjęcie -->
+                    <partial name="_displayPhoto" model="@Model.Photo" />
+
+
+
+                    <!-- wybiera zdjęcie -->
+                    <input asp-for="PhotoData" id="fileInput" style="border: none; padding: 0px; margin: 0px; background-color: transparent; margin-top: 15px; width: fit-content;" accept="image/*" onchange="previewImage(event); saveFiles();" />
                     <div id="imageContainer" class="image">
                         <img id="imagePreview" alt="Uploaded Photo" style="display: none;" />
                     </div>
-
-@* 
-                    <input id="files" asp-for="Photo" multiple onchange="saveFiles()" />
- *@
                 </div>
             </td>
         </tr>
@@ -175,13 +157,19 @@
                 <span>Rola</span>
             </td>
             <td class="rightColumn">
-                @if(Model.RolesList != null)
-                {
-                    <div class="db">
-                        <select asp-for="RoleName" asp-items="Model.RolesList" class="w-200px form-input2"></select>
-                        <span asp-validation-for="RoleName" class="c-red"></span>
-                    </div>
-                }
+                <input asp-for="RoleName" disabled />
+                <span asp-validation-for="RoleName" class="c-red"></span>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="DataDodania"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="DataDodania" disabled />
+                    <span asp-validation-for="DataDodania" class="c-red"></span>
+                </div>
             </td>
         </tr>
     </table>
