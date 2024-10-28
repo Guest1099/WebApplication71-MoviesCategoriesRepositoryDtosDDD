@@ -4,176 +4,29 @@ using System;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Account;
 using WebApplication71.DTOs.Users;
-using WebApplication71.Services;
+using WebApplication71.Services.Abs;
 
 namespace WebApplication71.Controllers
 {
+    /// <summary>
+    /// Akcje dla zalogowanego użytkownika
+    /// </summary>
     [Authorize]
     public class AccountController : Controller
     {
-        private readonly AccountService _accountService;
+        private readonly IAccountService _accountService;
 
-        public AccountController(AccountService accountService)
+        public AccountController(IAccountService accountService)
         {
             _accountService = accountService;
         }
+
 
         [HttpGet]
         public IActionResult Index()
         {
             return View();
         }
-
-
-        /*
-                [AllowAnonymous]
-                [HttpGet]
-                public IActionResult Register()
-                    => View(new RegisterViewModel() { RegisterResult = "" });
-
-                [AllowAnonymous]
-                [HttpPost]
-                [ValidateAntiForgeryToken]
-                public async Task<IActionResult> Register(RegisterViewModel model)
-                {
-                    if (ModelState.IsValid)
-                    {
-                        ApplicationUser user = new ApplicationUser(
-                            email: model.Email,
-                            imie: model.Imie,
-                            nazwisko: model.Nazwisko,
-                            photo: model.Photo,
-                            telefon: model.Telefon,
-                            dataUrodzenia: model.DataUrodzenia,
-                            ulica: model.Ulica,
-                            pesel: model.Pesel,
-                            miejscowosc: model.Miejscowosc,
-                            wojewodztwo: model.Wojewodztwo,
-                            plec: model.Plec
-                            );
-
-                        var result = await _userManager.CreateAsync(user, model.Password);
-                        if (result.Succeeded)
-                        {
-                            // dodanie nowozarejestrowanego użytkownika do roli 
-                            await _userManager.AddToRoleAsync(user, "User");
-                            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
-
-                            // zalogowanie
-                            await _signInManager.SignInAsync(user, false);
-                            model.RegisterResult = "Zarejestrowano, sprawdź pocztę aby dokończyć rejestrację";
-                        }
-                        else
-                        {
-                            model.RegisterResult = "Nie zarejestrowano";
-                        }
-                        return RedirectToAction("Index", "Home");
-                    }
-                    return View(model);
-                }
-
-
-                [HttpGet]
-                public IActionResult ChangePassword()
-                {
-                    return View(new ChangePasswordViewModel() { ChangePasswordResult = "" });
-                }
-
-                [HttpPost]
-                [ValidateAntiForgeryToken]
-                public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
-                {
-                    if (ModelState.IsValid)
-                    {
-                        ApplicationUser user = await _userManager.FindByNameAsync(User.Identity.Name);
-                        if (user == null)
-                        {
-                            model.ChangePasswordResult = "Wskazany użytkownik nie istnieje";
-                        }
-                        else
-                        {
-                            if (model.OldPassword != model.NewPassword)
-                            {
-                                IdentityResult result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
-                                if (result.Succeeded)
-                                {
-                                    model.ChangePasswordResult = "Hasło zmienione poprawnie";
-                                    //await _signInManager.SignOutAsync ();
-                                    //return RedirectToAction ("Login", "Home");
-                                }
-                            }
-                            else
-                            {
-                                model.ChangePasswordResult = "Hasła różnią się od siebie";
-                            }
-
-                        }
-                    }
-                    return View(model);
-                }
-
-
-                public async Task<IActionResult> DeleteAccount()
-                {
-                    ApplicationUser user = await _userManager.FindByNameAsync(User.Identity.Name);
-                    if (user != null)
-                    {
-                        IdentityResult result = await _userManager.DeleteAsync(user);
-                        if (result.Succeeded)
-                        {
-                            await _signInManager.SignOutAsync();
-                            return RedirectToAction("Index", "Home");
-                        }
-                    }
-                    else
-                    {
-                        // model.Result = "Wskazany użytkownik nie istnieje";
-                    }
-                    return RedirectToAction("Index", "Home");
-                }
-
-
-                [HttpGet]
-                public IActionResult ForgotPassword()
-                    => View();
-
-                [HttpPost]
-                [ValidateAntiForgeryToken]
-                public async Task<IActionResult> ForgotPassword(string email)
-                {
-                    var user = await _userManager.FindByEmailAsync(email);
-                    if (user == null)
-                        return RedirectToAction("ForgotPasswordConfirmation");
-
-                    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                    var resetLink = Url.Action("ResetPassword", "Account", new { email, token }, Request.Scheme);
-
-                    return RedirectToAction("ForgotPasswordConfirmation");
-                }
-
-
-                [HttpGet]
-                public IActionResult ResetPassword(string email, string token)
-                {
-                    return View(new ResetPasswordDto()
-                    {
-                        Email = email,
-                        Token = token
-                    });
-                }
-
-                [HttpPost]
-                public async Task<IActionResult> ResetPassword(ResetPasswordDto model)
-                {
-                    var user = await _userManager.FindByEmailAsync(model.Email);
-                    var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
-                    if (result.Succeeded)
-                        return RedirectToAction("ResetPasswordConfirmation");
-                    else
-                        return View(model);
-                }
-        */
-
 
 
 
@@ -191,21 +44,7 @@ namespace WebApplication71.Controllers
                     return View("NotFound");
 
 
-                return View(new GetUserDto()
-                {
-                    Email = user.Email,
-                    Imie = user.Imie,
-                    Nazwisko = user.Nazwisko,
-                    Ulica = user.Ulica,
-                    Miejscowosc = user.Miejscowosc,
-                    Wojewodztwo = user.Wojewodztwo,
-                    KodPocztowy = user.KodPocztowy,
-                    Pesel = user.Pesel,
-                    DataUrodzenia = user.DataUrodzenia,
-                    Plec = user.Plec,
-                    Telefon = user.Telefon,
-                    Photo = user.Photo
-                });
+                return View(user);
             }
             catch (Exception ex)
             {
@@ -229,7 +68,7 @@ namespace WebApplication71.Controllers
                 {
                     var result = await _accountService.UpdateAccount(new UpdateAccountDto()
                     {
-                        Email = model.Email,
+                        Id = model.Id,
                         Imie = model.Imie,
                         Nazwisko = model.Nazwisko,
                         Ulica = model.Ulica,
@@ -240,10 +79,11 @@ namespace WebApplication71.Controllers
                         DataUrodzenia = model.DataUrodzenia,
                         Plec = model.Plec,
                         Telefon = model.Telefon,
-                        Photo = model.Photo
+                        Photo = model.Photo,
+                        PhotoData = model.PhotoData
                     });
                     if (result != null && result.Success)
-                        return RedirectToAction("Edit", "Account");
+                        return RedirectToAction("Index", "Home");
                 }
 
                 return View(model);
@@ -257,9 +97,28 @@ namespace WebApplication71.Controllers
 
 
         [HttpGet]
-        public IActionResult ChangeEmail()
+        public async Task <IActionResult> ChangeEmail()
         {
-            return View();
+            try
+            {
+                var result = await _accountService.GetUserByEmail(User.Identity.Name);
+                if (result == null || !result.Success)
+                    return View("NotFound");
+
+                var user = result.Object;
+                if (user == null)
+                    return View("NotFound");
+
+
+                return View(new ChangeEmailDto()
+                {
+                    Email = user.Email,
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpPost]
@@ -273,7 +132,11 @@ namespace WebApplication71.Controllers
                     model.Email = User.Identity.Name;
                     var result = await _accountService.ChangeEmail(model);
                     if (result != null && result.Success)
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Logout", "Account");
+
+
+                    // zwraca komunikat błędu związanego z aktualizacją rekordu
+                    ViewData["ErrorMessage"] = result.Message;
                 }
                 return View(model);
             }
@@ -287,9 +150,7 @@ namespace WebApplication71.Controllers
 
         [HttpGet]
         public IActionResult ChangePassword()
-        {
-            return View();
-        }
+            => View ();
 
 
         [HttpPost]
@@ -303,7 +164,11 @@ namespace WebApplication71.Controllers
                     model.Email = User.Identity.Name;
                     var result = await _accountService.ChangePassword(model);
                     if (result != null && result.Success)
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Logout", "Account");
+
+
+                    // zwraca komunikat błędu związanego z aktualizacją rekordu
+                    ViewData["ErrorMessage"] = result.Message;
                 }
                 return View(model);
             }
@@ -317,7 +182,7 @@ namespace WebApplication71.Controllers
 
 
         [HttpGet]
-        public IActionResult DeleteAccount(string id)
+        public IActionResult Delete(string id)
         {
             try
             {
@@ -336,16 +201,18 @@ namespace WebApplication71.Controllers
         [HttpPost]
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteAccountConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
             try
             {
                 if (string.IsNullOrEmpty(id))
                     return View("NotFound");
 
-                await _accountService.DeleteAccountByEmail(User.Identity.Name);
+                var result = await _accountService.DeleteAccountByEmail(User.Identity.Name);
+                if (result != null && result.Success)
+                    return RedirectToAction("Index", "Account");
 
-                return RedirectToAction("Index", "Account");
+                return RedirectToAction ("Delete", "Account", new { id = id });
             }
             catch (Exception ex)
             {
@@ -373,8 +240,11 @@ namespace WebApplication71.Controllers
                 if (ModelState.IsValid)
                 {
                     var result = await _accountService.Login(model);
-                    if (result.Success)
+                    if (result != null && result.Success)
                         return RedirectToAction("Index", "Home");
+
+
+                    model.LoginResult = result.Message;
                 }
                 return View(model);
             }

@@ -11,7 +11,9 @@
 
 
     <div class="df-sb">
-        <div></div>
+        <div class="w-200px centery">
+            <a asp-action="Create" asp-controller="Logowania" class="buttonCreate">+ Dodaj nową pozycję</a>
+        </div>
 
         <div class="df-sb mt-20 mb-20">
 
@@ -84,31 +86,31 @@
 
 
                     <td>
-                        @if (string.IsNullOrEmpty(logowanie.DataWylogowania))
+                        @* @if (string.IsNullOrEmpty(logowanie.DataWylogowania))
                         {
                             <span>Użytkownik obecnie zalogowany</span>
                         }
                         else
                         {
                             <span>@logowanie.DataWylogowania</span>
-                        }
+                        } *@
                     </td>
 
                     <td>
                         @{
                             // oblicza tymczasowo czas pracy, kiedy użytkownik jest zalogowany
-                            if (!string.IsNullOrEmpty(logowanie.DataLogowania) && string.IsNullOrEmpty(logowanie.DataWylogowania))
-                            {
-                                var dataZalogowania = DateTime.Parse(logowanie.DataLogowania);
-                                var dataWylogowania = DateTime.Now;
-                                var czasPracy = dataWylogowania - dataZalogowania;
-                                czasPracy = new TimeSpan(czasPracy.Days, czasPracy.Hours, czasPracy.Minutes, czasPracy.Seconds);
-                                <span>@czasPracy</span>
-                            }
-                            else
-                            {
-                                <span>@logowanie.CzasPracy</span>
-                            }
+                            // if (!string.IsNullOrEmpty(logowanie.DataLogowania) && string.IsNullOrEmpty(logowanie.DataWylogowania))
+                            // {
+                            //     var dataZalogowania = DateTime.Parse(logowanie.DataLogowania);
+                            //     var dataWylogowania = DateTime.Now;
+                            //     var czasPracy = dataWylogowania - dataZalogowania;
+                            //     czasPracy = new TimeSpan(czasPracy.Days, czasPracy.Hours, czasPracy.Minutes, czasPracy.Seconds);
+                            //     <span>@czasPracy</span>
+                            // }
+                            // else
+                            // {
+                            //     <span>@logowanie.CzasPracy</span>
+                            // }
                         }
                     </td>
 
@@ -148,8 +150,11 @@
 
 
 
-    @if (Model.Paginator.Count > 5)
-    {
+
+
+
+
+    @{
 
         <!-- Paginator -->
         bool hasPrevious = Model.Paginator.HasPreviousPage;
@@ -178,6 +183,8 @@
                                asp-route-PageIndex="@(Model.Paginator.PageIndex - 1)"
                                asp-route-q="@Model.q"
                                asp-route-SortowanieOption="@Model.SortowanieOption"
+                               asp-route-DataZalogowaniaOd="@Model.DataZalogowaniaOd"
+                               asp-route-DataZalogowaniaDo="@Model.DataZalogowaniaDo"
                                class="paginatorButton">
                                 Prev
                             </a>
@@ -229,6 +236,8 @@
                                            asp-route-PageIndex="@i"
                                            asp-route-q="@Model.q"
                                            asp-route-SortowanieOption="@Model.SortowanieOption"
+                                           asp-route-DataZalogowaniaOd="@Model.DataZalogowaniaOd"
+                                           asp-route-DataZalogowaniaDo="@Model.DataZalogowaniaDo"
                                            class="paginator-item"
                                            style="@style">
                                             @i
@@ -247,6 +256,8 @@
                                asp-route-PageIndex="@(Model.Paginator.PageIndex + 1)"
                                asp-route-q="@Model.q"
                                asp-route-SortowanieOption="@Model.SortowanieOption"
+                               asp-route-DataZalogowaniaOd="@Model.DataZalogowaniaOd"
+                               asp-route-DataZalogowaniaDo="@Model.DataZalogowaniaDo"
                                class="paginatorButton">
                                 Next
                             </a>

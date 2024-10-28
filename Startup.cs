@@ -69,7 +69,7 @@ namespace WebApplication71
 
             services.AddScoped<IRolesService, RolesService>();
             services.AddScoped<IUsersService, UsersService>();
-            services.AddScoped(typeof(AccountService));
+            services.AddScoped<IAccountService, AccountService>();
 
         }
 

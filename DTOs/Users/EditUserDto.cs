@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System;
+using System.ComponentModel.DataAnnotations;
 using WebApplication71.Models.Enums;
 
 namespace WebApplication71.DTOs.Users
@@ -33,7 +35,7 @@ namespace WebApplication71.DTOs.Users
 
         [Required]
         [DataType(DataType.Date)]
-        public string DataUrodzenia { get; set; }
+        public DateTime DataUrodzenia { get; set; }
 
         [Required]
         public Plec Plec { get; set; }
@@ -42,6 +44,15 @@ namespace WebApplication71.DTOs.Users
         public string Telefon { get; set; }
 
         [Required]
-        public string Photo { get; set; }
+        public byte [] Photo { get; set; }
+
+        [Required]
+        public string RoleName { get; set; }
+        public string DataDodania { get; set; }
+
+
+
+
+        public IFormFile PhotoData { get; set; }
     }
 }

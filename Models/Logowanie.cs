@@ -9,11 +9,11 @@ namespace WebApplication71.Models
         public string LogowanieId { get; private set; }
 
         [Required, DataType(DataType.DateTime)]
-        public string DataLogowania { get; private set; }
+        public DateTime DataLogowania { get; private set; }
 
         [Required, DataType(DataType.DateTime)]
-        public string DataWylogowania { get; private set; }
-        public string CzasPracy { get; private set; }
+        public DateTime DataWylogowania { get; private set; }
+        public TimeSpan CzasPracy { get; private set; }
 
 
 
@@ -25,13 +25,25 @@ namespace WebApplication71.Models
         public Logowanie(string userId)
         {
             LogowanieId = Guid.NewGuid().ToString();
-            DataLogowania = DateTime.Now.ToString();
-            DataWylogowania = "";
+            DataLogowania = DateTime.Now;
+            DataWylogowania = DateTime.MinValue;
             UserId = userId;
         }
 
 
-        public Logowanie(string dataLogowania, string dataWylogowania, string czasPracy, string userId)
+        public Logowanie(DateTime dataLogowania, DateTime dataWylogowania, string userId)
+        {
+            LogowanieId = Guid.NewGuid().ToString();
+            DataLogowania = dataLogowania;
+            DataWylogowania = dataWylogowania;
+            var czasPracy = dataWylogowania - dataLogowania;
+            CzasPracy = new TimeSpan (0,0,0,0);
+            UserId = userId;
+        }
+
+
+
+        public Logowanie(DateTime dataLogowania, DateTime dataWylogowania, TimeSpan czasPracy, string userId)
         {
             LogowanieId = Guid.NewGuid().ToString();
             DataLogowania = dataLogowania;
@@ -41,8 +53,7 @@ namespace WebApplication71.Models
         }
 
 
-
-        public void Update(string dataLogowania, string dataWylogowania, string userId)
+        public void Update(DateTime dataLogowania, DateTime dataWylogowania, string userId)
         {
             LogowanieId = Guid.NewGuid().ToString();
             DataLogowania = dataLogowania;
@@ -53,22 +64,22 @@ namespace WebApplication71.Models
 
             // obliczenie czasu pracy
 
-            var dz = DateTime.Parse(dataLogowania);
-            var dw = DateTime.Parse(dataWylogowania);
-            var czasPracy = dz - dw;
-            CzasPracy = czasPracy.ToString();
+            /*var dz = DateTime.Parse(dataLogowania);
+            var dw = DateTime.Parse(dataWylogowania);*/
+            TimeSpan czasPracy = dataLogowania - dataWylogowania;
+            CzasPracy = czasPracy;
         }
 
-        public void DodajDateWylogowania(string dataWylogowania)
+        public void DodajDateWylogowania(DateTime dataWylogowania)
         {
             DataWylogowania = dataWylogowania;
 
             // obliczenie czasu pracy
 
-            var dz = DateTime.Parse(DataLogowania);
-            var dw = DateTime.Parse(dataWylogowania);
-            var czasPracy = dw - dz;
-            CzasPracy = czasPracy.ToString();
+            var dz = DataLogowania;
+            var dw = dataWylogowania;
+            TimeSpan czasPracy = dw - dz;
+            CzasPracy = czasPracy;
         }
 
 

@@ -1,0 +1,19 @@
+﻿@model byte []
+
+@{
+
+    try
+    {
+        if (Model != null)
+        {
+            if (Model.Length > 0)
+            {
+                var src = $"data:image/png;base64,{Convert.ToBase64String(Model)}"; // lub inny format, np. image/jpeg
+                <img src="@src" />
+            }
+        }
+    }
+
+    catch { }
+
+}

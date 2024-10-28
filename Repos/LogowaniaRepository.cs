@@ -114,6 +114,8 @@ namespace WebApplication71.Repos
                 try
                 {
                     Logowanie logowanie = new Logowanie(
+                        dataLogowania: model.DataLogowania,
+                        dataWylogowania: model.DataWylogowania,
                         userId: model.UserId
                         );
 

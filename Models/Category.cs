@@ -17,6 +17,8 @@ namespace WebApplication71.Models
         public List<Movie>? Movies { get; private set; }
 
 
+
+
         public Category(string name)
         {
             CategoryId = Guid.NewGuid().ToString();

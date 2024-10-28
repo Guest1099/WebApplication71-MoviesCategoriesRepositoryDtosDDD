@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebApplication71.DTOs;
+using WebApplication71.DTOs.Account;
 using WebApplication71.DTOs.Users;
 
 namespace Application.Services.Abs
@@ -13,5 +14,7 @@ namespace Application.Services.Abs
         Task<ResultViewModel<CreateUserDto>> Create(CreateUserDto model);
         Task<ResultViewModel<EditUserDto>> Update(EditUserDto model);
         Task<ResultViewModel<bool>> Delete(string userId);
+        Task<ResultViewModel<ChangeUserEmailDto>> ChangeEmail(ChangeUserEmailDto model);
+        Task<ResultViewModel<ChangeUserPasswordDto>> ChangePassword(ChangeUserPasswordDto model);
     }
 }

@@ -105,13 +105,21 @@ namespace WebApplication71.Repos
             {
                 try
                 {
-                    Category category = new Category(model.Name);
+                    // sprawdza czy podana nazwa kategorii już istnieje, jeśli nie to dodaje rekord, jeśli tak to zwraca komunikat
+                    if ((await _context.Categories.FirstOrDefaultAsync (f=> f.Name == model.Name)) == null)
+                    {
+                        Category category = new Category(model.Name);
 
-                    _context.Categories.Add(category);
-                    await _context.SaveChangesAsync();
+                        _context.Categories.Add(category);
+                        await _context.SaveChangesAsync();
 
-                    resultViewModel.Success = true;
-                    resultViewModel.Object = model;
+                        resultViewModel.Success = true;
+                        resultViewModel.Object = model;
+                    }
+                    else
+                    {
+                        resultViewModel.Message = "Wskazana nazwa kategorii już istnieje";
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -137,21 +145,32 @@ namespace WebApplication71.Repos
             {
                 try
                 {
-                    var category = await _context.Categories.FirstOrDefaultAsync(f => f.CategoryId == model.CategoryId);
-                    if (category != null)
+                    // sprawdza czy podana nazwa kategorii już istnieje, jeśli nie to dodaje rekord, jeśli tak to zwraca komunikat
+                    if ((await _context.Categories.FirstOrDefaultAsync(f => f.Name == model.Name && f.CategoryId != model.CategoryId)) == null)
                     {
-                        category.UpdateCategory(model.Name);
+                        var category = await _context.Categories.FirstOrDefaultAsync(f => f.CategoryId == model.CategoryId);
+                        if (category != null)
+                        {
+                            category.UpdateCategory (
+                                name: category.Name
+                                );
 
-                        _context.Entry(category).State = EntityState.Modified;
-                        await _context.SaveChangesAsync();
+                            _context.Entry(category).State = EntityState.Modified;
+                            await _context.SaveChangesAsync();
 
-                        resultViewModel.Success = true;
-                        resultViewModel.Object = model;
+                            resultViewModel.Success = true;
+                            resultViewModel.Object = model;
+                        }
+                        else
+                        {
+                            resultViewModel.Message = "Category was null";
+                        }
                     }
                     else
                     {
-                        resultViewModel.Message = "Category was null";
+                        resultViewModel.Message = "Wskazana nazwa kategorii już istnieje";
                     }
+
 
                 }
                 catch (Exception ex)
