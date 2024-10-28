@@ -37,7 +37,7 @@ namespace WebApplication71.Models
             DataLogowania = dataLogowania;
             DataWylogowania = dataWylogowania;
             var czasPracy = dataWylogowania - dataLogowania;
-            CzasPracy = new TimeSpan (0,0,0,0);
+            CzasPracy = new TimeSpan (1,0,0,0);
             UserId = userId;
         }
 
