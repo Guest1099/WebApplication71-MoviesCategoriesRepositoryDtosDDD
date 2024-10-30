@@ -17,6 +17,7 @@ namespace WebApplication71.Controllers
         public CategoriesController(ICategoriesRepository categoriesRepository)
         {
             _categoriesRepository = categoriesRepository;
+
         }
 
 
