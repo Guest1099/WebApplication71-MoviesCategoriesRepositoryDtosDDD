@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Application.Services.Abs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,11 +15,14 @@ namespace WebApplication71.Controllers
     public class LogowaniaController : Controller
     {
         private readonly ILogowaniaRepository _logowaniaRepository;
+        private readonly IUsersService _usersService;
 
-        public LogowaniaController(ILogowaniaRepository logowaniaRepository)
+        public LogowaniaController(ILogowaniaRepository logowaniaRepository, IUsersService usersService)
         {
             _logowaniaRepository = logowaniaRepository;
+            _usersService = usersService;
         }
+
 
         [HttpGet]
         public async Task<IActionResult> Index(GetLogowaniaDto model)
@@ -45,8 +50,8 @@ namespace WebApplication71.Controllers
                     q = model.q,
                     SearchOption = model.SearchOption,
                     SortowanieOption = model.SortowanieOption,
-                    DataZalogowaniaOd = DateTime.Now.ToString(),
-                    DataZalogowaniaDo = DateTime.Now.ToString()
+                    DataZalogowaniaOd = model.DataZalogowaniaOd,
+                    DataZalogowaniaDo = model.DataZalogowaniaDo
                 });
             }
             catch (Exception ex)
@@ -86,17 +91,17 @@ namespace WebApplication71.Controllers
                 // Data logowania od
                 logowania = logowania.Where(
                     w =>
-                        DateTime.Parse(w.DataLogowania).Year >= DateTime.Parse(model.DataZalogowaniaOd).Year &&
-                        DateTime.Parse(w.DataLogowania).Month >= DateTime.Parse(model.DataZalogowaniaOd).Month &&
-                        DateTime.Parse(w.DataLogowania).Day >= DateTime.Parse(model.DataZalogowaniaOd).Day
+                        w.DataLogowania.Year >= model.DataZalogowaniaOd.Year &&
+                        w.DataLogowania.Month >= model.DataZalogowaniaOd.Month &&
+                        w.DataLogowania.Day >= model.DataZalogowaniaOd.Day
                     ).ToList();
 
                 // Data logowania do
                 logowania = logowania.Where(
                     w =>
-                        DateTime.Parse(w.DataLogowania).Year <= DateTime.Parse(model.DataZalogowaniaDo).Year &&
-                        DateTime.Parse(w.DataLogowania).Month <= DateTime.Parse(model.DataZalogowaniaDo).Month &&
-                        DateTime.Parse(w.DataLogowania).Day <= DateTime.Parse(model.DataZalogowaniaDo).Day
+                        w.DataLogowania.Year <= model.DataZalogowaniaDo.Year &&
+                        w.DataLogowania.Month <= model.DataZalogowaniaDo.Month &&
+                        w.DataLogowania.Day <= model.DataZalogowaniaDo.Day
                     ).ToList();
 
 
@@ -115,8 +120,6 @@ namespace WebApplication71.Controllers
                 }
 
                 model.Paginator = Paginator<GetLogowanieDto>.CreateAsync(logowania, model.PageIndex, model.PageSize);
-
-
                 return View(model);
             }
             catch (Exception ex)
@@ -125,6 +128,94 @@ namespace WebApplication71.Controllers
             }
         }
 
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            try
+            {
+                var result = await _usersService.GetAll();
+
+                if (result == null || !result.Success)
+                    return View("NotFound");
+
+
+                var users = result.Object;
+                if (users == null)
+                    return View("NotFound");
+
+                var usersSelectList = users.Select(
+                        s => new GetUserListDto()
+                        {
+                            Id = s.Id,
+                            ImieInazwisko = $"{s.Imie} {s.Nazwisko}"
+                        });
+
+                if (usersSelectList == null)
+                    return View("NotFound");
+
+
+                return View(new CreateLogowanieDto()
+                {
+                    UsersList = new SelectList(usersSelectList, "Id", "ImieInazwisko")
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CreateLogowanieDto model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var result = await _logowaniaRepository.Create(model);
+                    if (result != null && result.Success)
+                        return RedirectToAction("Index", "Logowania");
+
+
+                    // zwraca komunikat błędu związanego z tworzeniem rekordu
+                    ViewData["ErrorMessage"] = result.Message;
+                }
+
+                var resultUsers = await _usersService.GetAll();
+
+                if (resultUsers == null || !resultUsers.Success)
+                    return View("NotFound");
+
+
+                var users = resultUsers.Object;
+                if (users == null)
+                    return View("NotFound");
+
+                var usersSelectList = users.Select(
+                        s => new GetUserListDto()
+                        {
+                            Id = s.Id,
+                            ImieInazwisko = $"{s.Imie} {s.Nazwisko}"
+                        });
+
+                if (usersSelectList == null)
+                    return View("NotFound");
+
+
+                model.UsersList = new SelectList(usersSelectList, "Id", "ImieInazwisko", model.UserId);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+
+        }
 
 
 
@@ -144,12 +235,12 @@ namespace WebApplication71.Controllers
                     return NotFound();
 
 
-                var category = result.Object;
-                if (category == null)
+                var logowanie = result.Object;
+                if (logowanie == null)
                     return NotFound();
 
 
-                return View(category);
+                return View(logowanie);
             }
             catch (Exception ex)
             {
@@ -192,7 +283,7 @@ namespace WebApplication71.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> Delete(string id)
+        public IActionResult Delete(string id)
         {
             try
             {

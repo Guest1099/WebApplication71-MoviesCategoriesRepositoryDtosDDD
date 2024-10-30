@@ -2,16 +2,13 @@
 
 
 <div class="dodawanieHeader">
-    <span class="titleHeader">Edytowanie istniejącej pozycji</span>
+    <span class="titleHeader">Dodawanie nowej pozycji</span>
 </div>
 <hr />
 
-
-
-
-<form method="post" asp-action="Edit" asp-controller="Users" enctype="multipart/form-data">
+<form method="post" asp-action="Edit" asp-controller="Account" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" />
-
+    <input type="hidden" asp-for="Email" />
 
     <table>
         <tr>
@@ -19,24 +16,9 @@
                 <label asp-for="Email"></label>
             </td>
             <td class="rightColumn">
-                <div class="df">
-                    <div class="db mr-10">
-                        <input asp-for="Email" disabled />
-                        <span asp-validation-for="Email" class="c-red"></span>
-                    </div>
-                    <a asp-action="ChangeEmail"
-                       asp-controller="Users"
-                       asp-route-userId="@Model.Id"
-                       class="button3 ml-10 mr-10">
-                        Change email
-                    </a>
-
-                    <a asp-action="ChangePassword"
-                       asp-controller="Users"
-                       asp-route-userId="@Model.Id"
-                       class="button3">
-                        Change password
-                    </a>
+                <div class="db">
+                    <span>@Model.Email</span>
+                    <span asp-validation-for="Email" class="c-red"></span>
                 </div>
             </td>
         </tr>
@@ -147,7 +129,7 @@
                 <div class="image w-200px">
                     <!-- wyświetla zdjęcie -->
                     <partial name="_displayPhoto" model="@Model.Photo" />
-                    
+
 
 
                     <!-- wybiera zdjęcie -->
@@ -171,25 +153,11 @@
         </tr>
         <tr>
             <td class="leftColumn">
-                <span>Rola</span>
-            </td>
-            <td class="rightColumn">
-                @if (Model.RolesList != null)
-                {
-                    <div class="db">
-                        <select asp-for="RoleName" asp-items="Model.RolesList" class="w-200px form-input2"></select>
-                        <span asp-validation-for="RoleName" class="c-red"></span>
-                    </div>
-                }
-            </td>
-        </tr>
-        <tr>
-            <td class="leftColumn">
-                <label asp-for="DataDodania"></label>
+                <span>Data utworzenia konta</span>
             </td>
             <td class="rightColumn">
                 <div class="db">
-                    <input asp-for="DataDodania" disabled />
+                    <span>@Model.DataDodania</span>
                     <span asp-validation-for="DataDodania" class="c-red"></span>
                 </div>
             </td>
@@ -199,10 +167,10 @@
 
 
     <div class="w-100 df-sb mt-30 mb-40">
-        <a asp-action="Index" asp-controller="Users" class="buttonWstecz w-100px">Wstecz</a>
+        <a asp-action="Index" asp-controller="Home" class="buttonWstecz w-100px">Wstecz</a>
         <div class="df">
             <input type="submit" value="Zapisz" class="buttonEdit w-100px" />
-            <a asp-action="Index" asp-controller="Users" class="buttonAnuluj w-100px ml-2">Anuluj</a>
+            <a asp-action="Index" asp-controller="Home" class="buttonAnuluj w-100px ml-2">Anuluj</a>
         </div>
     </div>
 </form>

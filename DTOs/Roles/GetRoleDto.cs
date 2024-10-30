@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using WebApplication71.DTOs.Users;
-using WebApplication71.Models;
 
 namespace WebApplication71.DTOs.Roles
 {
@@ -10,6 +9,6 @@ namespace WebApplication71.DTOs.Roles
         public string Name { get; set; }
 
 
-        public List <GetUserDto> Users { get; set; }
+        public List<GetUserDto> Users { get; set; }
     }
 }

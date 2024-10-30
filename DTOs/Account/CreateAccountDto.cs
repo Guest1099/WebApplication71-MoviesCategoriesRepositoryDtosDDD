@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using WebApplication71.Models.Enums;
 using WebApplication71.Services;
 
@@ -42,7 +43,7 @@ namespace WebApplication71.DTOs.Account
 
         [Required]
         [DataType(DataType.Date)]
-        public string DataUrodzenia { get; set; }
+        public DateTime DataUrodzenia { get; set; }
 
         [Required]
         public Plec Plec { get; set; }
@@ -51,7 +52,7 @@ namespace WebApplication71.DTOs.Account
         public string Telefon { get; set; }
 
         [Required]
-        public string Photo { get; set; }
+        public byte[] Photo { get; set; }
 
         [Required]
         public string RoleName { get; set; }

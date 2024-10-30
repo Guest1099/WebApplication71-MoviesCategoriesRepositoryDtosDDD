@@ -194,7 +194,7 @@ namespace WebApplication71.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> Delete(string id)
+        public IActionResult Delete(string id)
         {
             try
             {

@@ -1,3 +1,4 @@
+using Application.Services;
 using Application.Services.Abs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -69,7 +70,8 @@ namespace WebApplication71
 
             services.AddScoped<IRolesService, RolesService>();
             services.AddScoped<IUsersService, UsersService>();
-            services.AddScoped(typeof(AccountService));
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IEmailSender, EmailSender>();
 
         }
 

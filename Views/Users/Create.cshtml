@@ -1,11 +1,46 @@
 ﻿@model CreateUserDto
 
+@{
+    string password = "SDG%$@5423sdgagSDert";
+}
+<h5>@password</h5>
+
+
+
 <div class="dodawanieHeader">
     <span class="titleHeader">Dodawanie nowej pozycji</span>
 </div>
 <hr />
 
-<form method="post" asp-action="Create" asp-controller="Users">
+<form method="post" asp-action="Create" asp-controller="Users" enctype="multipart/form-data">
+
+
+    
+    <table>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Email"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="Email" />
+                    <span asp-validation-for="Email" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Password"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="Password" />
+                    <span asp-validation-for="Password" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+    </table>
+
 
     <table>
         <tr>
@@ -98,17 +133,6 @@
         </tr>
         <tr>
             <td class="leftColumn">
-                <label asp-for="Plec"></label>
-            </td>
-            <td class="rightColumn">
-                <div class="db">
-                    <input asp-for="Plec" />
-                    <span asp-validation-for="Plec" class="c-red"></span>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td class="leftColumn">
                 <label asp-for="Telefon"></label>
             </td>
             <td class="rightColumn">
@@ -124,12 +148,44 @@
             </td>
             <td class="rightColumn">
                 <div class="db">
-                    <input asp-for="Photo" />
-                    <span asp-validation-for="Photo" class="c-red"></span>
+                    <input asp-for="PhotoData" id="fileInput" accept="image/*" onchange="previewImage(event); saveFiles();" />
+                    <div id="imageContainer" class="image">
+                        <img id="imagePreview" alt="Uploaded Photo" style="display: none;" />
+                    </div>
+
+@* 
+                    <input id="files" asp-for="Photo" multiple onchange="saveFiles()" />
+ *@
                 </div>
             </td>
         </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Plec">Plec</label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <select asp-for="Plec" asp-items='@new SelectList(Enum.GetValues(typeof(Plec)))' class="w-200px form-input2"></select>
+                    <span asp-validation-for="Plec" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <span>Rola</span>
+            </td>
+            <td class="rightColumn">
+                @if(Model.RolesList != null)
+                {
+                    <div class="db">
+                        <select asp-for="RoleName" asp-items="Model.RolesList" class="w-200px form-input2"></select>
+                        <span asp-validation-for="RoleName" class="c-red"></span>
+                    </div>
+                }
+            </td>
+        </tr>
     </table>
+
 
 
     <div class="w-100 df-sb mt-30 mb-40">
@@ -144,9 +200,3 @@
 
 <!-- Zwraca komunikat błędu, o ile takowy się pojawi -->
 <span class="c-red">@ViewData["ErrorMessage"]</span>
-
-
-
-
-
-

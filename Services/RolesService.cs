@@ -39,14 +39,14 @@ namespace WebApplication71.Services
                     List<GetRoleDto> rolesDto = new List<GetRoleDto>();
                     foreach (var role in roles)
                     {
-                        var usersDto = await UsersInRole (role.Name);
-                        GetRoleDto roleDto = new GetRoleDto ()
+                        var usersDto = await UsersInRole(role.Name);
+                        GetRoleDto roleDto = new GetRoleDto()
                         {
                             Id = role.Id,
                             Name = role.Name,
                             Users = usersDto
                         };
-                        rolesDto.Add (roleDto);
+                        rolesDto.Add(roleDto);
                     }
 
                     returnResult.Success = true;
@@ -191,8 +191,8 @@ namespace WebApplication71.Services
                     var role = await _context.Roles.FirstOrDefaultAsync(f => f.Id == roleId);
                     if (role != null)
                     {
-                        var users = await UsersInRole (role.Name);
-                        if (users.Any ())
+                        var users = await UsersInRole(role.Name);
+                        if (users.Any())
                         {
                             _context.Roles.Remove(role);
                             await _context.SaveChangesAsync();

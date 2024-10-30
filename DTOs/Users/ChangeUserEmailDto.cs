@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebApplication71.DTOs.Account
+namespace WebApplication71.DTOs.Users
 {
-    public class ChangeEmailDto
+    public class ChangeUserEmailDto
     {
-        public string UserName { get; set; }
+        public string Id { get; set; }
 
         public string Email { get; set; }
 
@@ -12,8 +12,7 @@ namespace WebApplication71.DTOs.Account
         [DataType(DataType.EmailAddress)]
         public string NewEmail { get; set; }
 
-        //public bool Success { get; set; }
 
-        //public string Result { get; set; }
+        public string Message { get; set; }
     }
 }

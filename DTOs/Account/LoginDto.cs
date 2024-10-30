@@ -13,6 +13,8 @@ namespace WebApplication71.DTOs.Account
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
+
+
         public string LoginResult { get; set; }
     }
 }

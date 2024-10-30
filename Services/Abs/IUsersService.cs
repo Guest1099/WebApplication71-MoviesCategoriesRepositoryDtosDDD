@@ -13,5 +13,7 @@ namespace Application.Services.Abs
         Task<ResultViewModel<CreateUserDto>> Create(CreateUserDto model);
         Task<ResultViewModel<EditUserDto>> Update(EditUserDto model);
         Task<ResultViewModel<bool>> Delete(string userId);
+        Task<ResultViewModel<ChangeUserEmailDto>> ChangeEmail(ChangeUserEmailDto model);
+        Task<ResultViewModel<ChangeUserPasswordDto>> ChangePassword(ChangeUserPasswordDto model);
     }
 }
