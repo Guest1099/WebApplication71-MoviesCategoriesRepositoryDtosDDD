@@ -1,10 +1,18 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Application.Services.Abs;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Security.Claims;
+using System.Security.Policy;
+using System.Text;
 using System.Threading.Tasks;
 using WebApplication71.Data;
 using WebApplication71.DTOs;
@@ -20,14 +28,19 @@ namespace WebApplication71.Services
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IEmailSender _emailSender; 
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUrlHelperFactory _urlHelperFactory;
 
-        public AccountService(ApplicationDbContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AccountService(ApplicationDbContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender, IHttpContextAccessor httpContextAccessor, IUrlHelperFactory urlHelperFactory)
         {
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailSender = emailSender;
+            _httpContextAccessor = httpContextAccessor;
+            _urlHelperFactory = urlHelperFactory; 
         }
-
 
         public async Task<ResultViewModel<GetUserDto>> GetUserById(string userId)
         {
@@ -41,17 +54,21 @@ namespace WebApplication71.Services
                     returnResult.Success = true;
                     returnResult.Object = new GetUserDto()
                     {
+                        Id = user.Id,
                         Email = user.Email,
                         Imie = user.Imie,
                         Nazwisko = user.Nazwisko,
                         Ulica = user.Ulica,
                         Miejscowosc = user.Miejscowosc,
                         Wojewodztwo = user.Wojewodztwo,
+                        KodPocztowy = user.KodPocztowy,
                         Pesel = user.Pesel,
                         DataUrodzenia = user.DataUrodzenia,
                         Plec = user.Plec,
                         Telefon = user.Telefon,
-                        Photo = user.Photo
+                        Photo = user.Photo,
+                        RoleName = user.RoleName,
+                        DataDodania = user.DataDodania
                     };
                 }
                 else
@@ -80,17 +97,21 @@ namespace WebApplication71.Services
                     returnResult.Success = true;
                     returnResult.Object = new GetUserDto()
                     {
+                        Id = user.Id,
                         Email = user.Email,
                         Imie = user.Imie,
                         Nazwisko = user.Nazwisko,
                         Ulica = user.Ulica,
                         Miejscowosc = user.Miejscowosc,
                         Wojewodztwo = user.Wojewodztwo,
+                        KodPocztowy = user.KodPocztowy,
                         Pesel = user.Pesel,
                         DataUrodzenia = user.DataUrodzenia,
                         Plec = user.Plec,
                         Telefon = user.Telefon,
-                        Photo = user.Photo
+                        Photo = user.Photo,
+                        RoleName = user.RoleName,
+                        DataDodania = user.DataDodania
                     };
                 }
                 else
@@ -143,7 +164,7 @@ namespace WebApplication71.Services
                         if (result.Succeeded)
                         {
                             // przypisanie roli użytkownikowi
-                            await _userManager.AddToRoleAsync(user, "User");
+                            await _userManager.AddToRoleAsync(user, model.RoleName);
 
 
                             returnResult.Success = true;
@@ -190,7 +211,7 @@ namespace WebApplication71.Services
             {
                 try
                 {
-                    ApplicationUser user = await _context.Users.FirstOrDefaultAsync(f => f.Email == model.Email);
+                    ApplicationUser user = await _context.Users.FirstOrDefaultAsync(f => f.Id == model.Id);
                     if (user != null)
                     {
                         user.Update(
@@ -204,7 +225,7 @@ namespace WebApplication71.Services
                             dataUrodzenia: model.DataUrodzenia,
                             plec: model.Plec,
                             telefon: model.Telefon,
-                            photo: model.Photo
+                            photo: await ChangeFileToBytes(model.PhotoData)
                             );
 
 
@@ -214,15 +235,15 @@ namespace WebApplication71.Services
                             // dodanie zdjęcia
                             //await CreateNewPhoto (model.Files, user.Id);
 
+                            /*
+                                                        // usunięcie użytkownika z rół i przypisanie na nowo
+                                                        var userRoles = await _userManager.GetRolesAsync(user);
+                                                        await _userManager.RemoveFromRolesAsync(user, userRoles);
 
-                            // usunięcie użytkownika z rół i przypisanie na nowo
-                            var userRoles = await _userManager.GetRolesAsync(user);
-                            await _userManager.RemoveFromRolesAsync(user, userRoles);
-
-                            // przypisanie użytkownika do nowej roli
-                            await _userManager.AddToRoleAsync(user, "User");
-                            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "User"));
-
+                                                        // przypisanie użytkownika do nowej roli
+                                                        await _userManager.AddToRoleAsync(user, model.RoleName);
+                                                        await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, model.RoleName));
+                            */
 
 
 
@@ -370,7 +391,7 @@ namespace WebApplication71.Services
                     ApplicationUser user = await _context.Users.FirstOrDefaultAsync(f => f.Email == model.Email);
                     if (user != null)
                     {
-                        IdentityResult result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                        IdentityResult result = await _userManager.ChangePasswordAsync(user, model.Password, model.NewPassword);
                         if (result.Succeeded)
                         {
                             returnResult.Success = true;
@@ -406,6 +427,166 @@ namespace WebApplication71.Services
 
 
 
+
+        public async Task<ResultViewModel <ForgotPasswordDto>> ForgotPassword(ForgotPasswordDto model)
+        {
+            var returnResult = new ResultViewModel<ForgotPasswordDto>() { Success = false, Message = "", Object = new ForgotPasswordDto() };
+
+            if (model != null)
+            {
+                try
+                {
+                    var user = await _context.Users.FirstOrDefaultAsync (f=> f.Email == model.Email);
+                    if (user == null /*|| !(await _userManager.IsEmailConfirmedAsync(user))*/)
+                    {
+                        returnResult.Message = "Wskazany użytkownik nie istnieje";
+                    }
+                    else
+                    {
+                        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+/*
+                        string url = GenerateResetPasswordUrl(token, model.Email);
+                        string sendMessage = $"Proszę zresetować swoje hasło, klikając tutaj: <a href='{url}'>link</a>";
+                        _emailSender.SendEmail(model.Email, "Resetowanie hasła", sendMessage);
+*/
+
+                        string url = GenerateResetPasswordUrl(token, model.Email); // dla jakiego maila generowany jest token
+                        string sendMessage = $"Proszę zresetować swoje hasło, klikając tutaj {model.Email}: <a href='{url}'>link</a>";
+                        _emailSender.SendEmail(model.Email, "Resetowanie hasła", sendMessage); // pod jaki adres wysyłany jest email
+
+                          
+                        //_emailSender.SendEmail("mgmcdeveloper@gmail.com"); // email do testowania czy działa wysyłka
+
+                        returnResult.Success = true;
+                        returnResult.Message = "Na twojego maila wysłany został link z możliwością zresetowania hasła";
+                    } 
+                }
+                catch (Exception ex)
+                {
+                    returnResult.Message = $"Exception: {ex.Message}";
+                }
+            }
+            else
+            {
+                returnResult.Message = "Model was null";
+            }
+
+            return returnResult;
+        }
+
+
+
+        public string GenerateResetPasswordUrl(string token, string email)
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
+            var urlHelper = _urlHelperFactory.GetUrlHelper(new ActionContext(httpContext, httpContext.GetRouteData(), new ActionDescriptor()));
+
+            return urlHelper.Action("ResetPassword", "Account", new { token = token, email = email }, httpContext.Request.Scheme);
+        }
+
+
+
+        public async Task<ResultViewModel<ResetPasswordDto>> ResetPassword (ResetPasswordDto model)
+        {
+            var returnResult = new ResultViewModel<ResetPasswordDto>() { Success = false, Message = "", Object = new ResetPasswordDto() };
+
+            if (model != null)
+            {
+                try
+                {
+                    // sprawdza czy hasła się różnią
+                    if (model.Password == model.ConfirmPassword)
+                    {
+                        var user = await _context.Users.FirstOrDefaultAsync(f => f.Email == model.Email);
+                        if (user != null)
+                        {
+                            IdentityResult result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+                            if (result.Succeeded)
+                            {
+                                returnResult.Success = true;
+                                returnResult.Message = "Hasło zostało zresetowane";
+                                returnResult.Object = model;
+
+                                // wylogowanie
+                                //await _signInManager.SignOutAsync ();
+                            }
+                            else
+                            {
+                                returnResult.Message = "Błędne hasło";
+                            }
+                        }
+                        else
+                        {
+                            returnResult.Message = "Wskazany użytkownik nie istnieje";
+                        }
+                    }
+                    else
+                    {
+                        returnResult.Message = "Hasła w polach muszą być identyczne";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    returnResult.Message = $"Exception: {ex.Message}";
+                }
+            }
+            else
+            {
+                returnResult.Message = "Model was null";
+            }
+
+            return returnResult;
+        }
+
+
+
+
+
+
+        /*
+
+
+        // W tej akcji wysyłasz e-mail z linkiem potwierdzającym, zawierającym token.
+        public async Task<SendConfirmationViewModel> SendConfirmationEmail(SendConfirmationViewModel model)
+        {
+            var user = await _userManager.FindByIdAsync(model.Email);
+            if (user != null)
+            {
+                string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                string encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+
+                *//*var callbackUrl = Url.Action("ConfirmEmail", "Account",
+        new { userId = user.Id, code = encodedToken }, protocol: HttpContext.Request.Scheme);*//*
+
+                // Tutaj wyślij e-mail z linkiem potwierdzającym, zawierającym callbackUrl
+
+                model.UserId = user.Id;
+                model.Code = encodedToken;
+            }
+            return model;
+        }
+
+
+        public async Task<ConfirmEmailViewModel> ConfirmEmail(ConfirmEmailViewModel model)
+        {
+            if (!string.IsNullOrEmpty(model.UserId) || !string.IsNullOrEmpty(model.Email))
+                model.Result = false;
+
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            if (user != null)
+            {
+                string code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(model.Code));
+                var result = await _userManager.ConfirmEmailAsync(user, code);
+                if (result.Succeeded)
+                {
+                    model.Code = code;
+                    model.Result = true;
+                }
+            }
+            return model;
+        }
+*/
 
 
 
@@ -586,9 +767,10 @@ namespace WebApplication71.Services
 
             try
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
+                var user = await _context.Users.FirstOrDefaultAsync (f=> f.Email == model.Email);
                 if (user != null)
                 {
+
                     var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: true, lockoutOnFailure: false);
                     if (result.Succeeded)
                     {
@@ -604,13 +786,13 @@ namespace WebApplication71.Services
                         returnResult.Object = model;
                     }
                     else
-                    {
-                        returnResult.Message = "Błędny login lub hasło";
+                    { 
+                        returnResult.Message = "Błędny login lub hasło"; // tu jest błędne hasło
                     }
                 }
                 else
                 {
-                    returnResult.Message = "Użytkownik nie istnieje";
+                    returnResult.Message = "Błędny login lub hasło"; // tu jest błędny login
                 }
             }
             catch (Exception ex)
@@ -779,7 +961,7 @@ namespace WebApplication71.Services
         {
             try
             {
-                
+
                 // wyszukuje najnowszy rekord logowania oraz dopisuje do niego datę wylogowania
                 var ostatnieLogowanieUzytkownika = await _context.Logowania
                     .Include(i => i.User)
@@ -789,30 +971,53 @@ namespace WebApplication71.Services
                 if (ostatnieLogowanieUzytkownika != null)
                 {
                     // zapisanie w bazie daty wylogowania użytkownika
-                    ostatnieLogowanieUzytkownika.DodajDateWylogowania(DateTime.Now.ToString());
+                    ostatnieLogowanieUzytkownika.DodajDateWylogowania(DateTime.Now);
                     _context.Entry(ostatnieLogowanieUzytkownika).State = EntityState.Modified;
                     await _context.SaveChangesAsync();
                 }
 
 
 
-/*
-                // jeżeli jakiś rekord przypisany do tego użytkownika w polu DataWylogowania ma puste pole wtedy taki rekord jest usuwany
-                var logowaniaUzytkownika = await _context.Logowania
+
+                // usówa nadmiarową ilość rekordów w których DataWylogowania zawiera wpis 01.01.0001 00:00:00 
+                /*var znajdzWszystkieZalogowaniaUzytkownika = await _context.Logowania
                     .Include(i => i.User)
-                    .OrderByDescending(o => o.DataLogowania)
-                    .Where(w => w.User.Email == email)
                     .ToListAsync();
 
-                foreach (var logowanie in logowaniaUzytkownika)
+                foreach (var log in znajdzWszystkieZalogowaniaUzytkownika)
                 {
-                    if (!string.IsNullOrEmpty(logowanie.DataWylogowania))
+                    DateTime dataZalogowania = log.DataLogowania;
+
+                    if (DateTime.Now.AddDays(-2) >= dataZalogowania)
                     {
-                        _context.Logowania.Remove(logowanie);
-                        await _context.SaveChangesAsync();
+                        if (string.IsNullOrEmpty(log.DataWylogowania))
+                        {
+                            _context.Logowania.Remove(log);
+                            await _context.SaveChangesAsync();
+                        }
                     }
-                }
-*/
+                }*/
+
+
+
+
+                /*
+                                // jeżeli jakiś rekord przypisany do tego użytkownika w polu DataWylogowania ma puste pole wtedy taki rekord jest usuwany
+                                var logowaniaUzytkownika = await _context.Logowania
+                                    .Include(i => i.User)
+                                    .OrderByDescending(o => o.DataLogowania)
+                                    .Where(w => w.User.Email == email)
+                                    .ToListAsync();
+
+                                foreach (var logowanie in logowaniaUzytkownika)
+                                {
+                                    if (!string.IsNullOrEmpty(logowanie.DataWylogowania))
+                                    {
+                                        _context.Logowania.Remove(logowanie);
+                                        await _context.SaveChangesAsync();
+                                    }
+                                }
+                */
 
 
                 // wylogowanie
@@ -823,10 +1028,6 @@ namespace WebApplication71.Services
 
             }
         }
-
-
-
-
 
 
 
@@ -865,6 +1066,41 @@ namespace WebApplication71.Services
             }
             catch { }*/
         }
+
+
+
+
+
+
+        /// <summary>
+        /// Zamienia zdjęcie na bytes
+        /// </summary>
+        private async Task<byte[]> ChangeFileToBytes(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return null;
+            }
+
+            try
+            {
+                byte[] photoData;
+                using (var stream = new MemoryStream())
+                {
+                    await file.CopyToAsync(stream);
+                    photoData = stream.ToArray();
+                }
+
+                return photoData;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
+
 
     }
 }

@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using WebApplication71.Models;
 using WebApplication71.Models.Enums;
 
@@ -48,7 +51,7 @@ namespace WebApplication71.Data
 
             // USERS   
 
-            string dataUrodzenia = new DateTime(rand.Next(1980, 2000), rand.Next(1, 12), rand.Next(1, 30), rand.Next(1, 24), rand.Next(1, 60), rand.Next(1, 60)).ToString();
+            DateTime dataUrodzenia = new DateTime(rand.Next(1980, 2000), rand.Next(1, 12), rand.Next(1, 30), rand.Next(1, 24), rand.Next(1, 60), rand.Next(1, 60));
             string pesel = rand.Next(100000000, 999999999).ToString();
 
             var administratorUser = new ApplicationUser(
@@ -63,7 +66,7 @@ namespace WebApplication71.Data
                 dataUrodzenia: dataUrodzenia,
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                photo: "",
+                photo: new byte[0],
                 roleName: "Administrator",
                 password: "SDG%$@5423sdgagSDert"
                 );
@@ -85,7 +88,7 @@ namespace WebApplication71.Data
                 dataUrodzenia: dataUrodzenia,
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                photo: "",
+                photo: new byte[0],
                 roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
@@ -108,7 +111,7 @@ namespace WebApplication71.Data
                 dataUrodzenia: dataUrodzenia,
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                photo: "",
+                photo: new byte[0],
                 roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
@@ -132,7 +135,7 @@ namespace WebApplication71.Data
                 dataUrodzenia: dataUrodzenia,
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                photo: "",
+                photo: new byte[0],
                 roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
@@ -155,7 +158,7 @@ namespace WebApplication71.Data
                 dataUrodzenia: dataUrodzenia,
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                photo: "",
+                photo: new byte[0],
                 roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
@@ -178,7 +181,7 @@ namespace WebApplication71.Data
                 dataUrodzenia: dataUrodzenia,
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                photo: "",
+                photo: new byte[0],
                 roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
@@ -191,6 +194,9 @@ namespace WebApplication71.Data
 
             builder.Entity<ApplicationUser>().HasData(administratorUser, userUser, aaaUser, bbbUser, cccUser, dddUser);
             builder.Entity<IdentityUserRole<string>>().HasData(identityUserRoleAdmin, identityUserRoleUser, identityUserRoleUserAaa, identityUserRoleUserBbb, identityUserRoleUserCcc, identityUserRoleUserDdd);
+
+            //builder.Entity<ApplicationUser>().HasData(administratorUser);
+            //builder.Entity<IdentityUserRole<string>>().HasData(identityUserRoleAdmin);
 
 
 
@@ -255,22 +261,52 @@ namespace WebApplication71.Data
             }
 
 
-
-            for (var j = 0; j < rand.Next(1, 10); j++)
-            {
-                var dataZalogowania = DateTime.Now.AddDays(-rand.Next(10, 100));
-                var dataWylogowania = dataZalogowania.AddMinutes(rand.Next(150, 480));
-                string userId = users[rand.Next(0, users.Count)].Id;
-                Logowanie logowanie = new Logowanie(
-                    userId: userId
-                    );
-                builder.Entity<Logowanie>().HasData(logowanie);
-            }
-
+            /*
+                        for (var j = 0; j < rand.Next(1, 10); j++)
+                        {
+                            var dataZalogowania = DateTime.Now.AddDays(-rand.Next(10, 100));
+                            var dataWylogowania = dataZalogowania.AddMinutes(rand.Next(150, 480));
+                            string userId = users[rand.Next(0, users.Count)].Id;
+                            Logowanie logowanie = new Logowanie(
+                                userId: userId
+                                );
+                            builder.Entity<Logowanie>().HasData(logowanie);
+                        }
+            */
 
 
 
             base.OnModelCreating(builder);
+        }
+
+
+
+
+        /// <summary>
+        /// Zamienia zdjęcie na bytes
+        /// </summary>
+        private async Task<byte[]> CreateNewPhoto(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return null;
+            }
+
+            try
+            {
+                byte[] photoData;
+                using (var stream = new MemoryStream())
+                {
+                    await file.CopyToAsync(stream);
+                    photoData = stream.ToArray();
+                }
+
+                return photoData;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
 

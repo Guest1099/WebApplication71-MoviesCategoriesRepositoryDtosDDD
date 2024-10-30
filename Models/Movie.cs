@@ -30,7 +30,7 @@ namespace WebApplication71.Models
         public int Klikniecia { get; private set; }
 
 
-        public string DataDodania { get; private set; }
+        public DateTime DataDodania { get; private set; }
 
 
 
@@ -53,7 +53,7 @@ namespace WebApplication71.Models
             UserId = userId;
             CategoryId = categoryId;
             Klikniecia = 0;
-            DataDodania = DateTime.Now.ToString();
+            DataDodania = DateTime.Now;
         }
 
 

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication71.DTOs.Logowania
 {
@@ -6,14 +7,9 @@ namespace WebApplication71.DTOs.Logowania
     {
         public string LogowanieId { get; set; }
 
-        [Required]
-        [DataType(DataType.DateTime)]
-        public string DataLogowania { get; set; }
-
-        [Required]
-        [DataType(DataType.DateTime)]
-        public string DataWylogowania { get; set; }
-        public string CzasPracy { get; set; }
+        public DateTime DataLogowania { get; set; }
+        public DateTime DataWylogowania { get; set; }
+        public TimeSpan CzasPracy { get; set; }
 
 
 

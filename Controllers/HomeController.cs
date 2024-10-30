@@ -28,7 +28,7 @@ namespace WebApplication71.Controllers
             _logowaniaRepository = logowaniaRepository;
 
 
-            StatystykiDictionary = new Dictionary<string, int> ();
+            StatystykiDictionary = new Dictionary<string, int>();
         }
 
 

@@ -8,13 +8,13 @@ namespace WebApplication71.Models
     {
         [Key]
         public string CategoryId { get; private set; }
-
-        [Required, DataType(DataType.Text)]
         public string Name { get; private set; }
 
 
 
         public List<Movie>? Movies { get; private set; }
+
+
 
 
         public Category(string name)

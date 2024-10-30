@@ -1,15 +1,45 @@
 ﻿@model GetUserDto
 
+
 <div class="dodawanieHeader">
-    <span class="titleHeader">Dodawanie nowej pozycji</span>
+    <span class="titleHeader">Edytowanie danych</span>
 </div>
 <hr />
 
-<form method="post" asp-action="Edit" asp-controller="Users">
+
+
+
+<form method="post" asp-action="Edit" asp-controller="Users" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" />
 
 
     <table>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Email"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="df">
+                    <div class="db mr-10">
+                        <input asp-for="Email" disabled />
+                        <span asp-validation-for="Email" class="c-red"></span>
+                    </div>
+                    <a asp-action="ChangeEmail"
+                       asp-controller="Users"
+                       asp-route-userId="@Model.Id"
+                       class="button3 ml-10 mr-10">
+                        Change email
+                    </a>
+
+                    <a asp-action="ChangePassword"
+                       asp-controller="Users"
+                       asp-route-userId="@Model.Id"
+                       class="button3">
+                        Change password
+                    </a>
+                </div>
+            </td>
+        </tr>
         <tr>
             <td class="leftColumn">
                 <label asp-for="Imie"></label>
@@ -89,23 +119,12 @@
         </tr>
         <tr>
             <td class="leftColumn">
-                <label asp-for="DataUrodzenia"></label>
+                <span>Data urodzenia</span>
             </td>
             <td class="rightColumn">
                 <div class="db">
                     <input asp-for="DataUrodzenia" />
                     <span asp-validation-for="DataUrodzenia" class="c-red"></span>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td class="leftColumn">
-                <label asp-for="Plec"></label>
-            </td>
-            <td class="rightColumn">
-                <div class="db">
-                    <input asp-for="Plec" />
-                    <span asp-validation-for="Plec" class="c-red"></span>
                 </div>
             </td>
         </tr>
@@ -125,13 +144,58 @@
                 <label asp-for="Photo"></label>
             </td>
             <td class="rightColumn">
+                <div class="image w-200px">
+                    <!-- wyświetla zdjęcie -->
+                    <partial name="_displayPhoto" model="@Model.Photo" />
+                    
+
+
+                    <!-- wybiera zdjęcie -->
+                    <input asp-for="PhotoData" id="fileInput" style="border: none; padding: 0px; margin: 0px; background-color: transparent; margin-top: 15px; width: fit-content;" accept="image/*" onchange="previewImage(event); saveFiles();" />
+                    <div id="imageContainer" class="image">
+                        <img id="imagePreview" alt="Uploaded Photo" style="display: none;" />
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Plec">Plec</label>
+            </td>
+            <td class="rightColumn">
                 <div class="db">
-                    <input asp-for="Photo" />
-                    <span asp-validation-for="Photo" class="c-red"></span>
+                    <select asp-for="Plec" asp-items='@new SelectList(Enum.GetValues(typeof(Plec)))' class="w-200px form-input2"></select>
+                    <span asp-validation-for="Plec" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <span>Rola</span>
+            </td>
+            <td class="rightColumn">
+                @if (Model.RolesList != null)
+                {
+                    <div class="db">
+                        <select asp-for="RoleName" asp-items="Model.RolesList" class="w-200px form-input2"></select>
+                        <span asp-validation-for="RoleName" class="c-red"></span>
+                    </div>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <span>Data dodania</span>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <span>@Model.DataDodania</span>
+                    <span asp-validation-for="DataDodania" class="c-red"></span>
                 </div>
             </td>
         </tr>
     </table>
+
 
 
     <div class="w-100 df-sb mt-30 mb-40">
@@ -146,9 +210,3 @@
 
 <!-- Zwraca komunikat błędu, o ile takowy się pojawi -->
 <span class="c-red">@ViewData["ErrorMessage"]</span>
-
-
-
-
-
-

@@ -1,0 +1,50 @@
+﻿@model ChangeUserEmailDto
+
+
+<div class="rightColumnUser">
+
+    <div class="headerCe">Zmiana adresu email</div>
+
+
+    <form method="post" asp-action="ChangeEmail" asp-controller="Users">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Email" />
+
+
+        <div class="db">
+            <div class="row">
+                <div class="fieldName">
+                    <span>Dotychczasowy email</span>
+                </div>
+                <div class="fieldEdit">
+                    <input asp-for="Email" disabled />
+                </div>
+            </div>
+        </div>
+
+        <div class="db">
+            <div class="row">
+                <div class="fieldName">
+                    <span>Nowy email</span>
+                </div>
+                <div class="fieldEdit">
+                    <input asp-for="NewEmail" />
+                    <span asp-validation-for="NewEmail" class="c-red"></span>
+                    @*  <span class="c-red">@Model.Result</span> *@
+                </div>
+            </div>
+        </div>
+
+
+        <div class="bottom-bar-options">
+            <a asp-action="Index" asp-controller="Users" class="form-button-a">Anuluj</a>
+            <input type="submit" value="Zapisz" class="form-button" />
+        </div>
+
+    </form>
+</div>
+
+
+
+<!-- Zwraca komunikat błędu, o ile takowy się pojawi -->
+<span class="c-red">@Model.Message</span>

@@ -12,8 +12,11 @@ namespace WebApplication71.DTOs.Account
         [DataType(DataType.EmailAddress)]
         public string NewEmail { get; set; }
 
-        public bool Success { get; set; }
 
-        public string Result { get; set; }
+
+
+        //public bool Success { get; set; }
+
+        //public string Result { get; set; }
     }
 }

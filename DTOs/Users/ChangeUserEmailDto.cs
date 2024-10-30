@@ -1,21 +1,22 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using WebApplication71.Services;
 
-namespace WebApplication71.DTOs.Account
+namespace WebApplication71.DTOs.Users
 {
-    public class LoginDto
+    public class ChangeUserEmailDto
     {
+        public string Id { get; set; }
+
         [Required(ErrorMessage = "To pole jest wymagane")]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
-
         [Required(ErrorMessage = "To pole jest wymagane")]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
+        [DataType(DataType.EmailAddress)]
+        public string NewEmail { get; set; }
 
 
 
-        //public string LoginResult { get; set; }
+
+        public string Message { get; set; }
     }
 }

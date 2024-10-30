@@ -1,0 +1,64 @@
+﻿@model CreateLogowanieDto
+
+@Model.DataLogowania
+<br />
+@Model.DataWylogowania
+<br />
+@Model.UserId
+
+<div class="dodawanieHeader">
+    <span class="titleHeader">Dodawanie nowej pozycji</span>
+</div>
+<hr />
+
+<form method="post" asp-action="Create" asp-controller="Logowania">
+
+    <table>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="DataLogowania"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="DataLogowania" />
+                    <span asp-validation-for="DataLogowania" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="DataWylogowania"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="DataWylogowania" />
+                    <span asp-validation-for="DataWylogowania" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <span>Imię i nazwisko</span>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <select asp-for="UserId" asp-items="Model.UsersList" class="w-200px form-input2"></select>
+                    <span asp-validation-for="UserId" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+
+    <div class="w-100 df-sb mt-30 mb-40">
+        <a asp-action="Index" asp-controller="Logowania" class="buttonWstecz w-100px">Wstecz</a>
+        <div class="df">
+            <input type="submit" value="Zapisz" class="buttonEdit w-100px" />
+            <a asp-action="Index" asp-controller="Logowania" class="buttonAnuluj w-100px ml-2">Anuluj</a>
+        </div>
+    </div>
+</form>
+
+
+<!-- Zwraca komunikat błędu, o ile takowy się pojawi -->
+<span class="c-red">@ViewData["ErrorMessage"]</span>

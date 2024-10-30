@@ -8,7 +8,8 @@ namespace WebApplication71.DTOs.Categories
     {
         public string CategoryId { get; set; }
 
-        [Required]
+
+        [Required(ErrorMessage = "To pole jest wymagane")]
         public string Name { get; set; }
 
 
