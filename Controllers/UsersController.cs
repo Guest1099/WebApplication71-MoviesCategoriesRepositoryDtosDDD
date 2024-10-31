@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Users;
@@ -41,6 +42,7 @@ namespace WebApplication71.Controllers
 
                 return View(new GetUsersDto()
                 {
+                    Users = users,
                     Paginator = Paginator<GetUserDto>.CreateAsync(users, model.PageIndex, model.PageSize),
                     PageIndex = model.PageIndex,
                     PageSize = model.PageSize,
@@ -84,6 +86,24 @@ namespace WebApplication71.Controllers
                         ).ToList();
                 }
 
+
+                // Opcje wyszukiwania 
+                if (!string.IsNullOrEmpty(model.q) && !string.IsNullOrEmpty (model.SearchOption))
+                {
+                    switch (model.SearchOption)
+                    {
+                        case "Email":
+                            users = users.Where(w => w.Email.Contains(model.q)).ToList();
+                            break;
+
+                        case "Nazwisko":
+                            users = users.Where(w => w.Nazwisko.Contains(model.q)).ToList();
+                            break;
+
+                        case "Wszędzie": break;
+                    }
+                }
+
                 // Sortowanie
                 switch (model.SortowanieOption)
                 {
@@ -104,6 +124,7 @@ namespace WebApplication71.Controllers
                         break;
                 }
 
+                model.Users = users;
                 model.Paginator = Paginator<GetUserDto>.CreateAsync(users, model.PageIndex, model.PageSize);
                 return View(model);
             }
@@ -136,8 +157,8 @@ namespace WebApplication71.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
-                {
+                /*if (ModelState.IsValid)
+                {*/
                     var result = await _usersService.Create(model);
                     if (result != null && result.Success)
                         return RedirectToAction("Index", "Users");
@@ -145,7 +166,7 @@ namespace WebApplication71.Controllers
 
                     // zwraca komunikat błędu związanego z tworzeniem rekordu
                     ViewData["ErrorMessage"] = result.Message;
-                }
+                /*}*/
 
 
 

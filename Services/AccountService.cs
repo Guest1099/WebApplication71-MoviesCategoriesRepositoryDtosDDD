@@ -28,7 +28,7 @@ namespace WebApplication71.Services
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IEmailSender _emailSender; 
+        private readonly IEmailSender _emailSender;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUrlHelperFactory _urlHelperFactory;
 
@@ -39,7 +39,7 @@ namespace WebApplication71.Services
             _signInManager = signInManager;
             _emailSender = emailSender;
             _httpContextAccessor = httpContextAccessor;
-            _urlHelperFactory = urlHelperFactory; 
+            _urlHelperFactory = urlHelperFactory;
         }
 
         public async Task<ResultViewModel<GetUserDto>> GetUserById(string userId)
@@ -428,7 +428,7 @@ namespace WebApplication71.Services
 
 
 
-        public async Task<ResultViewModel <ForgotPasswordDto>> ForgotPassword(ForgotPasswordDto model)
+        public async Task<ResultViewModel<ForgotPasswordDto>> ForgotPassword(ForgotPasswordDto model)
         {
             var returnResult = new ResultViewModel<ForgotPasswordDto>() { Success = false, Message = "", Object = new ForgotPasswordDto() };
 
@@ -436,7 +436,7 @@ namespace WebApplication71.Services
             {
                 try
                 {
-                    var user = await _context.Users.FirstOrDefaultAsync (f=> f.Email == model.Email);
+                    var user = await _context.Users.FirstOrDefaultAsync(f => f.Email == model.Email);
                     if (user == null /*|| !(await _userManager.IsEmailConfirmedAsync(user))*/)
                     {
                         returnResult.Message = "Wskazany użytkownik nie istnieje";
@@ -445,22 +445,22 @@ namespace WebApplication71.Services
                     {
                         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-/*
-                        string url = GenerateResetPasswordUrl(token, model.Email);
-                        string sendMessage = $"Proszę zresetować swoje hasło, klikając tutaj: <a href='{url}'>link</a>";
-                        _emailSender.SendEmail(model.Email, "Resetowanie hasła", sendMessage);
-*/
+                        /*
+                                                string url = GenerateResetPasswordUrl(token, model.Email);
+                                                string sendMessage = $"Proszę zresetować swoje hasło, klikając tutaj: <a href='{url}'>link</a>";
+                                                _emailSender.SendEmail(model.Email, "Resetowanie hasła", sendMessage);
+                        */
 
                         string url = GenerateResetPasswordUrl(token, model.Email); // dla jakiego maila generowany jest token
                         string sendMessage = $"Proszę zresetować swoje hasło, klikając tutaj {model.Email}: <a href='{url}'>link</a>";
                         _emailSender.SendEmail(model.Email, "Resetowanie hasła", sendMessage); // pod jaki adres wysyłany jest email
 
-                          
+
                         //_emailSender.SendEmail("mgmcdeveloper@gmail.com"); // email do testowania czy działa wysyłka
 
                         returnResult.Success = true;
                         returnResult.Message = "Na twojego maila wysłany został link z możliwością zresetowania hasła";
-                    } 
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -487,7 +487,7 @@ namespace WebApplication71.Services
 
 
 
-        public async Task<ResultViewModel<ResetPasswordDto>> ResetPassword (ResetPasswordDto model)
+        public async Task<ResultViewModel<ResetPasswordDto>> ResetPassword(ResetPasswordDto model)
         {
             var returnResult = new ResultViewModel<ResetPasswordDto>() { Success = false, Message = "", Object = new ResetPasswordDto() };
 
@@ -760,34 +760,355 @@ namespace WebApplication71.Services
 
 
 
+        /*
+                public async Task<ResultViewModel<LoginDto>> Login(LoginDto model)
+                {
+                    var returnResult = new ResultViewModel<LoginDto>() { Success = false, Message = "", Object = new LoginDto() };
 
+                    try
+                    {
+                        var user = await _context.Users.FirstOrDefaultAsync (f=> f.Email == model.Email);
+                        if (user != null)
+                        { 
+                            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: true, lockoutOnFailure: false);
+                            if (result.Succeeded)
+                            {
+                                // mówi o tym, kiedyu żytkownik się zalogował 
+                                Logowanie logowanie = new Logowanie(
+                                    userId: user.Id
+                                    );
+                                _context.Logowania.Add(logowanie);
+                                await _context.SaveChangesAsync();
+
+
+                                returnResult.Success = true;
+                                returnResult.Object = model;
+                            }
+                            else
+                            { 
+                                returnResult.Message = "Błędny login lub hasło"; // tu jest błędne hasło
+                            }
+                        }
+                        else
+                        {
+                            returnResult.Message = "Błędny login lub hasło"; // tu jest błędny login
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        returnResult.Message = $"Exception: {ex.Message}";
+                    }
+
+                    return returnResult;
+                }
+        */
+
+
+
+        /*/// <summary>
+        /// Logowanie z 3 próbami zalogowania, po czym konto jest blokowane na 6 godzin
+        /// </summary>
         public async Task<ResultViewModel<LoginDto>> Login(LoginDto model)
         {
             var returnResult = new ResultViewModel<LoginDto>() { Success = false, Message = "", Object = new LoginDto() };
 
             try
             {
-                var user = await _context.Users.FirstOrDefaultAsync (f=> f.Email == model.Email);
+                var user = await _context.Users.FirstOrDefaultAsync(f => f.Email == model.Email);
                 if (user != null)
                 {
-
-                    var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: true, lockoutOnFailure: false);
-                    if (result.Succeeded)
+                    // sprawdza czy konto nie jest zablokowane, jeśli nie to następuje zalogowanie do systemu, jeśli tak to wyświetlana jest informacja, że user ma zalobkowane konto i po 6 godzinach zostanie odblokowane podczas próby pierwszego poprawnego logowania
+                    if (!user.LockoutEnabled)
                     {
-                        // mówi o tym, kiedyu żytkownik się zalogował 
-                        Logowanie logowanie = new Logowanie(
-                            userId: user.Id
-                            );
-                        _context.Logowania.Add(logowanie);
-                        await _context.SaveChangesAsync();
+                        if (user.IloscLogowan < 3)
+                        {
+                            if (!string.IsNullOrEmpty(user.DataZablokowaniaKonta))
+                            {
+                                DateTime dataZablokowaniaKonta = DateTime.Parse(user.DataZablokowaniaKonta);
+                                DateTime now = DateTime.Now;
 
+                                // jeżeli data zablokowania konta minęła, wyczyść ilość nieudanych prób logowań i oraz datę zablokowania konta
+                                if (dataZablokowaniaKonta > now)
+                                {
+                                    user.IloscLogowan = 0;
+                                    user.DataZablokowaniaKonta = "";
+                                    await _userManager.UpdateAsync (user);
+                                }
+                            }
+                        }
 
-                        returnResult.Success = true;
-                        returnResult.Object = model;
+                        returnResult = await LoginInternal(user, model);
                     }
                     else
-                    { 
-                        returnResult.Message = "Błędny login lub hasło"; // tu jest błędne hasło
+                    {
+                        if (user.IloscLogowan == 3)
+                        {
+                            // jeżeli konto jset zablokowane, sprawdza czy minął czas jeśli tak to konto jest odblokowywane
+                            if (!string.IsNullOrEmpty(user.DataZablokowaniaKonta))
+                            {
+                                DateTime dataZablokowaniaKonta = DateTime.Parse(user.DataZablokowaniaKonta);
+                                DateTime now = DateTime.Now;
+
+
+                                if (dataZablokowaniaKonta > now)
+                                {
+                                    returnResult = await LoginInternal(user, model);
+                                }
+
+                                returnResult.Message = "Konto użytkownika zostało zablokowane, spróbuj się zalogować za jakiś czas";
+                            }
+                        } 
+                        returnResult.Message = "Konto użytkownika zostało zablokowane, spróbuj się zalogować za jakiś czas";
+                    }
+                }
+                else
+                {
+                    returnResult.Message = "Błędny login lub hasło"; // tu jest błędny login
+                }
+            }
+            catch (Exception ex)
+            {
+                returnResult.Message = $"Exception: {ex.Message}";
+            }
+
+            return returnResult;
+        }
+*/
+
+
+        /// <summary>
+        /// Logowanie z 3 próbami zalogowania, po czym konto jest blokowane na 6 godzin
+        /// </summary>
+        public async Task<ResultViewModel<LoginDto>> Login(LoginDto model)
+        {
+            var returnResult = new ResultViewModel<LoginDto>() { Success = false, Message = "", Object = new LoginDto() };
+
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(f => f.Email == model.Email);
+                if (user != null)
+                {
+                    // sprawdza czy konto nie jest zablokowane, jeśli nie to następuje zalogowanie do systemu, jeśli tak to wyświetlana jest informacja, że user ma zalobkowane konto i po 6 godzinach zostanie odblokowane podczas próby pierwszego poprawnego logowania
+
+                    // jeżeli ilość ilość logowań jset mniejsza niż 3 użytkownik może się zalogować do systemu
+
+                    // jeżeli konto jest zablokowane, wyświetl komunikat
+                    if (user.LockoutEnabled)
+                    {
+                        // jeżeli użytkownik nie ma zablokowanego konta, a źle się zalogował i zaniechał dalszych prób logowania do konta to po
+                        // upłynięciu 6 godzin czasu data błędnego zalogowania oraz ilość zalogowanych prób jest czyszczona
+                        if (!string.IsNullOrEmpty(user.DataZablokowaniaKonta))
+                        {
+                            DateTime dataZablokowaniaKonta = DateTime.Parse(user.DataZablokowaniaKonta);
+                            DateTime now = DateTime.Now;
+
+                            // jeżeli data zablokowania przeminęła to zerowany jest licznik nieudanyhc logowań oraz data nieudanego logowania
+                            if (dataZablokowaniaKonta < now)
+                            {
+                                // wyczyść daty i liczniki z nieudanymi próbami logowania
+                                if (user.IloscLogowan == 3)
+                                {
+                                    user.IloscLogowan = 0;
+                                    //user.DataZablokowaniaKonta = "";
+                                    await _userManager.UpdateAsync(user);
+                                }
+
+                                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: true, lockoutOnFailure: false);
+                                if (result.Succeeded)
+                                {
+                                    // mówi o tym, kiedyu żytkownik się zalogował 
+                                    Logowanie logowanie = new Logowanie(
+                                        userId: user.Id
+                                        );
+                                    _context.Logowania.Add(logowanie);
+                                    await _context.SaveChangesAsync();
+
+
+                                    // zerowanie licznika nieudanych prób logowania 
+                                    user.IloscLogowan = 0;
+                                    user.DataZablokowaniaKonta = "";
+                                    user.LockoutEnabled = false;
+                                    await _userManager.UpdateAsync(user);
+
+
+                                    returnResult.Success = true;
+                                    returnResult.Object = model;
+                                }
+                                else
+                                {
+                                    // aktualizacja ilości logowań
+                                    user.IloscLogowan = user.IloscLogowan + 1;
+                                    //user.DataZablokowaniaKonta = DateTime.Now.AddSeconds(10).ToString();
+                                    await _userManager.UpdateAsync(user);
+
+                                    int iloscLogowan = 3 - user.IloscLogowan;
+                                    returnResult.Message = $"Błędne hasło. Pozostały {iloscLogowan} próby logowań";
+
+
+                                    // jeżeli ilość prób logowań wyniesie 3 wtedy zablokuj konto
+                                    if (user.IloscLogowan == 3)
+                                    {
+                                        //user.LockoutEnabled = true;
+                                        user.DataZablokowaniaKonta = DateTime.Now.AddSeconds(10).ToString();
+                                        await _userManager.UpdateAsync(user);
+                                        returnResult.Message = "Konto użytkownika zostało zablokowane, spróbuj się zalogować za jakiś czas";
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                returnResult.Message = "Konto użytkownika zostało zablokowane, spróbuj się zalogować za jakiś czas";
+                            }
+                        }
+                    }
+                    // jeżeli nie spróbuj zalogować
+                    else
+                    {
+                        // jeżeli użytkownik nie ma zablokowanego konta, a źle się zalogował i zaniechał dalszych prób logowania do konta to po
+                        // upłynięciu 6 godzin czasu data błędnego zalogowania oraz ilość zalogowanych prób jest czyszczona
+                        if (!string.IsNullOrEmpty(user.DataZablokowaniaKonta))
+                        {
+                            DateTime dataZablokowaniaKonta = DateTime.Parse(user.DataZablokowaniaKonta);
+                            DateTime now = DateTime.Now;
+
+                            // jeżeli data zablokowania przeminęła to zerowany jest licznik nieudanyhc logowań oraz data nieudanego logowania
+                            if (dataZablokowaniaKonta < now)
+                            {
+                                // wyczyść daty i liczniki z nieudanymi próbami logowania
+                                user.IloscLogowan = 0;
+                                user.DataZablokowaniaKonta = "";
+                                await _userManager.UpdateAsync(user);
+
+                                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: true, lockoutOnFailure: false);
+                                if (result.Succeeded)
+                                {
+                                    // mówi o tym, kiedyu żytkownik się zalogował 
+                                    Logowanie logowanie = new Logowanie(
+                                        userId: user.Id
+                                        );
+                                    _context.Logowania.Add(logowanie);
+                                    await _context.SaveChangesAsync();
+
+
+                                    // zerowanie licznika nieudanych prób logowania 
+                                    user.IloscLogowan = 0;
+                                    user.DataZablokowaniaKonta = "";
+                                    user.LockoutEnabled = false;
+                                    await _userManager.UpdateAsync(user);
+
+
+                                    returnResult.Success = true;
+                                    returnResult.Object = model;
+                                }
+                                else
+                                {
+                                    // aktualizacja ilości logowań
+                                    user.IloscLogowan = user.IloscLogowan + 1;
+                                    user.DataZablokowaniaKonta = DateTime.Now.AddSeconds(10).ToString();
+                                    await _userManager.UpdateAsync(user);
+
+                                    int iloscLogowan = 3 - user.IloscLogowan;
+                                    returnResult.Message = $"Błędne hasło. Pozostały {iloscLogowan} próby logowań";
+
+
+                                    // jeżeli ilość prób logowań wyniesie 3 wtedy zablokuj konto
+                                    if (user.IloscLogowan == 3)
+                                    {
+                                        user.LockoutEnabled = true;
+                                        await _userManager.UpdateAsync(user);
+                                        returnResult.Message = "Konto użytkownika zostało zablokowane, spróbuj się zalogować za jakiś czas";
+                                    }
+                                }
+                            }
+                            // jeśli data zablokowania konta nie przeminęła dalej podbijany jest licznik nieudanych prób, i leżeli osiągnie on maximum, czyli 3 wtedy konto jest blokowane na 6 godzin
+                            else
+                            {
+                                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: true, lockoutOnFailure: false);
+                                if (result.Succeeded)
+                                {
+                                    // mówi o tym, kiedyu żytkownik się zalogował 
+                                    Logowanie logowanie = new Logowanie(
+                                        userId: user.Id
+                                        );
+                                    _context.Logowania.Add(logowanie);
+                                    await _context.SaveChangesAsync();
+
+
+                                    // zerowanie licznika nieudanych prób logowania 
+                                    user.IloscLogowan = 0;
+                                    user.DataZablokowaniaKonta = "";
+                                    user.LockoutEnabled = false;
+                                    await _userManager.UpdateAsync(user);
+
+
+                                    returnResult.Success = true;
+                                    returnResult.Object = model;
+                                }
+                                else
+                                {
+                                    // aktualizacja ilości logowań
+                                    user.IloscLogowan = user.IloscLogowan + 1;
+                                    await _userManager.UpdateAsync(user);
+
+                                    int iloscLogowan = 3 - user.IloscLogowan;
+                                    returnResult.Message = $"Błędne hasło. Pozostały {iloscLogowan} próby logowań";
+
+
+                                    // jeżeli ilość prób logowań wyniesie 3 wtedy zablokuj konto
+                                    if (user.IloscLogowan == 3)
+                                    {
+                                        user.LockoutEnabled = true;
+                                        user.DataZablokowaniaKonta = DateTime.Now.AddSeconds(10).ToString();
+                                        await _userManager.UpdateAsync(user);
+                                        returnResult.Message = "Konto użytkownika zostało zablokowane, spróbuj się zalogować za jakiś czas";
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: true, lockoutOnFailure: false);
+                            if (result.Succeeded)
+                            {
+                                // mówi o tym, kiedyu żytkownik się zalogował 
+                                Logowanie logowanie = new Logowanie(
+                                    userId: user.Id
+                                    );
+                                _context.Logowania.Add(logowanie);
+                                await _context.SaveChangesAsync();
+
+
+                                // zerowanie licznika nieudanych prób logowania 
+                                user.IloscLogowan = 0;
+                                user.DataZablokowaniaKonta = "";
+                                user.LockoutEnabled = false;
+                                await _userManager.UpdateAsync(user);
+
+
+                                returnResult.Success = true;
+                                returnResult.Object = model;
+                            }
+                            else
+                            {
+                                // aktualizacja ilości logowań
+                                user.IloscLogowan = user.IloscLogowan + 1;
+                                user.DataZablokowaniaKonta = DateTime.Now.AddSeconds(10).ToString();
+                                await _userManager.UpdateAsync(user);
+
+                                int iloscLogowan = 3 - user.IloscLogowan;
+                                returnResult.Message = $"Błędne hasło. Pozostały {iloscLogowan} próby logowań";
+
+
+                                // jeżeli ilość prób logowań wyniesie 3 wtedy zablokuj konto
+                                if (user.IloscLogowan == 3)
+                                {
+                                    user.LockoutEnabled = true;
+                                    await _userManager.UpdateAsync(user);
+                                    returnResult.Message = "Konto użytkownika zostało zablokowane, spróbuj się zalogować za jakiś czas";
+                                }
+                            }
+                        }
+
                     }
                 }
                 else
@@ -803,6 +1124,80 @@ namespace WebApplication71.Services
             return returnResult;
         }
 
+
+
+        private async Task<ResultViewModel<LoginDto>> LoginInternal(ApplicationUser user, LoginDto model)
+        {
+            var returnResult = new ResultViewModel<LoginDto>() { Success = false, Message = "", Object = new LoginDto() };
+
+            // jeżeli ilość ilość logowań jset mniejsza niż 3 użytkownik może się zalogować do systemu
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: true, lockoutOnFailure: false);
+            if (result.Succeeded)
+            {
+                // mówi o tym, kiedyu żytkownik się zalogował 
+                Logowanie logowanie = new Logowanie(
+                    userId: user.Id
+                    );
+                _context.Logowania.Add(logowanie);
+                await _context.SaveChangesAsync();
+
+
+                // zerowanie licznika nieudanych prób logowania
+                user.IloscLogowan = 0;
+                user.DataZablokowaniaKonta = "";
+                await _userManager.UpdateAsync(user);
+
+
+                returnResult.Success = true;
+                returnResult.Object = model;
+            }
+            else
+            {
+                /*
+                                // sprawdź ile razy użytkownik już się logował, ma 3 próby, po 3 niudanej próbie logowania konto jest blokonwane na 6 godzin                                
+                                int iloePozostaloLogowanUzytkownikowi = 2 - user.IloscLogowan;
+                                if (iloePozostaloLogowanUzytkownikowi == 0)
+                                {
+                                    returnResult.Message = $"Konto użytkownika zostało zablokowane, spróbuj ponownie za jakiś czas";
+                                }
+                                else
+                                {
+                                    returnResult.Message = $"Błędny login lub hasło. Pozostały Ci {iloePozostaloLogowanUzytkownikowi} próby logowania";
+                                }
+                */
+
+                // aktualizacja ilości logowań
+                user.IloscLogowan = user.IloscLogowan + 1;
+                user.DataZablokowaniaKonta = DateTime.Now.AddMinutes(1).ToString();
+                await _userManager.UpdateAsync(user);
+
+                if (user.IloscLogowan == 3)
+                {
+                    user.LockoutEnabled = true;
+                    await _userManager.UpdateAsync(user);
+                }
+            }
+            return returnResult;
+        }
+
+
+        /// <summary>
+        /// Sprawdza poziom bezpieczeństwa logowania, jeżęli użytkownik logował się nie poprawnie 3 razy w ciągu 6 godzin jego konto jest blokowane na 6 godzine,
+        /// w przeciwny razie jest logowany
+        /// </summary>
+        private async Task CheckLoginSecurity(ApplicationUser user)
+        {
+
+        }
+
+        private async Task ZablokujKonto(ApplicationUser user)
+        {
+
+        }
+        private async Task OdblokujKonto(ApplicationUser user)
+        {
+
+        }
 
 
 

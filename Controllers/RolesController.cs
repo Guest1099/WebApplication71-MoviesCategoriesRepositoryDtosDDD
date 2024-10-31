@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Roles;
@@ -80,11 +82,11 @@ namespace WebApplication71.Controllers
                 // Sortowanie
                 switch (model.SortowanieOption)
                 {
-                    case "Name A-Z":
+                    case "Nazwa A-Z":
                         roles = roles.OrderBy(o => o.Name).ToList();
                         break;
 
-                    case "Name Z-A":
+                    case "Nazwa Z-A":
                         roles = roles.OrderByDescending(o => o.Name).ToList();
                         break;
                 }

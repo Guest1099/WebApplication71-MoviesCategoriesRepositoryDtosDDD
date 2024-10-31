@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Logowania;
@@ -40,6 +41,13 @@ namespace WebApplication71.Controllers
                     return View("NotFound");
 
 
+                if (model.DataZalogowaniaOd.ToShortDateString() == "01.01.0001")
+                    model.DataZalogowaniaOd = DateTime.Now.AddMonths(-30);
+
+                if (model.DataZalogowaniaDo.ToShortDateString() == "01.01.0001")
+                    model.DataZalogowaniaDo = DateTime.Now;
+
+
                 return View(new GetLogowaniaDto()
                 {
                     Paginator = Paginator<GetLogowanieDto>.CreateAsync(logowania, model.PageIndex, model.PageSize),
@@ -51,7 +59,7 @@ namespace WebApplication71.Controllers
                     SearchOption = model.SearchOption,
                     SortowanieOption = model.SortowanieOption,
                     DataZalogowaniaOd = model.DataZalogowaniaOd,
-                    DataZalogowaniaDo = model.DataZalogowaniaDo
+                    DataZalogowaniaDo = model.DataZalogowaniaDo,
                 });
             }
             catch (Exception ex)
@@ -110,11 +118,11 @@ namespace WebApplication71.Controllers
                 // Sortowanie
                 switch (model.SortowanieOption)
                 {
-                    case "Data logowania rosnąco":
+                    case "Data zalogowania rosnąco":
                         logowania = logowania.OrderBy(o => o.DataLogowania).ToList();
                         break;
 
-                    case "Data logowania malejąco":
+                    case "Data zalogowania malejąco":
                         logowania = logowania.OrderByDescending(o => o.DataLogowania).ToList();
                         break;
                 }

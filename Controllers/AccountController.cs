@@ -309,7 +309,7 @@ namespace WebApplication71.Controllers
         [AllowAnonymous]
         [HttpGet]
         public IActionResult Login()
-            => View(new LoginDto() { LoginResult = "" });
+            => View();
 
 
         [AllowAnonymous]
@@ -326,7 +326,7 @@ namespace WebApplication71.Controllers
                         return RedirectToAction("Index", "Home");
 
 
-                    model.LoginResult = result.Message;
+                    ViewData["ErrorMessage"] = result.Message;
                 }
                 return View(model);
             }

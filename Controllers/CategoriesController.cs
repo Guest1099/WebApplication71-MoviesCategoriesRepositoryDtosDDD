@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Categories;
@@ -17,7 +20,6 @@ namespace WebApplication71.Controllers
         public CategoriesController(ICategoriesRepository categoriesRepository)
         {
             _categoriesRepository = categoriesRepository;
-
         }
 
 
@@ -89,6 +91,7 @@ namespace WebApplication71.Controllers
                         categories = categories.OrderByDescending(o => o.Name).ToList();
                         break;
                 }
+
 
                 model.Paginator = Paginator<GetCategoryDto>.CreateAsync(categories, model.PageIndex, model.PageSize);
                 return View(model);

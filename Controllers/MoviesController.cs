@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Movies;
@@ -41,6 +42,7 @@ namespace WebApplication71.Controllers
 
                 return View(new GetMoviesDto()
                 {
+                    Movies = movies,
                     Paginator = Paginator<GetMovieDto>.CreateAsync(movies, model.PageIndex, model.PageSize),
                     PageIndex = model.PageIndex,
                     PageSize = model.PageSize,
@@ -76,10 +78,16 @@ namespace WebApplication71.Controllers
 
 
                 // Wyszukiwanie
+                // szuka w tytułach lub w opisach
                 if (!string.IsNullOrEmpty(model.q))
                 {
-                    movies = movies.Where(w => w.Title.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
+                    movies = movies.Where(
+                        w => 
+                            w.Title.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
+                            w.Description.Contains (model.q, StringComparison.OrdinalIgnoreCase)
+                    ).ToList();
                 }
+
 
                 // Sortowanie
                 switch (model.SortowanieOption)
@@ -93,6 +101,8 @@ namespace WebApplication71.Controllers
                         break;
                 }
 
+
+                model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)movies.Count / model.PageSize));
                 model.Paginator = Paginator<GetMovieDto>.CreateAsync(movies, model.PageIndex, model.PageSize);
                 return View(model);
             }

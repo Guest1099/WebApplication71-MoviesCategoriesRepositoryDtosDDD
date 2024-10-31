@@ -1,4 +1,6 @@
-﻿using WebApplication71.Services;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
+using WebApplication71.Services;
 
 namespace WebApplication71.DTOs
 {
@@ -6,7 +8,7 @@ namespace WebApplication71.DTOs
     {
 
         // Wyszukiwarka  
-        public string q { get; set; }
+        public string q { get; set; } = "";
         public string SearchOption { get; set; }
         public string SortowanieOption { get; set; }
 
@@ -19,6 +21,9 @@ namespace WebApplication71.DTOs
         public int IlePokazac { get; set; } = 0;
         public int Start { get; set; } = 0;
         public int End { get; set; } = 0;
+
+
+        public SelectList SelectListNumberItems { get; set; } = new SelectList(new List<string>() { "5", "10", "15", "20" });
 
     }
 }

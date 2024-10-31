@@ -18,7 +18,10 @@ namespace WebApplication71.Models
         public Plec Plec { get; private set; }
         public string Telefon { get; private set; }
         public byte[] Photo { get; private set; }
-        public int IloscZalogowan { get; private set; }
+
+        public int IloscLogowan { get; set; }
+        public string DataZablokowaniaKonta { get; set; }
+
         public string DataOstatniegoZalogowania { get; private set; }
         public string RoleName { get; private set; }
         public DateTime DataDodania { get; private set; }
@@ -65,10 +68,12 @@ namespace WebApplication71.Models
             Plec = plec;
             Telefon = telefon;
             Photo = photo;
-            IloscZalogowan = 0;
+            IloscLogowan = 0;
+            DataZablokowaniaKonta = "";
             DataOstatniegoZalogowania = "";
             RoleName = roleName;
             EmailConfirmed = false;
+            LockoutEnabled = false;
             DataDodania = DateTime.Now;
         }
 
@@ -100,10 +105,12 @@ namespace WebApplication71.Models
             Plec = plec;
             Telefon = telefon;
             Photo = photo;
-            IloscZalogowan = 0;
+            IloscLogowan = 0;
+            DataZablokowaniaKonta = "";
             DataOstatniegoZalogowania = "";
             RoleName = roleName;
             EmailConfirmed = false;
+            LockoutEnabled = false;
 
             PasswordHash = PasswordHashString(password);
 
@@ -142,10 +149,12 @@ namespace WebApplication71.Models
             Plec = plec;
             Telefon = telefon;
             Photo = photo;
-            IloscZalogowan = 0;
+            IloscLogowan = 0;
+            DataZablokowaniaKonta = "";
             DataOstatniegoZalogowania = "";
             RoleName = roleName;
             EmailConfirmed = false;
+            LockoutEnabled = false;
 
             PasswordHash = PasswordHashString(password);
             DataDodania = dataDodania;
@@ -197,9 +206,37 @@ namespace WebApplication71.Models
         }
 
 
-        public void IloscZalogowanUpdate(int iloscZalogowan)
+        public void IloscLogowanUpdate(int iloscZalogowan)
         {
-            IloscZalogowan = iloscZalogowan;
+            IloscLogowan = iloscZalogowan;
+            if (IloscLogowan == 3)
+            {
+                // blokowanie konta
+                LockoutEnabled = true;
+            }
+            else
+            {
+                // odblokowanie konta
+                LockoutEnabled = false;
+            }
+            DataZablokowaniaKonta = DateTime.Now.AddMinutes(1).ToString(); // docelowo blokowanie ustawione jest na 6 godzin
+        }
+
+        // kiedy po zablokowaniu konta zalogowanie jest możliwe wtedy zmieniamy statu konta z zablokowanego na odblokowane
+        public void UpdateLockoutEnabled(bool lockoutEnabled)
+        {
+            LockoutEnabled = lockoutEnabled;
+        }
+
+
+        /// <summary>
+        /// Czyści datę zablokowania konta, kiedy użytkownik poda błędnie login i zostanie naliczona mu błędna ilość zalogować, to kiedy powróci
+        /// do systemu logowania po określonym czasie wtedy używana jest ta metoda i czyszczona jest data DataZablokowaniaKonta oraz zerowany jest licznik IloscZalogowan
+        /// </summary>
+        public void UpdateDataZalogowaniaKonta ()
+        {
+            DataZablokowaniaKonta = "";
+            IloscLogowan = 0;
         }
 
 
