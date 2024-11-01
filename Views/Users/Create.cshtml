@@ -247,9 +247,7 @@
             var uploadedFilesData = sessionStorage.getItem('uploadPhoto');
             var uploadedFilesBase64 = sessionStorage.getItem('uploadedFilesBase64');
 
-
             let imageContainer = document.getElementById('imageContainer');
-
 
             if (uploadedFilesBase64) {
                 var base64Files = JSON.parse(uploadedFilesBase64);
@@ -276,12 +274,12 @@
                 // Przypisanie nowej listy plików do pola input
                 filesInput.files = newFilesList.files;
 
-
                 imageContainer.style.width = '150px';
                 imageContainer.style.height = '150px';
-
-                sessionStorage.clear();
             }
+
+            // Usuń tę linię, aby nie czyścić sessionStorage
+            // sessionStorage.clear();
         };
 
 
