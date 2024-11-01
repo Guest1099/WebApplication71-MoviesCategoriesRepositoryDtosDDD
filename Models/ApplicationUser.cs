@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using WebApplication71.Models.Enums;
 
 namespace WebApplication71.Models
@@ -114,7 +115,7 @@ namespace WebApplication71.Models
 
             PasswordHash = PasswordHashString(password);
 
-            DataDodania = GetDate ();
+            DataDodania = GetDate();
         }
 
 
@@ -233,7 +234,7 @@ namespace WebApplication71.Models
         /// Czyści datę zablokowania konta, kiedy użytkownik poda błędnie login i zostanie naliczona mu błędna ilość zalogować, to kiedy powróci
         /// do systemu logowania po określonym czasie wtedy używana jest ta metoda i czyszczona jest data DataZablokowaniaKonta oraz zerowany jest licznik IloscZalogowan
         /// </summary>
-        public void UpdateDataZalogowaniaKonta ()
+        public void UpdateDataZalogowaniaKonta()
         {
             DataZablokowaniaKonta = "";
             IloscLogowan = 0;
@@ -247,7 +248,7 @@ namespace WebApplication71.Models
         }
 
 
-        private DateTime GetDate ()
+        private DateTime GetDate()
         {
             var d = DateTime.Now;
             return new DateTime(d.Year, d.Month, d.Day, d.Hour, d.Minute, d.Second);

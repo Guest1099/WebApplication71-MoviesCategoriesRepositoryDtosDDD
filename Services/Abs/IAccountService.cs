@@ -18,7 +18,7 @@ namespace WebApplication71.Services.Abs
         Task<ResultViewModel<ChangePasswordDto>> ChangePassword(ChangePasswordDto model);
 
         Task<ResultViewModel<ForgotPasswordDto>> ForgotPassword(ForgotPasswordDto model);
-        Task<ResultViewModel<ResetPasswordDto>> ResetPassword (ResetPasswordDto model);
+        Task<ResultViewModel<ResetPasswordDto>> ResetPassword(ResetPasswordDto model);
 
         Task<ResultViewModel<List<string>>> GetUserRoles(string email);
         Task<ResultViewModel<List<ApplicationUser>>> GetUsersInRole(string roleName);

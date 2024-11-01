@@ -41,6 +41,7 @@ namespace WebApplication71.Repos
                             DataLogowania = s.DataLogowania,
                             DataWylogowania = s.DataWylogowania,
                             CzasPracy = s.CzasPracy,
+                            ImieInazwisko = $"{s.User.Imie} {s.User.Nazwisko}",
                             Email = s.User.Email
                         })
                             .ToList();
@@ -81,6 +82,7 @@ namespace WebApplication71.Repos
                             DataLogowania = logowanie.DataLogowania,
                             DataWylogowania = logowanie.DataWylogowania,
                             CzasPracy = logowanie.CzasPracy,
+                            ImieInazwisko = $"{logowanie.User.Imie} {logowanie.User.Nazwisko}",
                             Email = logowanie.User.Email
                         };
                     }

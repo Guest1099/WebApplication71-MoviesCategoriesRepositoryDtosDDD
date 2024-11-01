@@ -146,22 +146,29 @@ namespace WebApplication71.Services
                 try
                 {
                     // sprawdza czy rola nie istnieje, jeżeli nie istnieje, tworzy nową rolę
-                    var role = await _context.Roles.FirstOrDefaultAsync(f => f.Name == model.Name);
-                    if (role == null)
+                    if ((await _context.Roles.FirstOrDefaultAsync(f => f.Name == model.Name && f.Id != model.Id)) == null)
                     {
-                        role.Update(
-                            name: model.Name
-                            );
+                        var role = await _context.Roles.FirstOrDefaultAsync(f => f.Id == model.Id);
+                        if (role != null)
+                        {
+                            role.Update(
+                                name: model.Name
+                                );
 
-                        _context.Entry(role).State = EntityState.Modified;
-                        await _context.SaveChangesAsync();
+                            _context.Entry(role).State = EntityState.Modified;
+                            await _context.SaveChangesAsync();
 
-                        returnResult.Success = true;
-                        returnResult.Object = model;
+                            returnResult.Success = true;
+                            returnResult.Object = model;
+                        }
+                        else
+                        {
+                            returnResult.Message = "Role was null";
+                        }
                     }
                     else
                     {
-                        returnResult.Message = "Role was null";
+                        returnResult.Message = "Wskazana nazwa roli już istnieje";
                     }
                 }
                 catch (Exception ex)
@@ -192,7 +199,7 @@ namespace WebApplication71.Services
                     if (role != null)
                     {
                         var users = await UsersInRole(role.Name);
-                        if (users.Any())
+                        if (!users.Any())
                         {
                             _context.Roles.Remove(role);
                             await _context.SaveChangesAsync();

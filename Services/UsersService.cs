@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 using WebApplication71.Data;
 using WebApplication71.DTOs;
@@ -261,7 +260,10 @@ namespace WebApplication71.Services
                 {
                     var user = await _context.Users.FirstOrDefaultAsync(f => f.Id == model.Id);
                     if (user != null)
-                    {
+                    { 
+                        object photoData = model.PhotoData == null ? user.Photo : await ChangeFileToBytes(model.PhotoData);                          
+                        byte[] photo = photoData as byte[];
+
                         user.Update(
                             imie: model.Imie,
                             nazwisko: model.Nazwisko,
@@ -273,7 +275,7 @@ namespace WebApplication71.Services
                             dataUrodzenia: model.DataUrodzenia,
                             plec: model.Plec,
                             telefon: model.Telefon,
-                            photo: await ChangeFileToBytes(model.PhotoData),
+                            photo: photo,
                             roleName: model.RoleName
                             );
 
@@ -586,34 +588,5 @@ namespace WebApplication71.Services
 
     }
 
-    public class PhotoDataFormFile : IFormFile
-    {
-        public string ContentType => throw new NotImplementedException();
-
-        public string ContentDisposition => throw new NotImplementedException();
-
-        public IHeaderDictionary Headers => throw new NotImplementedException();
-
-        public long Length => throw new NotImplementedException();
-
-        public string Name => throw new NotImplementedException();
-
-        public string FileName => throw new NotImplementedException();
-
-        public void CopyTo(Stream target)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task CopyToAsync(Stream target, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Stream OpenReadStream()
-        {
-            throw new NotImplementedException();
-        }
-    }
 }
 

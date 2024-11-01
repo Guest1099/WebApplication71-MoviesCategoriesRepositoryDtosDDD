@@ -6,95 +6,108 @@
 }
 
 
-<form method="post" asp-action="Index" asp-controller="Roles" class="formContainer">
-    <input type="hidden" asp-for="PageIndex" value="@Model.PageIndex" />
+<div class="overFormContainer">
+
+    <form method="post" asp-action="Index" asp-controller="Roles" class="formContainer">
+        <input type="hidden" asp-for="PageIndex" value="@Model.PageIndex" />
 
 
-    <div class="df-sb">
-        <div class="w-200px centery">
-            <a asp-action="Create" asp-controller="Roles" class="buttonCreate">+ Dodaj nową pozycję</a>
+        <div class="topContainer">
+            <div class="df-sb">
+                <div class="w-200px centery">
+                    <a asp-action="Create" asp-controller="Roles" class="buttonCreate">+ Dodaj nową pozycję</a>
+                </div>
+
+
+                <div class="df-sb mt-20 mb-20">
+                    <!-- Wyszukiwarka -->
+                    <div class="df">
+                        <input asp-for="q" class="searchInput" />
+                        <input type="submit" value="Szukaj" class="searchButton" />
+                    </div>
+
+                    <!-- Sortowanie -->
+                    <div class="df">
+                        <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption"></select>
+                        <input type="submit" value="Sortuj" class="searchButton" />
+                    </div>
+                </div>
+
+            </div>
+
         </div>
 
 
-        <div class="df-sb mt-20 mb-20">
-            <!-- Wyszukiwarka -->
-            <div class="df">
-                <input asp-for="q" class="searchInput" />
-                <input type="submit" value="Szukaj" class="searchButton" />
-            </div>
+        <div class="tableContainer">
 
-            <!-- Sortowanie -->
-            <div class="df">
-                <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption"></select>
-                <input type="submit" value="Sortuj" class="searchButton" />
-            </div>
-        </div>
-
-    </div>
-
-
-
-
-
-
-    <table>
-        <thead>
-            <tr>
-                <th>Lp</th>
-                <th>Name</th>
-                <th>Users</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var role in Model.Paginator)
+            @if (Model.Roles != null && Model.Roles.Any())
             {
-                index++;
-
-                <tr>
-                    <td class="w-40px">@index</td>
-
-
-
-                    <td style="min-width: 300px;">
-                        @role.Name
-                    </td>
+                if (!string.IsNullOrEmpty(Model.q))
+                {
+                    <h3>Wyniki wyszukiwania dla: @Model.q</h3>
+                }
 
 
-                    <td>
-                        @if (role.Users != null && role.Users.Any())
+
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Lp</th>
+                            <th>Name</th>
+                            <th>Users</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var role in Model.Paginator)
                         {
-                            @role.Users.Count
+                            index++;
+
+                            <tr>
+                                <td class="w-40px">@index</td>
+
+
+
+                                <td style="min-width: 300px;">
+                                    @role.Name
+                                </td>
+
+
+                                <td>
+                                    @if (role.Users != null && role.Users.Any())
+                                    {
+                                        @role.Users.Count
+                                    }
+                                </td>
+
+
+                                <td class="w-50px">
+                                    <div class="db">
+                                        <a asp-action="Edit"
+                                           asp-controller="Roles"
+                                           asp-route-roleId="@role.Id"
+                                           class="deleteButton">
+                                            Edytuj
+                                        </a>
+
+                                        <!-- jeżeli do roli jest przypisany jakikolwiek użytkownik wtedy nie można usunąc -->
+                                        @if (role.Users != null && !role.Users.Any())
+                                        {
+                                            <a asp-action="Delete"
+                                               asp-controller="Roles"
+                                               asp-route-id="@role.Id"
+                                               class="deleteButton">
+                                                Usuń
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+
+                            </tr>
                         }
-                    </td>
-
-
-                    <td class="w-50px">
-                        <div class="db">
-                            <a asp-action="Edit"
-                               asp-controller="Categories"
-                               asp-route-roleId="@role.Id"
-                               class="deleteButton">
-                                Edytuj
-                            </a>
-
-                            <!-- jeżeli do roli jest przypisany jakikolwiek użytkownik wtedy nie można usunąc -->
-                            @if (role.Users != null && !role.Users.Any())
-                            {
-                                <a asp-action="Delete"
-                                   asp-controller="Categories"
-                                   asp-route-id="@role.Id"
-                                   class="deleteButton">
-                                    Usuń
-                                </a>
-                            }
-                        </div>
-                    </td>
-
-                </tr>
-            }
-        </tbody>
-    </table>
+                    </tbody>
+                </table>
 
 
 
@@ -106,27 +119,8 @@
 
 
 
-    @{
-        bool showPaginator = false;
 
-        if (Model.Paginator.Count > 4)
-            showPaginator = true;
-
-        // if (Model.PageIndex > 0)
-        //     showPaginator = true;
-
-
-        if (!string.IsNullOrWhiteSpace (Model.q))
-        {
-            if (Model.q.Length > 0 && Model.Paginator.Count == 0)
-            {
-                <span>
-                    Brak wyników wyszukiwania pod tym hasłem
-                </span>
-            }
-            else
-            {
-                if (showPaginator)
+                if (Model.Paginator.Count > 4)
                 {
 
                     <!-- Paginator -->
@@ -245,11 +239,23 @@
                     </div>
 
                 }
+
+
             }
-        }
-    }
+            else
+            {
+                if (!string.IsNullOrEmpty(Model.q))
+                {
+                    <p>Nie znaleziono użytkowników pasujących do Twojego zapytania: <strong>@Model.q</strong>.</p>
+                }
+                else
+                {
+                    <p>Brak użytkowników w bazie danych.</p>
+                }
+            }
 
+        </div>
 
+    </form>
 
-
-</form>
+</div>

@@ -3,279 +3,310 @@
 @{
     int index = 0;
     index = Model.PageSize * (Model.PageIndex - 1);
+
+
+    bool isLastPage = Model.PageIndex >= Model.Paginator.TotalPage;
+    var selectAttributes = new Dictionary<string, object>();
+
+    if (isLastPage || Model.Users.Count <= 10)
+    {
+        selectAttributes["disabled"] = "disabled"; // Dodaj atrybut disabled
+    }
 }
 
 
-<form method="post" asp-action="Index" asp-controller="Users" class="formContainer">
-    <input type="hidden" asp-for="PageIndex" value="@Model.PageIndex" />
+
+<div class="overFormContainer">
+
+    <form method="post" asp-action="Index" asp-controller="Users" class="formContainer">
+        <input type="hidden" asp-for="PageIndex" value="@Model.PageIndex" />
 
 
-    <div class="df-sb">
-        <div class="w-200px centery">
-            <a asp-action="Create" asp-controller="Users" class="buttonCreate">+ Dodaj nową pozycję</a>
-        </div>
 
 
-        <div class="df-sb mt-20 mb-20">
-            <div class="df">
-                <!-- Wyszukiwarka -->
-                <div class="df centery">
-                    <span>Szukaj w</span>
-                    <select asp-for="SearchOption" asp-items='@Model.SelectListSearchOptionItems' class="selectOption"></select>
+        <div class="topContainer">
+            <div class="df-sb">
+                <div class="w-200px centery">
+                    <a asp-action="Create" asp-controller="Users" class="buttonCreate">+ Dodaj nową pozycję</a>
                 </div>
-                <div class="df">
-                    <input asp-for="q" class="searchInput" />
-                    <input type="submit" value="Szukaj" class="searchButton" />
-                </div>
-            </div>
-
-            <div class="df">
-                <!-- Sortowanie -->
-                <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption"></select>
-                <input type="submit" value="Sortuj" class="searchButton" />
-            </div>
-        </div>
-
-    </div>
 
 
-
-
-    @{
-        if (Model.Users.Count > 0)
-        {
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Lp</th>
-                        <th>Imię i nazwisko</th>
-                        <th>Adres</th>
-                        <th>Email</th>
-                        <th>Rola</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var user in Model.Paginator)
-                    {
-                        index++;
-
-                        <tr>
-                            <td class="w-40px">@index</td>
-
-
-                            <td>
-                                @user.Imie @user.Nazwisko
-                            </td>
-
-
-                            <td style="min-width: 300px;">
-                                <div class="db">
-                                    <div class="df">
-                                        <span>ulica: </span>
-                                        <span>@user.Ulica</span>
-                                    </div>
-                                    <div class="df">
-                                        <span>miejscowość: </span>
-                                        <span>@user.Miejscowosc</span>
-                                    </div>
-                                    <div class="df">
-                                        <span>województwo: </span>
-                                        <span>@user.Wojewodztwo</span>
-                                    </div>
-                                    <div class="df">
-                                        <span>kod pocztowy: </span>
-                                        <span>@user.KodPocztowy</span>
-                                    </div>
-                                </div>
-                            </td>
-
-
-                            <td style="min-width: 100px;">
-                                @user.Email
-                            </td>
-
-
-                            <td>
-                                @user.RoleName
-                            </td>
-
-
-                            <td class="w-50px">
-                                <div class="db">
-                                    <a asp-action="Edit"
-                                       asp-controller="Users"
-                                       asp-route-userId="@user.Id"
-                                       class="deleteButton">
-                                        Edytuj
-                                    </a>
-
-                                    <a asp-action="Delete"
-                                       asp-controller="Users"
-                                       asp-route-id="@user.Id"
-                                       class="deleteButton">
-                                        Usuń
-                                    </a>
-                                </div>
-                            </td>
-
-                        </tr>
-                    }
-                </tbody>
-            </table>
-
-
-
-
-
-
-
-
-
-
-            @*
-    bool showPaginator = false;
-
-    if (Model.Paginator.Count > 4)
-    showPaginator = true;
-
-    if (Model.PageIndex > 0)
-    showPaginator = true;
-    *@
-
-
-            if (Model.Users.Count > 4)
-            {
-
-                <!-- Paginator -->
-                bool hasPrevious = Model.Paginator.HasPreviousPage;
-                bool hasNext = Model.Paginator.HasNexPage;
-
-
-                <div class="df mt-30 pb-30">
-                    <div class="w-40 centery">
-
+                <div class="df-sb mt-20 mb-20">
+                    <div class="df">
+                        <!-- Wyszukiwarka -->
                         <div class="df centery">
-                            <p>Pokaż</p>
-                            <select asp-for="PageSize" asp-items='@Model.SelectListNumberItems' class="selectOption"></select>
-                            <input type="submit" value="Wybierz" class="selectOptionButton" />
+                            <span>Szukaj w</span>
+                            <select asp-for="SearchOption" asp-items='@Model.SelectListSearchOptionItems' class="selectOption"></select>
                         </div>
-
+                        <div class="df">
+                            <input asp-for="q" class="searchInput" />
+                            <input type="submit" value="Szukaj" class="searchButton" />
+                        </div>
                     </div>
 
-                    <div class="w-60 centery">
-                        <div class="w-100 centery">
-                            <div class="df fs-11 centery">
-                                @if (hasPrevious)
-                                {
-                                    <a asp-action="Index"
-                                       asp-controller="Users"
-                                       asp-route-PageSize="@Model.PageSize"
-                                       asp-route-PageIndex="@(Model.Paginator.PageIndex - 1)"
-                                       asp-route-SearchOption="@Model.SortowanieOption"
-                                       asp-route-q="@Model.q"
-                                       asp-route-SortowanieOption="@Model.SortowanieOption"
-                                       class="paginatorButton">
-                                        Prev
-                                    </a>
-                                }
-                                else
-                                {
-                                    <a asp-action="Index"
-                                       asp-controller="Users"
-                                       class="paginatorButton disable-link">
-                                        Prev
-                                    </a>
-                                }
+                    <div class="df">
+                        <!-- Sortowanie -->
+                        <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption"></select>
+                        <input type="submit" value="Sortuj" class="searchButton" />
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
 
 
-                                <div class="df ml-10 mr-10">
-                                    @{
-                                        int length = Model.PageIndex + Model.Paginator.Count;
+        <div class="tableContainer">
+            @if (Model.Users != null && Model.Users.Any())
+            {
+                if (!string.IsNullOrEmpty(Model.q))
+                {
+                    <h3>Wyniki wyszukiwania dla: @Model.q</h3>
+                }
 
-                                        string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
 
 
-                                        Model.Start = 1;
-                                        Model.End = Model.PageSize + 1;
-                                        int srodek = (int)Math.Round((double)(Model.PageSize / 2));
 
-                                        if (Model.PageIndex > srodek)
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Lp</th>
+                            <th>Imię i nazwisko</th>
+                            <th>Adres</th>
+                            <th>Email</th>
+                            <th>Rola</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model.Paginator)
+                        {
+                            index++;
+
+                            <tr>
+                                <td class="w-40px">@index</td>
+
+
+                                <td>
+                                    @user.Imie @user.Nazwisko
+                                </td>
+
+
+                                <td style="min-width: 300px;">
+                                    <div class="db">
+                                        <div class="df">
+                                            <span>ulica: </span>
+                                            <span>@user.Ulica</span>
+                                        </div>
+                                        <div class="df">
+                                            <span>miejscowość: </span>
+                                            <span>@user.Miejscowosc</span>
+                                        </div>
+                                        <div class="df">
+                                            <span>województwo: </span>
+                                            <span>@user.Wojewodztwo</span>
+                                        </div>
+                                        <div class="df">
+                                            <span>kod pocztowy: </span>
+                                            <span>@user.KodPocztowy</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+
+                                <td style="min-width: 100px;">
+                                    @user.Email
+                                </td>
+
+
+                                <td>
+                                    @user.RoleName
+                                </td>
+
+
+                                <td class="w-50px">
+                                    <div class="db">
+
+                                        <a asp-action="Edit"
+                                           asp-controller="Users"
+                                           asp-route-userId="@user.Id"
+                                           class="deleteButton">
+                                            Edytuj
+                                        </a>
+
+
+                                        <!-- użytkownika typu admin oraz user nie można usunąć -->
+                                        @if (user.Email == "admin@admin.pl" || user.Email == "user@user.pl")
                                         {
-                                            Model.Start = Model.PageIndex - (srodek - 1);
-                                            Model.End = Model.PageIndex + Model.PageSize - srodek;
                                         }
-
-
-
-                                        for (var i = Model.Start; i < Model.End; i++)
+                                        else
                                         {
-                                            if (i == Model.PageIndex)
-                                            {
-                                                style = "padding: 7px 10px; background-color: lightgray; color: black; font-weight: bold";
-                                            }
-                                            else
-                                            {
-                                                style = "padding: 7px 10px; background-color: white;";
-                                            }
-                                            if (i <= Model.Paginator.TotalPage)
-                                            {
-                                                <a asp-action="Index"
-                                                   asp-controller="Users"
-                                                   asp-route-PageSize="@Model.PageSize"
-                                                   asp-route-PageIndex="@i"
-                                                   asp-route-SearchOption="@Model.SortowanieOption"
-                                                   asp-route-q="@Model.q"
-                                                   asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                   class="paginator-item"
-                                                   style="@style">
-                                                    @i
-                                                </a>
-                                            }
+                                            <a asp-action="Delete"
+                                               asp-controller="Users"
+                                               asp-route-id="@user.Id"
+                                               class="deleteButton">
+                                                Usuń
+                                            </a>
                                         }
+                                    </div>
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+
+
+
+
+
+
+
+
+
+
+                if (Model.Users.Count > 4)
+                {
+
+                    <!-- Paginator -->
+                    bool hasPrevious = Model.Paginator.HasPreviousPage;
+                    bool hasNext = Model.Paginator.HasNexPage;
+
+
+                    <div class="df mt-30 pb-30">
+                        <div class="w-40 centery">
+
+                            <div class="df centery">
+                                <p>Pokaż</p>
+                                <select asp-for="PageSize" asp-items='@Model.SelectListNumberItems' class="selectOption" htmlAttributes="@selectAttributes"></select>
+                                <input type="submit" value="Wybierz" class="selectOptionButton" />
+                            </div>
+
+                        </div>
+
+                        <div class="w-60 centery">
+                            <div class="w-100 centery">
+                                <div class="df fs-11 centery">
+                                    @if (hasPrevious)
+                                    {
+                                        <a asp-action="Index"
+                                           asp-controller="Users"
+                                           asp-route-PageSize="@Model.PageSize"
+                                           asp-route-PageIndex="@(Model.Paginator.PageIndex - 1)"
+                                           asp-route-SearchOption="@Model.SortowanieOption"
+                                           asp-route-q="@Model.q"
+                                           asp-route-SortowanieOption="@Model.SortowanieOption"
+                                           class="paginatorButton">
+                                            Prev
+                                        </a>
                                     }
+                                    else
+                                    {
+                                        <a asp-action="Index"
+                                           asp-controller="Users"
+                                           class="paginatorButton disable-link">
+                                            Prev
+                                        </a>
+                                    }
+
+
+                                    <div class="df ml-10 mr-10">
+                                        @{
+                                            int length = Model.PageIndex + Model.Paginator.Count;
+
+                                            string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
+
+
+                                            Model.Start = 1;
+                                            Model.End = Model.PageSize + 1;
+                                            int srodek = (int)Math.Round((double)(Model.PageSize / 2));
+
+                                            if (Model.PageIndex > srodek)
+                                            {
+                                                Model.Start = Model.PageIndex - (srodek - 1);
+                                                Model.End = Model.PageIndex + Model.PageSize - srodek;
+                                            }
+
+
+
+                                            for (var i = Model.Start; i < Model.End; i++)
+                                            {
+                                                if (i == Model.PageIndex)
+                                                {
+                                                    style = "padding: 7px 10px; background-color: lightgray; color: black; font-weight: bold";
+                                                }
+                                                else
+                                                {
+                                                    style = "padding: 7px 10px; background-color: white;";
+                                                }
+                                                if (i <= Model.Paginator.TotalPage)
+                                                {
+                                                    <a asp-action="Index"
+                                                       asp-controller="Users"
+                                                       asp-route-PageSize="@Model.PageSize"
+                                                       asp-route-PageIndex="@i"
+                                                       asp-route-SearchOption="@Model.SortowanieOption"
+                                                       asp-route-q="@Model.q"
+                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                       class="paginator-item"
+                                                       style="@style">
+                                                        @i
+                                                    </a>
+                                                }
+                                            }
+                                        }
+                                    </div>
+
+
+                                    @if (hasNext)
+                                    {
+                                        <a asp-action="Index"
+                                           asp-controller="Users"
+                                           asp-route-PageSize="@Model.PageSize"
+                                           asp-route-PageIndex="@(Model.Paginator.PageIndex + 1)"
+                                           asp-route-SearchOption="@Model.SortowanieOption"
+                                           asp-route-q="@Model.q"
+                                           asp-route-SortowanieOption="@Model.SortowanieOption"
+                                           class="paginatorButton">
+                                            Next
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-action="Index"
+                                           asp-controller="Users"
+                                           class="paginatorButton disable-link">
+                                            Next
+                                        </a>
+                                    }
+
+
                                 </div>
-
-
-                                @if (hasNext)
-                                {
-                                    <a asp-action="Index"
-                                       asp-controller="Users"
-                                       asp-route-PageSize="@Model.PageSize"
-                                       asp-route-PageIndex="@(Model.Paginator.PageIndex + 1)"
-                                       asp-route-SearchOption="@Model.SortowanieOption"
-                                       asp-route-q="@Model.q"
-                                       asp-route-SortowanieOption="@Model.SortowanieOption"
-                                       class="paginatorButton">
-                                        Next
-                                    </a>
-                                }
-                                else
-                                {
-                                    <a asp-action="Index"
-                                       asp-controller="Users"
-                                       class="paginatorButton disable-link">
-                                        Next
-                                    </a>
-                                }
-
-
                             </div>
                         </div>
                     </div>
-                </div>
+
+                }
+
 
             }
-        }
-        else if (Model.Paginator.Count == 0)
-        {
-            <span>
-                Brak znalezionych danych
-            </span>
-        }
-    }
+            else
+            {
+                if (!string.IsNullOrEmpty(Model.q))
+                {
+                    <p>Nie znaleziono użytkowników pasujących do Twojego zapytania: <strong>@Model.q</strong>.</p>
+                }
+                else
+                {
+                    <p>Brak użytkowników w bazie danych.</p>
+                }
+            }
+
+        </div>
 
 
 
-</form>
+    </form>
+
+</div>

@@ -1,10 +1,6 @@
 ﻿@model CreateLogowanieDto
 
-@Model.DataLogowania
-<br />
-@Model.DataWylogowania
-<br />
-@Model.UserId
+
 
 <div class="dodawanieHeader">
     <span class="titleHeader">Dodawanie nowej pozycji</span>
@@ -16,7 +12,18 @@
     <table>
         <tr>
             <td class="leftColumn">
-                <label asp-for="DataLogowania"></label>
+                <span>Imię i nazwisko</span>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <select asp-for="UserId" asp-items="Model.UsersList" class="w-200px form-input2"></select>
+                    <span asp-validation-for="UserId" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <span>Data zalogowania</span>
             </td>
             <td class="rightColumn">
                 <div class="db">
@@ -27,23 +34,12 @@
         </tr>
         <tr>
             <td class="leftColumn">
-                <label asp-for="DataWylogowania"></label>
+                <span>Data wylogowania</span>
             </td>
             <td class="rightColumn">
                 <div class="db">
                     <input asp-for="DataWylogowania" />
                     <span asp-validation-for="DataWylogowania" class="c-red"></span>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td class="leftColumn">
-                <span>Imię i nazwisko</span>
-            </td>
-            <td class="rightColumn">
-                <div class="db">
-                    <select asp-for="UserId" asp-items="Model.UsersList" class="w-200px form-input2"></select>
-                    <span asp-validation-for="UserId" class="c-red"></span>
                 </div>
             </td>
         </tr>

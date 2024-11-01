@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Account;
@@ -89,10 +87,10 @@ namespace WebApplication71.Controllers
                     {
                         if (result.Success)
                             return RedirectToAction("Edit", "Account");
-                         
+
 
                         ViewData["ErrorMessage"] = result.Message;
-                    } 
+                    }
                 }
 
                 return View(model);
@@ -228,8 +226,8 @@ namespace WebApplication71.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public IActionResult ResetPassword (string token, string email)
-            => View(new ResetPasswordDto ()
+        public IActionResult ResetPassword(string token, string email)
+            => View(new ResetPasswordDto()
             {
                 //Email = "admin@admin.pl",
                 Email = email, // tu musi być prawdziwy adres email
@@ -240,13 +238,13 @@ namespace WebApplication71.Controllers
         [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword (ResetPasswordDto model)
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _accountService.ResetPassword (model);
+                    var result = await _accountService.ResetPassword(model);
 
                     // zwraca komunikat błędu związanego z aktualizacją rekordu
                     ViewData["ErrorMessage"] = result.Message;

@@ -27,6 +27,8 @@ namespace WebApplication71.DTOs.Logowania
             0,
             0);*/
 
+
+        public List<GetLogowanieDto> Logowania { get; set; }
         public SelectList SortowanieOptionItems = new SelectList(new List<string>() { "Data zalogowania rosnąco", "Data zalogowania malejąco" });
     }
 }

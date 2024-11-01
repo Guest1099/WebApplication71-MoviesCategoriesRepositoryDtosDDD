@@ -23,6 +23,9 @@ namespace WebApplication71.DTOs
         public int End { get; set; } = 0;
 
 
+        public int MaxLength { get; set; } = 0;
+
+
         public SelectList SelectListNumberItems { get; set; } = new SelectList(new List<string>() { "5", "10", "15", "20" });
 
     }

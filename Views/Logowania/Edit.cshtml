@@ -12,6 +12,26 @@
     <table>
         <tr>
             <td class="leftColumn">
+                <span>Imię i nazwisko</span>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <span>@Model.ImieInazwisko</span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Email"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <span>@Model.Email</span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
                 <label asp-for="DataLogowania"></label>
             </td>
             <td class="rightColumn">
@@ -29,17 +49,6 @@
                 <div class="db">
                     <input asp-for="DataWylogowania" />
                     <span asp-validation-for="DataWylogowania" class="c-red"></span>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td class="leftColumn">
-                <label asp-for="Email"></label>
-            </td>
-            <td class="rightColumn">
-                <div class="db">
-                    <input asp-for="Email" />
-                    <span asp-validation-for="Email" class="c-red"></span>
                 </div>
             </td>
         </tr>

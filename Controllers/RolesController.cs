@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Roles;
+using WebApplication71.Models;
 using WebApplication71.Services;
 using WebApplication71.Services.Abs;
 
@@ -40,6 +39,7 @@ namespace WebApplication71.Controllers
 
                 return View(new GetRolesDto()
                 {
+                    Roles = roles,
                     Paginator = Paginator<GetRoleDto>.CreateAsync(roles, model.PageIndex, model.PageSize),
                     PageIndex = model.PageIndex,
                     PageSize = model.PageSize,
@@ -91,6 +91,9 @@ namespace WebApplication71.Controllers
                         break;
                 }
 
+
+                model.Roles = roles;
+                model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)roles.Count / model.PageSize));
                 model.Paginator = Paginator<GetRoleDto>.CreateAsync(roles, model.PageIndex, model.PageSize);
                 return View(model);
             }
@@ -173,6 +176,7 @@ namespace WebApplication71.Controllers
                 {
                     var result = await _rolesService.Update(new EditRoleDto()
                     {
+                        Id = model.Id,
                         Name = model.Name
                     });
                     if (result != null && result.Success)

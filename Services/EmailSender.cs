@@ -67,7 +67,7 @@ namespace Application.Services
         <p>Pozdrawiamy,<br>Zespół Marketingu</p>
     </div>
 </body>
-</html>"; 
+</html>";
 
 
             Configuration.Default.ApiKey.Add("api-key", apiKey);

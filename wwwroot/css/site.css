@@ -415,8 +415,9 @@ tbody tr:nth-child(even) {
     border-radius: 5px 5px 5px 5px;
     margin: 0px 10px;
     width: 100px;
+    min-width: 100px;
+    width: max-content;
 }
-
 
 
 /* Logowanie ----------------------------------------------------------------------------------- */
@@ -740,6 +741,25 @@ button {
             min-width: 300px;
             height: 100px;
         }
+
+
+/* Form containers ----------------------------------------------------------------------------------- */
+
+.overFormContainer {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.topContainer {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: rgb(250,250,250);
+    border-bottom: 2px solid rgb(220,220,220);
+}
+
+.tableContainer {
+}
 
 
 

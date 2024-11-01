@@ -29,7 +29,7 @@ namespace WebApplication71.DTOs.Users
         public string Nazwisko { get; set; }
 
 
-        [Required(ErrorMessage = "*")]
+        [Required(ErrorMessage = "To pole jest wymagane")]
         public string Ulica { get; set; }
 
 
@@ -42,27 +42,27 @@ namespace WebApplication71.DTOs.Users
 
 
         [Required(ErrorMessage = "To pole jest wymagane")]
+        [RegularExpression(@"^\d{2}-\d{3}$", ErrorMessage = "Kod pocztowy musi być w formacie XX-XXX, np. 12-345")]
         public string KodPocztowy { get; set; }
 
 
         [Required(ErrorMessage = "To pole jest wymagane")]
+        [RegularExpression(@"^\d{11}$", ErrorMessage = "Numer PESEL musi składać się z 11 cyfr")]
         public string Pesel { get; set; }
 
 
-        [Required(ErrorMessage = "To pole jest wymagane")]
         [DataType(DataType.Date)]
-        public DateTime DataUrodzenia { get; set; }
+        public DateTime DataUrodzenia { get; set; } = DateTime.Now;
 
-
-        [Required(ErrorMessage = "To pole jest wymagane")]
+         
         public Plec Plec { get; set; }
 
 
         [Required(ErrorMessage = "To pole jest wymagane")]
+        [RegularExpression(@"^\d+$", ErrorMessage = "Numer telefonu musi składać się wyłącznie z cyfr")]
         public string Telefon { get; set; }
 
-
-        [Required(ErrorMessage = "To pole jest wymagane")]
+        
         public byte[] Photo { get; set; }
 
 

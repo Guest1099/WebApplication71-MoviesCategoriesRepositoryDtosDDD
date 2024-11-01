@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Categories;
+using WebApplication71.Models;
 using WebApplication71.Repos.Abs;
 using WebApplication71.Services;
 
@@ -41,6 +40,7 @@ namespace WebApplication71.Controllers
 
                 return View(new GetCategoriesDto()
                 {
+                    Categories = categories,
                     Paginator = Paginator<GetCategoryDto>.CreateAsync(categories, model.PageIndex, model.PageSize),
                     PageIndex = model.PageIndex,
                     PageSize = model.PageSize,
@@ -93,6 +93,8 @@ namespace WebApplication71.Controllers
                 }
 
 
+                model.Categories = categories;
+                model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)categories.Count / model.PageSize));
                 model.Paginator = Paginator<GetCategoryDto>.CreateAsync(categories, model.PageIndex, model.PageSize);
                 return View(model);
             }

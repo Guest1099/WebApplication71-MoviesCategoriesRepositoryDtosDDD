@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Movies;
@@ -82,9 +81,9 @@ namespace WebApplication71.Controllers
                 if (!string.IsNullOrEmpty(model.q))
                 {
                     movies = movies.Where(
-                        w => 
+                        w =>
                             w.Title.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
-                            w.Description.Contains (model.q, StringComparison.OrdinalIgnoreCase)
+                            w.Description.Contains(model.q, StringComparison.OrdinalIgnoreCase)
                     ).ToList();
                 }
 
@@ -99,9 +98,18 @@ namespace WebApplication71.Controllers
                     case "Tytuł Z-A":
                         movies = movies.OrderByDescending(o => o.Title).ToList();
                         break;
+
+                    case "Kategoria A-Z":
+                        movies = movies.OrderBy(o => o.Category).ToList();
+                        break;
+
+                    case "Kategoria Z-A":
+                        movies = movies.OrderByDescending(o => o.Category).ToList();
+                        break;
                 }
 
 
+                model.Movies = movies;
                 model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)movies.Count / model.PageSize));
                 model.Paginator = Paginator<GetMovieDto>.CreateAsync(movies, model.PageIndex, model.PageSize);
                 return View(model);

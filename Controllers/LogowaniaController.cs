@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Logowania;
+using WebApplication71.Models;
 using WebApplication71.Repos.Abs;
 using WebApplication71.Services;
 
@@ -50,6 +50,7 @@ namespace WebApplication71.Controllers
 
                 return View(new GetLogowaniaDto()
                 {
+                    Logowania = logowania,
                     Paginator = Paginator<GetLogowanieDto>.CreateAsync(logowania, model.PageIndex, model.PageSize),
                     PageIndex = model.PageIndex,
                     PageSize = model.PageSize,
@@ -127,6 +128,9 @@ namespace WebApplication71.Controllers
                         break;
                 }
 
+
+                model.Logowania = logowania;
+                model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)logowania.Count / model.PageSize));
                 model.Paginator = Paginator<GetLogowanieDto>.CreateAsync(logowania, model.PageIndex, model.PageSize);
                 return View(model);
             }
