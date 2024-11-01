@@ -25,7 +25,7 @@ namespace WebApplication71.Controllers
             _rolesService = rolesService;
             _categoriesRepostiory = categoriesRepostiory;
             _moviesRepository = moviesRepository;
-            _logowaniaRepository = logowaniaRepository;
+            _logowaniaRepository = logowaniaRepository; 
 
 
             StatystykiDictionary = new Dictionary<string, int>();
