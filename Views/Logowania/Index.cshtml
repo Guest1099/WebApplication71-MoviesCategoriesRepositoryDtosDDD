@@ -3,6 +3,21 @@
 @{
     int index = 0;
     index = Model.PageSize * (Model.PageIndex - 1);
+
+
+    ApplicationUser zalogowanyUser = new ApplicationUser();
+    bool userIsAdmin = false;
+    if (User != null && User.Identity != null)
+    {
+        zalogowanyUser = await Context.Users.FirstOrDefaultAsync(f => f.Email == User.Identity.Name);
+        if (zalogowanyUser != null)
+        {
+            if (await UserManager.IsInRoleAsync(zalogowanyUser, "Administrator"))
+            {
+                userIsAdmin = true;
+            }
+        }
+    }
 }
 
 
@@ -11,6 +26,10 @@
 
     <form method="post" asp-action="Index" asp-controller="Logowania" class="formContainer">
         <input type="hidden" asp-for="PageIndex" value="@Model.PageIndex" />
+        <input type="hidden" asp-for="DataZalogowaniaOd" />
+        <input type="hidden" asp-for="DataZalogowaniaDo" />
+        @* <input type="hidden" asp-for="DataZalogowaniaOd" value="@Model.DataZalogowaniaOd" />
+        <input type="hidden" asp-for="DataZalogowaniaDo" value="@Model.DataZalogowaniaDo" /> *@
 
 
         <div class="topContainer">
@@ -86,8 +105,12 @@
                             <th>Data zalogowania</th>
                             <th>Data wylogowania</th>
                             <th>Czas pracy</th>
-                            <th>Email</th>
-                            <th></th>
+
+                            @if(userIsAdmin)
+                            {
+                                <th>Email</th>
+                                <th></th>
+                            }
                         </tr>
                     </thead>
                     <tbody>
@@ -144,34 +167,40 @@
                                 </td>
 
 
-                                <td>
-                                    @logowanie.Email
-                                </td>
+
+                                
+                                @if(userIsAdmin)
+                                {
+                                    <td>
+                                        @logowanie.Email
+                                    </td>
 
 
-                                <td class="w-50px">
-                                    <div class="db">
+                                    <td class="w-50px">
+                                        <div class="db">
 
-                                        <!-- jeżeli użytkownik jest dostępny edycja edycja rekordu jest niedostępna -->
-                                        @if (logowanie.DataWylogowania.ToString() != "01.01.0001 00:00:00")
-                                        {
-                                            <a asp-action="Edit"
+                                            <!-- jeżeli użytkownik jest dostępny edycja edycja rekordu jest niedostępna -->
+                                            @if (logowanie.DataWylogowania.ToString() != "01.01.0001 00:00:00")
+                                            {
+                                                <a asp-action="Edit"
+                                                   asp-controller="Logowania"
+                                                   asp-route-logowanieId="@logowanie.LogowanieId"
+                                                   class="deleteButton">
+                                                    Edytuj
+                                                </a>
+                                            }
+
+
+                                            <a asp-action="Delete"
                                                asp-controller="Logowania"
-                                               asp-route-logowanieId="@logowanie.LogowanieId"
+                                               asp-route-id="@logowanie.LogowanieId"
                                                class="deleteButton">
-                                                Edytuj
+                                                Usuń
                                             </a>
-                                        }
-
-
-                                        <a asp-action="Delete"
-                                           asp-controller="Logowania"
-                                           asp-route-id="@logowanie.LogowanieId"
-                                           class="deleteButton">
-                                            Usuń
-                                        </a>
-                                    </div>
-                                </td>
+                                        </div>
+                                    </td>
+                                }
+                                
 
                             </tr>
                         }
@@ -320,11 +349,11 @@
             {
                 if (!string.IsNullOrEmpty(Model.q))
                 {
-                    <p>Nie znaleziono użytkowników pasujących do Twojego zapytania: <strong>@Model.q</strong>.</p>
+                    <p>Nie znaleziono zalogowań pasujących do Twojego zapytania: <strong>@Model.q</strong>.</p>
                 }
                 else
                 {
-                    <p>Brak użytkowników w bazie danych.</p>
+                    <p>Brak zalogowań w bazie danych.</p>
                 }
             }
         </div>

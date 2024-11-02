@@ -8,6 +8,19 @@ namespace WebApplication71.Models
 {
     public class ApplicationUser : IdentityUser<string>
     {
+        public override string Id { get; set; }
+        public override string Email { get; set; }
+        public override string UserName { get; set; }
+        public override string NormalizedEmail { get; set; }
+        public override string NormalizedUserName { get; set; }
+        public override string SecurityStamp { get; set; }
+        public override bool EmailConfirmed { get; set; }
+        public override bool LockoutEnabled { get; set; }
+        public override string PasswordHash { get; set; }
+        
+
+
+
         public string Imie { get; private set; }
         public string Nazwisko { get; private set; }
         public string Ulica { get; private set; }

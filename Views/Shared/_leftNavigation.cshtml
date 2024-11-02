@@ -9,7 +9,14 @@
     ApplicationUser zalogowanyUser = new ApplicationUser();
     if (User != null && User.Identity != null)
     {
-        zalogowanyUser = users.FirstOrDefault(f => f.Email == User.Identity.Name);
+        zalogowanyUser = await Context.Users.FirstOrDefaultAsync(f => f.Email == User.Identity.Name);
+        if (zalogowanyUser != null)
+        {
+            if (await UserManager.IsInRoleAsync (zalogowanyUser, "User"))
+            {
+                logowania = logowania.Where(w => w.UserId == zalogowanyUser.Id).ToList();
+            }
+        }
     }
 }
 
@@ -26,7 +33,7 @@
 
             <ul>
                 <li>
-                    <a asp-action="Index" asp-controller="Home" class="buttonEdit">Home</a>
+                    <a asp-action="Index" asp-controller="Home" class="buttonEdit">Dashboard</a>
                 </li>
 
                 @* Linki wyświetlane tylko dla administratora systemu *@

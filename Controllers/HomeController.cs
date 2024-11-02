@@ -42,7 +42,12 @@ namespace WebApplication71.Controllers
                 var roles = await _rolesService.GetAll();
                 var categories = await _categoriesRepostiory.GetAll();
                 var movies = await _moviesRepository.GetAll();
-                var logowania = await _logowaniaRepository.GetAll();
+
+                string email = "";
+                if (User != null && User.Identity != null)
+                    email = User.Identity.Name;
+
+                var logowania = await _logowaniaRepository.GetAll(email);
 
                 if (users != null && users.Success &&
                     roles != null && roles.Success &&

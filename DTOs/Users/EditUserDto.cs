@@ -49,7 +49,7 @@ namespace WebApplication71.DTOs.Users
 
 
         [Required(ErrorMessage = "To pole jest wymagane")]
-        [RegularExpression(@"^\d+$", ErrorMessage = "Numer telefonu musi składać się wyłącznie z cyfr")]
+        [RegularExpression(@"^(\d{3} ?\d{3} ?\d{3})$", ErrorMessage = "Numer telefonu musi składać się wyłącznie z cyfr, z opcjonalnymi spacjami.")]
         public string Telefon { get; set; }
 
 

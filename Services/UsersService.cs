@@ -208,6 +208,12 @@ namespace WebApplication71.Services
                         var createResult = await _userManager.CreateAsync(user, model.Password);
                         if (createResult.Succeeded)
                         {
+                            
+                            user.EmailConfirmed = false;
+                            user.LockoutEnabled = false;
+                            await _userManager.UpdateAsync(user);
+
+
                             /*
                                                         // dodanie zdjęcia
                                                         await CreateNewPhoto(model.Files, user.Id);
@@ -281,6 +287,9 @@ namespace WebApplication71.Services
 
 
                         // zaktualizowanie danych użytkownika
+
+                        user.EmailConfirmed = false;
+                        user.LockoutEnabled = false;
                         await _userManager.UpdateAsync(user);
 
 
@@ -353,6 +362,9 @@ namespace WebApplication71.Services
                                 user.UpdateEmail(
                                     email: model.NewEmail
                                     );
+
+                                user.EmailConfirmed = false;
+                                user.LockoutEnabled = false;
                                 await _userManager.UpdateAsync(user);
 
                                 //await _signInManager.SignOutAsync ();
@@ -485,6 +497,12 @@ namespace WebApplication71.Services
             var createResult = await _userManager.CreateAsync(user, newPassword);
             if (createResult.Succeeded)
             {
+
+                user.EmailConfirmed = false;
+                user.LockoutEnabled = false;
+                await _userManager.UpdateAsync(user);
+
+
                 /*
                                             // dodanie zdjęcia
                                             await CreateNewPhoto(model.Files, user.Id);

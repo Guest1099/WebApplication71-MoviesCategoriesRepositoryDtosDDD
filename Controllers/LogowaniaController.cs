@@ -30,7 +30,7 @@ namespace WebApplication71.Controllers
         {
             try
             {
-                var result = await _logowaniaRepository.GetAll();
+                var result = await _logowaniaRepository.GetAll(User.Identity.Name);
 
                 if (result == null || !result.Success)
                     return View("NotFound");
@@ -76,7 +76,7 @@ namespace WebApplication71.Controllers
         {
             try
             {
-                var result = await _logowaniaRepository.GetAll();
+                var result = await _logowaniaRepository.GetAll(User.Identity.Name);
 
                 if (result == null || !result.Success)
                     return View("NotFound");
@@ -96,7 +96,7 @@ namespace WebApplication71.Controllers
                         ).ToList();
                 }
 
-
+/*
                 // Data logowania od
                 logowania = logowania.Where(
                     w =>
@@ -113,7 +113,15 @@ namespace WebApplication71.Controllers
                         w.DataLogowania.Day <= model.DataZalogowaniaDo.Day
                     ).ToList();
 
+*/
 
+                // filtrowanie według daty logowania od i do
+
+                logowania = logowania.Where (
+                    w => 
+                        w.DataLogowania >= model.DataZalogowaniaOd &&
+                        w.DataLogowania <= model.DataZalogowaniaDo
+                        ).ToList ();
 
 
                 // Sortowanie

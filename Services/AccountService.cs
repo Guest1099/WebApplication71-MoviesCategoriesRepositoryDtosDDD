@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication71.Controllers;
 using WebApplication71.Data;
 using WebApplication71.DTOs;
 using WebApplication71.DTOs.Account;
@@ -160,6 +161,12 @@ namespace WebApplication71.Services
                         var result = await _userManager.CreateAsync(user, model.Password);
                         if (result.Succeeded)
                         {
+
+                            user.EmailConfirmed = false;
+                            user.LockoutEnabled = false;
+                            await _userManager.UpdateAsync (user);
+
+
                             // przypisanie roli użytkownikowi
                             await _userManager.AddToRoleAsync(user, model.RoleName);
 
@@ -229,6 +236,12 @@ namespace WebApplication71.Services
                         var result = await _userManager.UpdateAsync(user);
                         if (result.Succeeded)
                         {
+
+                            user.EmailConfirmed = false;
+                            user.LockoutEnabled = false;
+                            await _userManager.UpdateAsync(user);
+
+
                             // dodanie zdjęcia
                             //await CreateNewPhoto (model.Files, user.Id);
 
@@ -342,6 +355,9 @@ namespace WebApplication71.Services
                                 user.UpdateEmail(
                                     email: model.NewEmail
                                     );
+
+                                user.EmailConfirmed = false;
+                                user.LockoutEnabled = false;
                                 await _userManager.UpdateAsync(user);
 
                                 //await _signInManager.SignOutAsync ();
@@ -802,76 +818,6 @@ namespace WebApplication71.Services
 
 
 
-        /*/// <summary>
-        /// Logowanie z 3 próbami zalogowania, po czym konto jest blokowane na 6 godzin
-        /// </summary>
-        public async Task<ResultViewModel<LoginDto>> Login(LoginDto model)
-        {
-            var returnResult = new ResultViewModel<LoginDto>() { Success = false, Message = "", Object = new LoginDto() };
-
-            try
-            {
-                var user = await _context.Users.FirstOrDefaultAsync(f => f.Email == model.Email);
-                if (user != null)
-                {
-                    // sprawdza czy konto nie jest zablokowane, jeśli nie to następuje zalogowanie do systemu, jeśli tak to wyświetlana jest informacja, że user ma zalobkowane konto i po 6 godzinach zostanie odblokowane podczas próby pierwszego poprawnego logowania
-                    if (!user.LockoutEnabled)
-                    {
-                        if (user.IloscLogowan < 3)
-                        {
-                            if (!string.IsNullOrEmpty(user.DataZablokowaniaKonta))
-                            {
-                                DateTime dataZablokowaniaKonta = DateTime.Parse(user.DataZablokowaniaKonta);
-                                DateTime now = DateTime.Now;
-
-                                // jeżeli data zablokowania konta minęła, wyczyść ilość nieudanych prób logowań i oraz datę zablokowania konta
-                                if (dataZablokowaniaKonta > now)
-                                {
-                                    user.IloscLogowan = 0;
-                                    user.DataZablokowaniaKonta = "";
-                                    await _userManager.UpdateAsync (user);
-                                }
-                            }
-                        }
-
-                        returnResult = await LoginInternal(user, model);
-                    }
-                    else
-                    {
-                        if (user.IloscLogowan == 3)
-                        {
-                            // jeżeli konto jset zablokowane, sprawdza czy minął czas jeśli tak to konto jest odblokowywane
-                            if (!string.IsNullOrEmpty(user.DataZablokowaniaKonta))
-                            {
-                                DateTime dataZablokowaniaKonta = DateTime.Parse(user.DataZablokowaniaKonta);
-                                DateTime now = DateTime.Now;
-
-
-                                if (dataZablokowaniaKonta > now)
-                                {
-                                    returnResult = await LoginInternal(user, model);
-                                }
-
-                                returnResult.Message = "Konto użytkownika zostało zablokowane, spróbuj się zalogować za jakiś czas";
-                            }
-                        } 
-                        returnResult.Message = "Konto użytkownika zostało zablokowane, spróbuj się zalogować za jakiś czas";
-                    }
-                }
-                else
-                {
-                    returnResult.Message = "Błędny login lub hasło"; // tu jest błędny login
-                }
-            }
-            catch (Exception ex)
-            {
-                returnResult.Message = $"Exception: {ex.Message}";
-            }
-
-            return returnResult;
-        }
-*/
-
 
         /// <summary>
         /// Logowanie z 3 próbami zalogowania, po czym konto jest blokowane na 6 godzin
@@ -906,7 +852,6 @@ namespace WebApplication71.Services
                                 if (user.IloscLogowan == 3)
                                 {
                                     user.IloscLogowan = 0;
-                                    //user.DataZablokowaniaKonta = "";
                                     await _userManager.UpdateAsync(user);
                                 }
 
@@ -935,7 +880,6 @@ namespace WebApplication71.Services
                                 {
                                     // aktualizacja ilości logowań
                                     user.IloscLogowan = user.IloscLogowan + 1;
-                                    //user.DataZablokowaniaKonta = DateTime.Now.AddSeconds(10).ToString();
                                     await _userManager.UpdateAsync(user);
 
                                     int iloscLogowan = 3 - user.IloscLogowan;
@@ -1178,24 +1122,6 @@ namespace WebApplication71.Services
         }
 
 
-        /// <summary>
-        /// Sprawdza poziom bezpieczeństwa logowania, jeżęli użytkownik logował się nie poprawnie 3 razy w ciągu 6 godzin jego konto jest blokowane na 6 godzine,
-        /// w przeciwny razie jest logowany
-        /// </summary>
-        private async Task CheckLoginSecurity(ApplicationUser user)
-        {
-
-        }
-
-        private async Task ZablokujKonto(ApplicationUser user)
-        {
-
-        }
-        private async Task OdblokujKonto(ApplicationUser user)
-        {
-
-        }
-
 
 
 
@@ -1265,95 +1191,13 @@ namespace WebApplication71.Services
                 }
         */
 
-
-
-
-        /*
-                public async Task Logout(string userEmail)
-                {
-                    // wyszukanie wszystkich zalogowań użytkownika, postortowanie ich oraz wybranie ostatniego najnowszego zalogowania
-                    var ostatnieLogowanieUzytkownika = await _context.Logowania
-                        .Include(i => i.User)
-                        .OrderByDescending(o => o.DataLogowania)
-                        .FirstOrDefaultAsync(f => f.User.Email == userEmail);
-
-                    if (ostatnieLogowanieUzytkownika != null)
-                    {
-                        // zapisanie w bazie daty wylogowania użytkownika
-                        ostatnieLogowanieUzytkownika.DodajDateWylogowania(DateTime.Now.ToString());
-                        _context.Entry(ostatnieLogowanieUzytkownika).State = EntityState.Modified;
-                        await _context.SaveChangesAsync();
-                    }
-
-
-
-
-
-
-
-
-                    var wszystkieRekordy = await _context.Logowania.ToListAsync();
-
-                    var zsumowanyCzas = wszystkieRekordy
-                        .GroupBy(w => DateTime.Parse(w.DataLogowania).Date)
-                        .Select(g => new
-                        {
-                            Data = g.Key,
-                            CzasPracyMinut = g.Sum(x =>
-                            {
-                                var logowanie = DateTime.Parse(x.DataLogowania);
-                                var wylogowanie = string.IsNullOrEmpty(x.DataWylogowania)
-                                    ? DateTime.Now // Używamy bieżącego czasu, jeśli brak daty wylogowania
-                                    : DateTime.Parse(x.DataWylogowania);
-
-                                return (wylogowanie - logowanie).TotalMinutes;
-                            }),
-                            PierwszeLogowanie = g.First().DataLogowania, // Pierwsze logowanie w grupie
-                            OstatnieWylogowanie = g.Last().DataWylogowania, // Ostatnie wylogowanie w grupie
-                            UserId = g.First().User.Id // Id użytkownika
-                        })
-                        .ToList();
-
-                    // usuniecie wszystkich pozostałych rekordów i zapisanie nowych
-                    *//*foreach (var w in wszystkieRekordy)
-                    {
-                        _context.Logowania.Remove (w);
-                        await _context.SaveChangesAsync ();
-                    }*//*
-
-                    // Dodawanie zsumowanego czasu pracy jako nowych rekordów
-                    foreach (var dzien in zsumowanyCzas)
-                    {
-                        var logowanie = new Logowanie(
-                            dzien.PierwszeLogowanie, // Przyjmujemy pierwszy czas logowania + "_XXX"
-                            dzien.OstatnieWylogowanie, // Przyjmujemy ostatni czas wylogowania
-                            dzien.CzasPracyMinut.ToString() + "_XXX", // Całkowity czas pracy w minutach
-                            dzien.UserId // Id użytkownika
-                        );
-
-                        _context.Logowania.Add(logowanie);
-                    }
-
-                    await _context.SaveChangesAsync(); // Zapisujemy zmiany
-
-
-
-
-
-
-                    // wylogowanie
-                    await _signInManager.SignOutAsync();
-                }
-        */
-
-
+         
 
 
         public async Task Logout(string email)
         {
             try
             {
-
                 // wyszukuje najnowszy rekord logowania oraz dopisuje do niego datę wylogowania
                 var ostatnieLogowanieUzytkownika = await _context.Logowania
                     .Include(i => i.User)
@@ -1371,45 +1215,62 @@ namespace WebApplication71.Services
 
 
 
-                // usówa nadmiarową ilość rekordów w których DataWylogowania zawiera wpis 01.01.0001 00:00:00 
-                /*var znajdzWszystkieZalogowaniaUzytkownika = await _context.Logowania
-                    .Include(i => i.User)
-                    .ToListAsync();
+/*
+                // USUWANIE ZBĘDNYCH REKORDÓW
+                 
+                // znalezienie wszystkich rekoród posiadających "01.01.0001 00:00:00" w DataWylogowania
+                var logowania = await _context.Logowania
+                    .Include (i=> i.User)
+                    .Where (w=> w.DataWylogowania == DateTime.Parse ("01.01.0001 00:00:00"))
+                    .ToListAsync ();
 
-                foreach (var log in znajdzWszystkieZalogowaniaUzytkownika)
+
+                Dictionary <string, List<Logowanie>> results = new Dictionary<string, List<Logowanie>> ();
+                // najpierwsz pętla przechodzi przez wszystkich użytkowników aby pobrać "01.01.0001 00:00:00" dla indywidualnych użytkowników
+                foreach (var user in _context.Users)
                 {
-                    DateTime dataZalogowania = log.DataLogowania;
-
-                    if (DateTime.Now.AddDays(-2) >= dataZalogowania)
+                    // pętla przez wszystkie powyższe logowania
+                    foreach (var logowanie in logowania)
                     {
-                        if (string.IsNullOrEmpty(log.DataWylogowania))
+                        if (logowanie.UserId == user.Id)
                         {
-                            _context.Logowania.Remove(log);
-                            await _context.SaveChangesAsync();
+                            List <Logowanie> logowaniaUzytkownika = new List<Logowanie> ();
+                            // jeżeli użytkownik jest już w bazie dodaj do niego kolejny rekord z jego zalogowaniem
+                            if (results.ContainsKey(user.Email))
+                            {
+                                logowaniaUzytkownika = results[user.Email];
+                                logowaniaUzytkownika.Add (logowanie);
+                            }
+                            else
+                            {
+                                logowaniaUzytkownika.Clear ();
+                                logowaniaUzytkownika.Add (logowanie);
+                                results.Add (user.Email, logowaniaUzytkownika);
+                            }
                         }
                     }
-                }*/
+                }
+                // usunięcie rekordów logowania według elementeów znajdujących się w słowniku
+                foreach (var result in results)
+                {
+                    result.Value.OrderByDescending (o=> o.DataLogowania); // posortowanie elementów wg. daty logowania
+                    int iloscElementow = result.Value.Count;
+                    var lastElementLogowanie = result.Value.Last();
 
 
+                    var now = DateTime.Now.AddDays(-2); // usinięcie rekordów sprzed dwóch dni
 
+                    if (lastElementLogowanie.DataLogowania < now)
+                    {
+                        // usunięcie logowania z bazy
+                        _context.Logowania.Remove(lastElementLogowanie);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+*/
 
-                /*
-                                // jeżeli jakiś rekord przypisany do tego użytkownika w polu DataWylogowania ma puste pole wtedy taki rekord jest usuwany
-                                var logowaniaUzytkownika = await _context.Logowania
-                                    .Include(i => i.User)
-                                    .OrderByDescending(o => o.DataLogowania)
-                                    .Where(w => w.User.Email == email)
-                                    .ToListAsync();
+                 
 
-                                foreach (var logowanie in logowaniaUzytkownika)
-                                {
-                                    if (!string.IsNullOrEmpty(logowanie.DataWylogowania))
-                                    {
-                                        _context.Logowania.Remove(logowanie);
-                                        await _context.SaveChangesAsync();
-                                    }
-                                }
-                */
 
 
                 // wylogowanie
@@ -1421,46 +1282,7 @@ namespace WebApplication71.Services
             }
         }
 
-
-
-
-
-
-
-        private async Task CreateNewPhoto(List<IFormFile> files, string userId)
-        {
-            /*try
-            {
-                if (files != null && files.Count > 0)
-                {
-                    foreach (var file in files)
-                    {
-                        if (file.Length > 0)
-                        {
-                            byte [] photoData;
-                            using (var stream = new MemoryStream ())
-                            {
-                                file.CopyTo (stream);
-                                photoData = stream.ToArray ();
-
-                                PhotoUser photoUser = new PhotoUser ()
-                                {
-                                    PhotoUserId = Guid.NewGuid ().ToString (),
-                                    PhotoData = photoData,
-                                    UserId = userId
-                                };
-                                _context.PhotosUser.Add (photoUser);
-                                await _context.SaveChangesAsync ();
-                            }
-                        }
-                    }
-                }
-            }
-            catch { }*/
-        }
-
-
-
+         
 
 
 

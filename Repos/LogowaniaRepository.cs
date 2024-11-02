@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,13 +16,17 @@ namespace WebApplication71.Repos
     public class LogowaniaRepository : ILogowaniaRepository
     {
         private readonly ApplicationDbContext _context;
-        public LogowaniaRepository(ApplicationDbContext context)
+        private readonly UserManager <ApplicationUser> _userManager;
+
+        public LogowaniaRepository(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
 
-        public async Task<ResultViewModel<List<GetLogowanieDto>>> GetAll()
+
+        public async Task<ResultViewModel<List<GetLogowanieDto>>> GetAll(string email)
         {
             var resultViewModel = new ResultViewModel<List<GetLogowanieDto>>() { Success = false, Message = "", Object = new List<GetLogowanieDto>() };
             try
@@ -30,6 +35,17 @@ namespace WebApplication71.Repos
                     .Include(i => i.User)
                     .OrderByDescending(o => o.DataLogowania)
                     .ToListAsync();
+
+
+                var zalogowanyUser = await _context.Users.FirstOrDefaultAsync (f=> f.Email == email);
+                if (zalogowanyUser != null)
+                {
+                    if (await _userManager.IsInRoleAsync (zalogowanyUser, "User"))
+                    {
+                        logowania = logowania.Where (w=> w.User.Email == email).ToList ();
+                    }
+                }
+
 
                 if (logowania != null)
                 {
