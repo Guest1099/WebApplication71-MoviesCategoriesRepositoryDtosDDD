@@ -12,10 +12,15 @@
 </div>
 <hr />
 
+
 <form method="post" asp-action="Create" asp-controller="Users" enctype="multipart/form-data">
 
 
-    
+
+    <div class="dodawanieHeader">
+        <span class="titleHeader">Dane dotyczące logowania</span>
+    </div>
+
     <table>
         <tr>
             <td class="leftColumn">
@@ -41,6 +46,11 @@
         </tr>
     </table>
 
+
+
+    <div class="dodawanieHeader">
+        <span class="titleHeader">Dane osobowe (opcjonalnie)</span>
+    </div>
 
     <table>
         <tr>
@@ -152,7 +162,6 @@
                         <img id="imagePreview" alt="Uploaded Photo" style="display: none;" />
                     </div>
                     <input asp-for="PhotoData" id="fileInput" accept="image/*" onchange="previewImage(event); saveFiles();" style="border: none; background-color: rgb(250,250,250);" />
-                    
                 </div>
             </td>
         </tr>
@@ -188,7 +197,7 @@
     <div class="w-100 df-sb mt-30 mb-40">
         <a asp-action="Index" asp-controller="Users" class="buttonWstecz w-100px">Wstecz</a>
         <div class="df">
-            <input type="submit" value="Zapisz" class="buttonEdit w-100px" />
+            <input type="submit" value="Zapisz" class="buttonEdit w-100px" onclick="clearSession()" />
             <a asp-action="Index" asp-controller="Users" class="buttonAnuluj w-100px ml-2">Anuluj</a>
         </div>
     </div>
@@ -197,6 +206,8 @@
 
 <!-- Zwraca komunikat błędu, o ile takowy się pojawi -->
 <span class="c-red">@ViewData["ErrorMessage"]</span>
+
+
 
 
 
@@ -260,7 +271,6 @@
 
             if (uploadedFilesData) {
                 var uploadedFiles = JSON.parse(uploadedFilesData); // zamienia tekst na obiekt
-
                 // Utworzenie nowej listy plików
                 var newFilesList = new DataTransfer();
 
@@ -277,8 +287,6 @@
                 imageContainer.style.height = '150px';
             }
 
-            // Usuń tę linię, aby nie czyścić sessionStorage
-            // sessionStorage.clear();
         };
 
 
@@ -304,5 +312,6 @@
                 reader.readAsDataURL(file); // konwertuj plik na URL
             }
         }
+
     </script>
 }

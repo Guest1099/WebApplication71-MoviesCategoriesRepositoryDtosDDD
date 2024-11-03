@@ -10,7 +10,7 @@ namespace WebApplication71.DTOs.Users
     {
         public string Id { get; set; }
 
-        
+
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
@@ -60,7 +60,6 @@ namespace WebApplication71.DTOs.Users
         public byte[] Photo { get; set; }
 
 
-        [Required(ErrorMessage = "To pole jest wymagane")]
         public string RoleName { get; set; }
 
 

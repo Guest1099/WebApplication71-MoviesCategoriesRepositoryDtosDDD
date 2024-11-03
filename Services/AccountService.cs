@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using WebApplication71.Controllers;
 using WebApplication71.Data;
@@ -171,6 +172,7 @@ namespace WebApplication71.Services
 
                             // przypisanie roli użytkownikowi
                             await _userManager.AddToRoleAsync(user, model.RoleName);
+                            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, model.RoleName));
 
 
                             returnResult.Success = true;
@@ -220,6 +222,9 @@ namespace WebApplication71.Services
                     ApplicationUser user = await _context.Users.FirstOrDefaultAsync(f => f.Id == model.Id);
                     if (user != null)
                     {
+                        object photoData = model.PhotoData == null ? user.Photo : await ChangeFileToBytes(model.PhotoData);
+                        byte[] photo = photoData as byte[];
+
                         user.Update(
                             imie: model.Imie,
                             nazwisko: model.Nazwisko,
@@ -231,7 +236,7 @@ namespace WebApplication71.Services
                             dataUrodzenia: model.DataUrodzenia,
                             plec: model.Plec,
                             telefon: model.Telefon,
-                            photo: await ChangeFileToBytes(model.PhotoData)
+                            photo: photo
                             );
 
 
@@ -247,16 +252,6 @@ namespace WebApplication71.Services
 
                             // dodanie zdjęcia
                             //await CreateNewPhoto (model.Files, user.Id);
-
-                            /*
-                                                        // usunięcie użytkownika z rół i przypisanie na nowo
-                                                        var userRoles = await _userManager.GetRolesAsync(user);
-                                                        await _userManager.RemoveFromRolesAsync(user, userRoles);
-
-                                                        // przypisanie użytkownika do nowej roli
-                                                        await _userManager.AddToRoleAsync(user, model.RoleName);
-                                                        await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, model.RoleName));
-                            */
 
 
 

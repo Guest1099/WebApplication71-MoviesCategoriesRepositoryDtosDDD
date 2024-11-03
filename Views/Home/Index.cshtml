@@ -1,18 +1,24 @@
-﻿@model Dictionary<string,int>
+﻿@model List<StatystykiViewModel>
 
 
-<h2>Statystyki</h2> 
+<h2>Statystyki</h2>
 
 <div class="df wrap">
 
-    @if(Model != null)
+    @if (Model != null)
     {
         foreach (var statystyka in Model)
         {
-            <div class="db centerx" style="display: flex; align-items: center; justify-content: center; width: 240px; height: 100px; text-align: center; border-radius: 10px; background-color: rgb(255,255,255); margin: 20px; padding: 15px;">
-                <span class="fs-12 b">@statystyka.Key</span>
-                <div class="lineStatystyki"></div>
-                <span class="fs-14">@statystyka.Value</span>
+            <div class="db dashboardCard" style="width: 240px; text-align: center; border-radius: 1px; background-color: rgb(255,255,255); margin: 20px; padding: 30px 15px 15px 15px; border-bottom: 1px solid rgb(220,220,220); box-shadow: 1px 1px 1px rgba(100,100,100,.1);">
+                <div class="db centerx" style="display: flex; align-items: center; justify-content: center;">
+                    <span class="fs-14 b">@statystyka.TitleDisplay</span>
+                    <div class="lineStatystyki"></div>
+                    <span class="fs-14">@statystyka.IloscElementow</span>
+                </div>
+
+                <div style="text-align: right; margin-top: 20px;">
+                    <a asp-action="Index" asp-controller="@statystyka.Controller" class="bottomLinkDashboard">więcej</a>
+                </div>
             </div>
         }
     }

@@ -310,8 +310,8 @@ namespace WebApplication71.Services
 
 
 
-                        returnResult.Message = "Dane zostały zaktualizowane poprawnie";
                         returnResult.Success = true;
+                        returnResult.Message = "Dane zostały zaktualizowane poprawnie";
                         returnResult.Object = model;
 
                     }

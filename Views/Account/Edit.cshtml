@@ -2,13 +2,17 @@
 
 
 <div class="dodawanieHeader">
-    <span class="titleHeader">Dodawanie nowej pozycji</span>
+    <span class="titleHeader">Edytowanie danych osobowych</span>
 </div>
 <hr />
 
 <form method="post" asp-action="Edit" asp-controller="Account" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="Email" />
+    <input type="hidden" asp-for="Photo" />
+    <input type="hidden" asp-for="RoleName" />
+    <input type="hidden" asp-for="DataDodania" />
+
 
     <table>
         <tr>
@@ -131,7 +135,7 @@
                     <div id="displayPhoto">
                         <partial name="_displayPhoto" model="@Model.Photo" />
                     </div>
-
+                    
 
 
                     <!-- wybiera zdjęcie -->
@@ -139,7 +143,7 @@
                         <img id="imagePreview" alt="Uploaded Photo" style="display: none;" />
                     </div>
                     <input asp-for="PhotoData" id="fileInput" style="border: none; padding: 0px; margin: 0px; background-color: transparent; margin-top: 15px; width: fit-content;" accept="image/*" onchange="previewImage(event); saveFiles();" />
-
+                     
                 </div>
             </td>
         </tr>
@@ -151,6 +155,17 @@
                 <div class="db">
                     <select asp-for="Plec" asp-items='@new SelectList(Enum.GetValues(typeof(Plec)))' class="w-200px form-input2"></select>
                     <span asp-validation-for="Plec" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <span>Rola</span>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <span>@Model.RoleName</span>
+                    <span asp-validation-for="RoleName" class="c-red"></span>
                 </div>
             </td>
         </tr>
@@ -170,10 +185,10 @@
 
 
     <div class="w-100 df-sb mt-30 mb-40">
-        <a asp-action="Index" asp-controller="Home" class="buttonWstecz w-100px">Wstecz</a>
+        <a asp-action="Index" asp-controller="Home" class="buttonWstecz w-100px" onclick="clearSession();">Wstecz</a>
         <div class="df">
-            <input type="submit" value="Zapisz" class="buttonEdit w-100px" />
-            <a asp-action="Index" asp-controller="Home" class="buttonAnuluj w-100px ml-2">Anuluj</a>
+            <input type="submit" value="Zapisz" class="buttonEdit w-100px" onclick="clearSession();" />
+            <a asp-action="Index" asp-controller="Home" class="buttonAnuluj w-100px ml-2" onclick="clearSession();">Anuluj</a>
         </div>
     </div>
 </form>
@@ -181,8 +196,6 @@
 
 <!-- Zwraca komunikat błędu, o ile takowy się pojawi -->
 <span class="c-red">@ViewData["ErrorMessage"]</span>
-
-
 
 
 
@@ -215,7 +228,7 @@
                 });
 
                 // Zapisywanie plików w sessionStorage
-                sessionStorage.setItem('uploadPhotoAccountEdit', JSON.stringify(filesData));
+                sessionStorage.setItem('uploadPhoto', JSON.stringify(filesData));
 
                 // Konwertowanie plików na Base64
                 var uploadedFilesBase64 = [];
@@ -223,7 +236,7 @@
                     var reader = new FileReader();
                     reader.onload = function (e) {
                         uploadedFilesBase64.push(e.target.result);
-                        sessionStorage.setItem('uploadedFilesBase64AccountEdit', JSON.stringify(uploadedFilesBase64));
+                        sessionStorage.setItem('uploadedFilesBase64', JSON.stringify(uploadedFilesBase64));
                     }
                     reader.readAsDataURL(file);
                 });
@@ -235,8 +248,8 @@
 
         // Funkcja pobiera dane z sesji do zmiennej po załadowaniu okna
         window.onload = function () {
-            var uploadedFilesData = sessionStorage.getItem('uploadPhotoAccountEdit');
-            var uploadedFilesBase64 = sessionStorage.getItem('uploadedFilesBase64AccountEdit');
+            var uploadedFilesData = sessionStorage.getItem('uploadPhoto');
+            var uploadedFilesBase64 = sessionStorage.getItem('uploadedFilesBase64');
 
             if (uploadedFilesBase64) {
                 var base64Files = JSON.parse(uploadedFilesBase64);
@@ -261,7 +274,7 @@
 
                 imageContainer.style.width = '150px';
                 imageContainer.style.height = '150px';
-                displayPhoto.style.display = 'none'; // Ukryj displayPhoto
+                displayPhoto.style.display = 'none';
             }
         };
 
@@ -280,5 +293,7 @@
                 displayPhoto.style.display = 'none'; // Ukryj displayPhoto
             }
         }
+
+
     </script>
 }

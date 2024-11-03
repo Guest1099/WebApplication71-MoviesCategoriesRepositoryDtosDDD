@@ -55,9 +55,6 @@ namespace WebApplication71.DTOs.Account
         public byte[] Photo { get; set; }
 
 
-        [Required(ErrorMessage = "To pole jest wymagane")]
-        public string RoleName { get; set; }
-
 
 
 

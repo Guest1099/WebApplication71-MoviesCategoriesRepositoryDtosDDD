@@ -19,8 +19,9 @@ namespace WebApplication71.Controllers
         private readonly ICategoriesRepository _categoriesRepostiory;
         private readonly IMoviesRepository _moviesRepository;
         private readonly ILogowaniaRepository _logowaniaRepository;
-        public Dictionary<string, int> StatystykiDictionary { get; set; }
+        //public Dictionary<string, int> StatystykiDictionary { get; set; }
 
+        private List <StatystykiViewModel> _statystyki;
         public HomeController(IUsersService usersService, IRolesService rolesService, ICategoriesRepository categoriesRepostiory, IMoviesRepository moviesRepository, ILogowaniaRepository logowaniaRepository)
         {
             _usersService = usersService;
@@ -30,7 +31,7 @@ namespace WebApplication71.Controllers
             _logowaniaRepository = logowaniaRepository;
 
 
-            StatystykiDictionary = new Dictionary<string, int>();
+            //StatystykiDictionary = new Dictionary<string, int>();
         }
 
 
@@ -60,16 +61,41 @@ namespace WebApplication71.Controllers
                     logowania != null && logowania.Success)
                 {
 
-                    StatystykiDictionary = new Dictionary<string, int>()
+                    _statystyki = new List<StatystykiViewModel> ()
                     {
-                        ["Użytkownicy systemu"] = users.Object.Count,
-                        ["Role systemu"] = roles.Object.Count,
-                        ["Kategorie systemu"] = categories.Object.Count,
-                        ["Filmy systemu"] = movies.Object.Count,
-                        ["Logowania użytkowników systemu"] = logowania.Object.Count,
-                    };
+                        new StatystykiViewModel ()
+                        {
+                            TitleDisplay = "Użytkownicy systemu",
+                            IloscElementow = users.Object.Count,
+                            Controller = "Users"
+                        },
+                        new StatystykiViewModel ()
+                        {
+                            TitleDisplay = "Role systemu",
+                            IloscElementow = roles.Object.Count,
+                            Controller = "Roles"
+                        },
+                        new StatystykiViewModel ()
+                        {
+                            TitleDisplay = "Kategorie systemu",
+                            IloscElementow = categories.Object.Count,
+                            Controller = "Categories"
+                        },
+                        new StatystykiViewModel ()
+                        {
+                            TitleDisplay = "Filmy systemu",
+                            IloscElementow = movies.Object.Count,
+                            Controller = "Movies"
+                        },
+                        new StatystykiViewModel ()
+                        {
+                            TitleDisplay = "Logowania użytkowników systemu",
+                            IloscElementow = logowania.Object.Count,
+                            Controller = "Logowania"
+                        },
+                    }; 
 
-                    return View(StatystykiDictionary);
+                    return View(_statystyki);
                 }
 
                 return View();
@@ -78,6 +104,7 @@ namespace WebApplication71.Controllers
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
+
         }
 
 

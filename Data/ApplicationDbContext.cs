@@ -54,7 +54,7 @@ namespace WebApplication71.Data
             // USERS   
 
             DateTime dataUrodzenia = new DateTime(rand.Next(1980, 2000), rand.Next(1, 12), rand.Next(1, 30), rand.Next(1, 24), rand.Next(1, 60), rand.Next(1, 60));
-            string pesel = rand.Next(100000000, 999999999).ToString();
+            string pesel = $"{rand.Next(2,9)}{rand.Next(100000000, 999999999)}";
 
             var administratorUser = new ApplicationUser(
                 email: "admin@admin.pl",
@@ -77,6 +77,28 @@ namespace WebApplication71.Data
                 UserId = administratorUser.Id,
                 RoleId = adminRole.Id
             };
+            var administratorUser2 = new ApplicationUser(
+                email: "admin2@admin.pl",
+                imie: _dataAutogenerator.Imie(),
+                nazwisko: _dataAutogenerator.Nazwisko(),
+                ulica: _dataAutogenerator.Imie(),
+                miejscowosc: _dataAutogenerator.Nazwisko(),
+                wojewodztwo: "Mazowieckie",
+                kodPocztowy: "12-222",
+                pesel: pesel,
+                dataUrodzenia: dataUrodzenia,
+                plec: Plec.Mężczyzna,
+                telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
+                photo: new byte[0],
+                roleName: "Administrator",
+                password: "SDG%$@5423sdgagSDert"
+                );
+            IdentityUserRole<string> identityUserRoleAdmin2 = new IdentityUserRole<string>()
+            {
+                UserId = administratorUser2.Id,
+                RoleId = adminRole.Id
+            };
+
 
             var userUser = new ApplicationUser(
                 email: "user@user.pl",
@@ -194,8 +216,8 @@ namespace WebApplication71.Data
             };
 
 
-            builder.Entity<ApplicationUser>().HasData(administratorUser, userUser, aaaUser, bbbUser, cccUser, dddUser);
-            builder.Entity<IdentityUserRole<string>>().HasData(identityUserRoleAdmin, identityUserRoleUser, identityUserRoleUserAaa, identityUserRoleUserBbb, identityUserRoleUserCcc, identityUserRoleUserDdd);
+            builder.Entity<ApplicationUser>().HasData(administratorUser, administratorUser2, userUser, aaaUser, bbbUser, cccUser, dddUser);
+            builder.Entity<IdentityUserRole<string>>().HasData(identityUserRoleAdmin, identityUserRoleAdmin2, identityUserRoleUser, identityUserRoleUserAaa, identityUserRoleUserBbb, identityUserRoleUserCcc, identityUserRoleUserDdd);
 
             //builder.Entity<ApplicationUser>().HasData(administratorUser);
             //builder.Entity<IdentityUserRole<string>>().HasData(identityUserRoleAdmin);

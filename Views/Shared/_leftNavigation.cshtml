@@ -27,8 +27,9 @@
         <div class="w-250px db leftNavigation">
 
             <div class="db p-10 mt-20 mb-30">
-                <p style="font-size: 40px; font-weight: bold;">Movies</p>
-                <p style="font-size: 20px; margin-left: 20px;">management</p>
+                <p style="font-size: 35px; font-weight: bold;">Zbigniew</p>
+                <p style="font-size: 20px; margin-left: 10px; font-weight: bold">Kuziński</p>
+                <p style="font-size: 12px; margin-left: 20px;">management system</p>
             </div>
 
             <ul>
@@ -43,7 +44,7 @@
                     if (await UserManager.IsInRoleAsync(zalogowanyUser, "Administrator"))
                     {
                         <li>
-                            <a asp-action="Index" asp-controller="Users" class="buttonDelete">Users (@users.Count)</a>
+                            <a asp-action="Index" asp-controller="Users" class="buttonDelete" onclick="clearSessions();">Users (@users.Count)</a>
                         </li>
                         <li>
                             <a asp-action="Index" asp-controller="Roles" class="buttonDelete">Roles (@roles.Count)</a>
@@ -65,7 +66,7 @@
                     <div class="b mt-10">Ustawienia</div>
                 </li>
                 <li>
-                    <a asp-action="Edit" asp-controller="Account" class="buttonEdit b">Edytuj dane osobowe</a>
+                    <a asp-action="Edit" asp-controller="Account" class="buttonEdit b" onclick="clearSessions();">Edytuj dane osobowe</a>
                 </li>
                 <li>
                     <a asp-action="ChangeEmail" asp-controller="Account" class="buttonEdit b">Zmień email</a>

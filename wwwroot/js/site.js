@@ -32,5 +32,23 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeDropdownMenu();
 });
 
+
+//************************************************************************** */
+// Funkcje wykorzystywane podczas uploadingu zdjęcia
+// create view
+//************************************************************************** */
  
- 
+
+
+
+// czyście globalnie sesje
+function clearSessions() {
+    sessionStorage.clear();
+}
+
+
+// czyści wybrane sesje po zapisaniu rekordu
+function clearSession() {
+    sessionStorage.removeItem('uploadPhoto');
+    sessionStorage.removeItem('uploadedFilesBase64');
+}

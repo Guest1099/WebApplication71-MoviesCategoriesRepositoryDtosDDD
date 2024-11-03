@@ -269,13 +269,18 @@ body {
 
 
 .dodawanieHeader { 
+    display: flex;
+    flex-direction: column;
     margin-bottom: 20px;
 }
-.dodawanieHeader .titleHeader {
-    font-size: 19px;
-    font-weight: bold;
-    margin-bottom: 20px;
-}
+    .dodawanieHeader .titleHeader {
+        font-size: 19px;
+        font-weight: bold;
+    }
+    .dodawanieHeader .descriptionHeader {
+        font-size: 12px;
+        margin: 20px 0px 30px 0px;
+    }
 
 
 
@@ -763,10 +768,23 @@ button {
 
 
 
+
+/* Dashboard ----------------------------------------------------------------------------------- */
+
+.dashboardCard {
+}
+    .dashboardCard:hover {
+        transform: scale(1.03);
+    }
+
+.bottomLinkDashboard {
+    margin: 20px 10px 0px 0px;
+    text-align: right;
+    font-size: 11px;
+}
+
+
 /* Różne ----------------------------------------------------------------------------------- */
-
-
-
 hr {
     margin-bottom: 30px;
     border: 1px solid rgb(160,160,160);
@@ -887,7 +905,7 @@ hr {
     height: 2px;
     border-radius: 5px;
     background-color: rgb(100,150,200);
-    margin: 10px 0px;
+    margin: 20px 0px;
 }
 
 
