@@ -35,7 +35,10 @@
         <div class="topContainer">
             <div class="df-sb">
                 <div class="w-200px centery">
-                    <a asp-action="Create" asp-controller="Logowania" class="buttonCreate">+ Dodaj nową pozycję</a>
+                    @if(userIsAdmin)
+                    {
+                        <a asp-action="Create" asp-controller="Logowania" class="buttonCreate">+ Dodaj nową pozycję</a>
+                    }
                 </div>
 
                 <div class="df-sb mt-20 mb-20">

@@ -7,13 +7,9 @@ namespace WebApplication71.Models
     {
         [Key]
         public string LogowanieId { get; private set; }
-
-        [Required, DataType(DataType.DateTime)]
         public DateTime DataLogowania { get; private set; }
-
-        [Required, DataType(DataType.DateTime)]
-        public DateTime DataWylogowania { get; private set; }
-        public TimeSpan CzasPracy { get; private set; }
+        public DateTime DataWylogowania { get; set; }
+        public TimeSpan CzasPracy { get; set; }
 
 
 

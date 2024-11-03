@@ -6,11 +6,14 @@ namespace WebApplication71.DTOs
 {
     public class BaseSearchModel<T>
     {
-
-        // Wyszukiwarka  
-        public string q { get; set; } = "";
+        // Opcje wyszukiwania, np. wyszukiwanie w emailach, albo w nazwiskach
         public string SearchOption { get; set; }
-        public string SortowanieOption { get; set; }
+
+        // Wyszukiwarka
+        public string q { get; set; } = "";
+
+        // Opcje sortowania np. Nazwa A-Z, Nazwa Z-A, i tak dalej
+        public string SortowanieOption { get; set; } = "Nazwa Z-A";
 
 
 
@@ -18,12 +21,12 @@ namespace WebApplication71.DTOs
         public Paginator<T> Paginator { get; set; }
         public int PageIndex { get; set; } = 1;
         public int PageSize { get; set; } = 10;
-        public int IlePokazac { get; set; } = 0;
         public int Start { get; set; } = 0;
         public int End { get; set; } = 0;
 
+        public int IlePokazac { get; set; } = 0;
 
-        public int MaxLength { get; set; } = 0;
+
 
 
         public SelectList SelectListNumberItems { get; set; } = new SelectList(new List<string>() { "5", "10", "15", "20" });

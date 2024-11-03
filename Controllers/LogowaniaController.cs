@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Logowania;
 using WebApplication71.Models;
+using WebApplication71.Models.Enums;
 using WebApplication71.Repos.Abs;
 using WebApplication71.Services;
 
@@ -28,6 +29,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(GetLogowaniaDto model)
         {
+            NI.Navigation = Navigation.LogowaniaIndex;
             try
             {
                 var result = await _logowaniaRepository.GetAll(User.Identity.Name);
@@ -74,6 +76,7 @@ namespace WebApplication71.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(string s, GetLogowaniaDto model)
         {
+            NI.Navigation = Navigation.LogowaniaIndex;
             try
             {
                 var result = await _logowaniaRepository.GetAll(User.Identity.Name);
@@ -96,32 +99,32 @@ namespace WebApplication71.Controllers
                         ).ToList();
                 }
 
-/*
-                // Data logowania od
-                logowania = logowania.Where(
-                    w =>
-                        w.DataLogowania.Year >= model.DataZalogowaniaOd.Year &&
-                        w.DataLogowania.Month >= model.DataZalogowaniaOd.Month &&
-                        w.DataLogowania.Day >= model.DataZalogowaniaOd.Day
-                    ).ToList();
+                /*
+                                // Data logowania od
+                                logowania = logowania.Where(
+                                    w =>
+                                        w.DataLogowania.Year >= model.DataZalogowaniaOd.Year &&
+                                        w.DataLogowania.Month >= model.DataZalogowaniaOd.Month &&
+                                        w.DataLogowania.Day >= model.DataZalogowaniaOd.Day
+                                    ).ToList();
 
-                // Data logowania do
-                logowania = logowania.Where(
-                    w =>
-                        w.DataLogowania.Year <= model.DataZalogowaniaDo.Year &&
-                        w.DataLogowania.Month <= model.DataZalogowaniaDo.Month &&
-                        w.DataLogowania.Day <= model.DataZalogowaniaDo.Day
-                    ).ToList();
+                                // Data logowania do
+                                logowania = logowania.Where(
+                                    w =>
+                                        w.DataLogowania.Year <= model.DataZalogowaniaDo.Year &&
+                                        w.DataLogowania.Month <= model.DataZalogowaniaDo.Month &&
+                                        w.DataLogowania.Day <= model.DataZalogowaniaDo.Day
+                                    ).ToList();
 
-*/
+                */
 
                 // filtrowanie według daty logowania od i do
 
-                logowania = logowania.Where (
-                    w => 
+                logowania = logowania.Where(
+                    w =>
                         w.DataLogowania >= model.DataZalogowaniaOd &&
                         w.DataLogowania <= model.DataZalogowaniaDo
-                        ).ToList ();
+                        ).ToList();
 
 
                 // Sortowanie
@@ -154,6 +157,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
+            NI.Navigation = Navigation.LogowaniaCreate;
             try
             {
                 var result = await _usersService.GetAll();
@@ -193,6 +197,7 @@ namespace WebApplication71.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateLogowanieDto model)
         {
+            NI.Navigation = Navigation.LogowaniaCreate;
             try
             {
                 if (ModelState.IsValid)
@@ -244,6 +249,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(string logowanieId)
         {
+            NI.Navigation = Navigation.LogowaniaEdit;
             try
             {
                 if (string.IsNullOrEmpty(logowanieId))
@@ -272,6 +278,7 @@ namespace WebApplication71.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(GetLogowanieDto model)
         {
+            NI.Navigation = Navigation.LogowaniaEdit;
             try
             {
                 if (ModelState.IsValid)
@@ -305,6 +312,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public IActionResult Delete(string id)
         {
+            NI.Navigation = Navigation.LogowaniaDelete;
             try
             {
                 if (string.IsNullOrEmpty(id))

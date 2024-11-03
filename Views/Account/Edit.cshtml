@@ -128,15 +128,18 @@
             <td class="rightColumn">
                 <div class="image w-200px">
                     <!-- wyświetla zdjęcie -->
-                    <partial name="_displayPhoto" model="@Model.Photo" />
+                    <div id="displayPhoto">
+                        <partial name="_displayPhoto" model="@Model.Photo" />
+                    </div>
 
 
 
                     <!-- wybiera zdjęcie -->
-                    <input asp-for="PhotoData" id="fileInput" style="border: none; padding: 0px; margin: 0px; background-color: transparent; margin-top: 15px; width: fit-content;" accept="image/*" onchange="previewImage(event); saveFiles();" />
                     <div id="imageContainer" class="image">
                         <img id="imagePreview" alt="Uploaded Photo" style="display: none;" />
                     </div>
+                    <input asp-for="PhotoData" id="fileInput" style="border: none; padding: 0px; margin: 0px; background-color: transparent; margin-top: 15px; width: fit-content;" accept="image/*" onchange="previewImage(event); saveFiles();" />
+
                 </div>
             </td>
         </tr>
@@ -178,3 +181,104 @@
 
 <!-- Zwraca komunikat błędu, o ile takowy się pojawi -->
 <span class="c-red">@ViewData["ErrorMessage"]</span>
+
+
+
+
+
+
+
+
+
+
+
+
+@section Scripts {
+    <script>
+        var filesInput = document.getElementById('fileInput');
+        var imagePreview = document.getElementById('imagePreview');
+        var displayPhoto = document.getElementById('displayPhoto');
+        var imageContainer = document.getElementById('imageContainer');
+
+        // Funkcja do zapisywania przesłanych plików w sessionStorage
+        function saveFiles() {
+            var files = filesInput.files;
+
+            if (files.length > 0) {
+                var filesArray = Array.from(files);
+                var filesData = filesArray.map(file => {
+                    return {
+                        name: file.name,
+                        type: file.type,
+                        size: file.size
+                    };
+                });
+
+                // Zapisywanie plików w sessionStorage
+                sessionStorage.setItem('uploadPhotoAccountEdit', JSON.stringify(filesData));
+
+                // Konwertowanie plików na Base64
+                var uploadedFilesBase64 = [];
+                filesArray.forEach(file => {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        uploadedFilesBase64.push(e.target.result);
+                        sessionStorage.setItem('uploadedFilesBase64AccountEdit', JSON.stringify(uploadedFilesBase64));
+                    }
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            // Ukryj displayPhoto
+            displayPhoto.style.display = 'none';
+        }
+
+        // Funkcja pobiera dane z sesji do zmiennej po załadowaniu okna
+        window.onload = function () {
+            var uploadedFilesData = sessionStorage.getItem('uploadPhotoAccountEdit');
+            var uploadedFilesBase64 = sessionStorage.getItem('uploadedFilesBase64AccountEdit');
+
+            if (uploadedFilesBase64) {
+                var base64Files = JSON.parse(uploadedFilesBase64);
+                // Wyświetlenie pierwszego obrazu w imagePreview
+                if (base64Files.length > 0) {
+                    imagePreview.src = base64Files[0];
+                    imagePreview.style.display = 'block';
+                    displayPhoto.style.display = 'none'; // Ukryj displayPhoto
+                }
+            }
+
+            if (uploadedFilesData) {
+                var uploadedFiles = JSON.parse(uploadedFilesData);
+                var newFilesList = new DataTransfer();
+
+                uploadedFiles.forEach(file => {
+                    var newFile = new File([], file.name, { type: file.type, size: file.size });
+                    newFilesList.items.add(newFile);
+                });
+
+                filesInput.files = newFilesList.files;
+
+                imageContainer.style.width = '150px';
+                imageContainer.style.height = '150px';
+                displayPhoto.style.display = 'none'; // Ukryj displayPhoto
+            }
+        };
+
+        // Funkcja odpowiedzialna za wyświetlenie zdjęcia w img
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+                displayPhoto.style.display = 'none'; // Ukryj displayPhoto
+            }
+        }
+    </script>
+}

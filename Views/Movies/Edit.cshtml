@@ -37,9 +37,20 @@
                 <label asp-for="Photo"></label>
             </td>
             <td class="rightColumn">
-                <div class="db">
-                    <input asp-for="Photo" />
-                    <span asp-validation-for="Photo" class="c-red"></span>
+                <div class="image w-200px">
+                    <!-- wyświetla zdjęcie -->
+                    <div id="displayPhoto">
+                        <partial name="_displayPhoto" model="@Model.Photo" />
+                    </div>
+
+
+
+                    <!-- wybiera zdjęcie -->
+                    <div id="imageContainer" class="image">
+                        <img id="imagePreview" alt="Uploaded Photo" style="display: none;" />
+                    </div>
+                    <input asp-for="PhotoData" id="fileInput" style="border: none; padding: 0px; margin: 0px; background-color: transparent; margin-top: 15px; width: fit-content;" accept="image/*" onchange="previewImage(event); saveFiles();" />
+
                 </div>
             </td>
         </tr>

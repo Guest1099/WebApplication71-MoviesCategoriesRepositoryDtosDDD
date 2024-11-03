@@ -5,6 +5,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Movies;
+using WebApplication71.Models;
+using WebApplication71.Models.Enums;
 using WebApplication71.Repos.Abs;
 using WebApplication71.Services;
 
@@ -26,6 +28,9 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(GetMoviesDto model)
         {
+            NI.Navigation = Navigation.MoviesIndex;
+
+
             try
             {
                 var result = await _moviesRepository.GetAll();
@@ -37,6 +42,7 @@ namespace WebApplication71.Controllers
 
                 if (movies == null)
                     return View("NotFound");
+                 
 
 
                 return View(new GetMoviesDto()
@@ -63,6 +69,8 @@ namespace WebApplication71.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(string s, GetMoviesDto model)
         {
+            NI.Navigation = Navigation.MoviesIndex;
+
             try
             {
                 var result = await _moviesRepository.GetAll();
@@ -127,6 +135,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
+            NI.Navigation = Navigation.MoviesCreate;
             try
             {
                 var result = await _categoriesRepository.GetAll();
@@ -152,6 +161,7 @@ namespace WebApplication71.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateMovieDto model)
         {
+            NI.Navigation = Navigation.MoviesCreate;
             try
             {
                 if (ModelState.IsValid)
@@ -183,6 +193,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(string movieId)
         {
+            NI.Navigation = Navigation.MoviesEdit;
             try
             {
                 if (string.IsNullOrEmpty(movieId))
@@ -213,6 +224,7 @@ namespace WebApplication71.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(GetMovieDto model)
         {
+            NI.Navigation = Navigation.MoviesEdit;
             try
             {
                 if (ModelState.IsValid)
@@ -247,6 +259,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(string id)
         {
+            NI.Navigation = Navigation.MoviesDelete;
             try
             {
                 if (string.IsNullOrEmpty(id))

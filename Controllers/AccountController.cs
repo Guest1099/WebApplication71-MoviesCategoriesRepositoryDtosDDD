@@ -5,6 +5,8 @@ using System;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Account;
 using WebApplication71.DTOs.Users;
+using WebApplication71.Models;
+using WebApplication71.Models.Enums;
 using WebApplication71.Services.Abs;
 
 namespace WebApplication71.Controllers
@@ -23,17 +25,12 @@ namespace WebApplication71.Controllers
         }
 
 
-        [HttpGet]
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-
 
         [HttpGet]
         public async Task<IActionResult> Edit()
         {
+            NI.Navigation = Navigation.AccountEdit;
+
             try
             {
                 var result = await _accountService.GetUserByEmail(User.Identity.Name);
@@ -59,6 +56,7 @@ namespace WebApplication71.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(GetUserDto model)
         {
+            NI.Navigation = Navigation.AccountEdit;
             try
             {
                 if (string.IsNullOrEmpty(model.Email))
@@ -106,6 +104,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> ChangeEmail()
         {
+            NI.Navigation = Navigation.AccountChangeEmail;
             try
             {
                 var result = await _accountService.GetUserByEmail(User.Identity.Name);
@@ -132,6 +131,7 @@ namespace WebApplication71.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangeEmail(ChangeEmailDto model)
         {
+            NI.Navigation = Navigation.AccountChangeEmail;
             try
             {
                 if (ModelState.IsValid)
@@ -157,13 +157,17 @@ namespace WebApplication71.Controllers
 
         [HttpGet]
         public IActionResult ChangePassword()
-            => View();
+        {
+            NI.Navigation = Navigation.AccountChangePassword;
+            return View ();
+        }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordDto model)
         {
+            NI.Navigation = Navigation.AccountChangePassword;
             try
             {
                 if (ModelState.IsValid)
@@ -264,6 +268,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public IActionResult Delete(string id)
         {
+            NI.Navigation = Navigation.AccountDelete;
             try
             {
                 if (string.IsNullOrEmpty(id))

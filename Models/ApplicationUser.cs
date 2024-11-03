@@ -190,6 +190,7 @@ namespace WebApplication71.Models
             Telefon = telefon;
             Photo = photo;
             RoleName = roleName;
+            //SecurityStamp = Guid.NewGuid ().ToString ();
         }
 
 
@@ -209,6 +210,7 @@ namespace WebApplication71.Models
             Plec = plec;
             Telefon = telefon;
             Photo = photo;
+            SecurityStamp = Guid.NewGuid().ToString();
         }
 
         public void UpdateEmail(string email)

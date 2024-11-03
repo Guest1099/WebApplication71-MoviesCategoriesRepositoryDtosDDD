@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Roles;
 using WebApplication71.Models;
+using WebApplication71.Models.Enums;
 using WebApplication71.Services;
 using WebApplication71.Services.Abs;
 
@@ -24,6 +25,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(GetRolesDto model)
         {
+            NI.Navigation = Navigation.RolesIndex;
             try
             {
                 var result = await _rolesService.GetAll();
@@ -61,6 +63,7 @@ namespace WebApplication71.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(string s, GetRolesDto model)
         {
+            NI.Navigation = Navigation.RolesIndex;
             try
             {
                 var result = await _rolesService.GetAll();
@@ -107,12 +110,16 @@ namespace WebApplication71.Controllers
 
         [HttpGet]
         public IActionResult Create()
-            => View();
+        {
+            NI.Navigation = Navigation.RolesCreate;
+            return View ();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateRoleDto model)
         {
+            NI.Navigation = Navigation.RolesCreate;
             try
             {
                 if (ModelState.IsValid)
@@ -142,6 +149,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(string roleId)
         {
+            NI.Navigation = Navigation.RolesEdit;
             try
             {
                 if (string.IsNullOrEmpty(roleId))
@@ -170,6 +178,7 @@ namespace WebApplication71.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(GetRoleDto model)
         {
+            NI.Navigation = Navigation.RolesEdit;
             try
             {
                 if (ModelState.IsValid)
@@ -201,6 +210,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public IActionResult Delete(string id)
         {
+            NI.Navigation = Navigation.RolesDelete;
             try
             {
                 if (string.IsNullOrEmpty(id))

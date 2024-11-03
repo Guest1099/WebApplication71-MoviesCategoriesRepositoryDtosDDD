@@ -1,0 +1,394 @@
+﻿@{
+    string text = "Jesteś tutaj: ";
+
+    <div class="df centery fs-12" style="color: rgb(100,100,100); margin: 8px 0px;">
+
+        @switch (NI.Navigation)
+        {
+
+            case Navigation.HomeIndex:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Home" class="actionLinkNi">Dashboard</a>
+                break;
+
+
+
+
+
+
+
+
+
+
+            case Navigation.AccountEdit:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Account" class="actionLinkNi">Account</a>
+                <div class="arrowNi">\</div>
+                <a asp-action="Edit" asp-controller="Account" class="actionLinkNi">Edit</a>
+                break;
+            case Navigation.AccountChangeEmail:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Account" class="actionLinkNi">Account</a>
+                <div class="arrowNi">\</div>
+                <a asp-action="ChangeEmail" asp-controller="Account" class="actionLinkNi">Change email</a>
+                break;
+            case Navigation.AccountChangePassword:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Account" class="actionLinkNi">Account</a>
+                <div class="arrowNi">\</div>
+                <a asp-action="ChangePassword" asp-controller="Account" class="actionLinkNi">Change password</a>
+                break;
+            case Navigation.AccountDelete:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Account" class="actionLinkNi">Account</a>
+                <div class="arrowNi">\</div>
+                <a asp-action="Delete" asp-controller="Account" class="actionLinkNi">Delete</a>
+                break;
+
+
+
+
+
+
+
+
+
+
+            case Navigation.UsersIndex:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Users" class="actionLinkNi">Users</a>
+                break;
+            case Navigation.UsersCreate:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Users" class="actionLinkNi">Users</a>
+                <div class="arrowNi">\</div>
+                <a asp-action="Create" asp-controller="Users" class="actionLinkNi">Create</a>
+                break;
+            case Navigation.UsersEdit:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Users" class="actionLinkNi">Users</a>
+                <div class="arrowNi">\</div>
+                <a asp-action="Edit" asp-controller="Users" class="actionLinkNi">Edit</a>
+                break;
+            case Navigation.UsersChangeEmail:
+                <span class="mr-10">@text</span>
+                <span>Users</span>
+                <div class="arrowNi">\</div>
+                <span>Edit</span>
+                <div class="arrowNi">\</div>
+                <span>Change email</span>
+                break;
+            case Navigation.UsersChangePassword:
+                <span class="mr-10">@text</span>
+                <span>Users</span>
+                <div class="arrowNi">\</div>
+                <span>Edit</span>
+                <div class="arrowNi">\</div>
+                <span>Change password</span>
+                break;
+
+
+
+
+
+
+
+
+
+
+            case Navigation.RolesIndex:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Roles" class="actionLinkNi">Roles</a>
+                break;
+            case Navigation.RolesCreate:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Roles" class="actionLinkNi">Roles</a>
+                <div class="arrowNi">\</div>
+                <a asp-action="Create" asp-controller="Roles" class="actionLinkNi">Create</a>
+                break;
+            case Navigation.RolesEdit:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Roles" class="actionLinkNi">Roles</a>
+                <div class="arrowNi">\</div>
+                <a asp-action="Edit" asp-controller="Roles" class="actionLinkNi">Edit</a>
+                break;
+
+
+
+
+
+
+
+
+
+
+            case Navigation.CategoriesIndex:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Categories" class="actionLinkNi">Categories</a>
+                break;
+            case Navigation.CategoriesCreate:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Categories" class="actionLinkNi">Categories</a>
+                <div class="arrowNi">\</div>
+                <a asp-action="Create" asp-controller="Categories" class="actionLinkNi">Create</a>
+                break;
+            case Navigation.CategoriesEdit:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Categories" class="actionLinkNi">Categories</a>
+                <div class="arrowNi">\</div>
+                <a asp-action="Edit" asp-controller="Categories" class="actionLinkNi">Edit</a>
+                break;
+
+
+
+
+
+
+
+
+
+
+            case Navigation.MoviesIndex:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Movies" class="actionLinkNi">Movies</a>
+                break;
+            case Navigation.MoviesCreate:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Movies" class="actionLinkNi">Movies</a>
+                <div class="arrowNi">\</div>
+                <a asp-action="Create" asp-controller="Movies" class="actionLinkNi">Create</a>
+                break;
+            case Navigation.MoviesEdit:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Movies" class="actionLinkNi">Movies</a>
+                <div class="arrowNi">\</div>
+                <a asp-action="Edit" asp-controller="Movies" class="actionLinkNi">Edit</a>
+                break;
+
+
+
+
+
+
+
+
+
+
+            case Navigation.LogowaniaIndex:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Logowania" class="actionLinkNi">Logowania</a>
+                break;
+            case Navigation.LogowaniaCreate:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Logowania" class="actionLinkNi">Logowania</a>
+                <div class="arrowNi">\</div>
+                <a asp-action="Create" asp-controller="Logowania" class="actionLinkNi">Create</a>
+                break;
+            case Navigation.LogowaniaEdit:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Logowania" class="actionLinkNi">Logowania</a>
+                <div class="arrowNi">\</div>
+                <a asp-action="Edit" asp-controller="Logowania" class="actionLinkNi">Edit</a>
+                break;
+
+
+
+        }
+
+    </div>
+
+}
+
+
+@* 
+@{
+    string text = "Jesteś tutaj: ";
+
+    <div class="df centery fs-12" style="color: rgb(100,100,100); margin: 8px 0px;">
+
+        @switch (NI.Navigation)
+        {
+
+            case Navigation.HomeIndex:
+                <span class="mr-10">@text</span>
+                <span>Dashboard</span>
+                break;
+
+
+
+
+
+
+            case Navigation.AccountChangeEmail:
+                <span class="mr-10">@text</span>
+                <span>Account</span>
+                <div class="arrowNi">\</div>
+                <span>Change email</span>
+                break;
+            case Navigation.AccountChangePassword:
+                <span class="mr-10">@text</span>
+                <span>Account</span>
+                <div class="arrowNi">\</div>
+                <span>Change password</span>
+                break;
+            case Navigation.AccountEdit:
+                <span class="mr-10">@text</span>
+                <span>Account</span>
+                <div class="arrowNi">\</div>
+                <span>Edit</span>
+                break;
+
+
+
+
+
+
+
+
+
+
+            case Navigation.UsersIndex:
+                <span class="mr-10">@text</span>
+                <span>Users</span>
+                break;
+            case Navigation.UsersCreate:
+                <span class="mr-10">@text</span>
+                <span>Users</span>
+                <div class="arrowNi">\</div>
+                <span>Create</span>
+                break;
+            case Navigation.UsersEdit:
+                <span class="mr-10">@text</span>
+                <span>Users</span>
+                <div class="arrowNi">\</div>
+                <span>Edit</span>
+                break;
+            case Navigation.UsersChangeEmail:
+                <span class="mr-10">@text</span>
+                <span>Users</span>
+                <div class="arrowNi">\</div>
+                <span>Edit</span>
+                <div class="arrowNi">\</div>
+                <span>Change email</span>
+                break;
+            case Navigation.UsersChangePassword:
+                <span class="mr-10">@text</span>
+                <span>Users</span>
+                <div class="arrowNi">\</div>
+                <span>Edit</span>
+                <div class="arrowNi">\</div>
+                <span>Change password</span>
+                break;
+
+
+
+
+
+
+
+
+
+
+            case Navigation.RolesIndex:
+                <span class="mr-10">@text</span>
+                <span>Roles</span>
+                break;
+            case Navigation.RolesCreate:
+                <span class="mr-10">@text</span>
+                <span>Roles</span>
+                <div class="arrowNi">\</div>
+                <span>Create</span>
+                break;
+            case Navigation.RolesEdit:
+                <span class="mr-10">@text</span>
+                <span>Roles</span>
+                <div class="arrowNi">\</div>
+                <span>Edit</span>
+                break;
+
+
+
+
+
+
+
+
+
+
+            case Navigation.CategoriesIndex:
+                <span class="mr-10">@text</span>
+                <span>Categories</span>
+                break;
+            case Navigation.CategoriesCreate:
+                <span class="mr-10">@text</span>
+                <span>Categories</span>
+                <div class="arrowNi">\</div>
+                <span>Create</span>
+                break;
+            case Navigation.CategoriesEdit:
+                <span class="mr-10">@text</span>
+                <span>Categories</span>
+                <div class="arrowNi">\</div>
+                <span>Edit</span>
+                break;
+
+
+
+
+
+
+
+
+
+
+            case Navigation.MoviesIndex:
+                <span class="mr-10">@text</span>
+                <span>Movies</span>
+                break;
+            case Navigation.MoviesCreate:
+                <span class="mr-10">@text</span>
+                <span>Movies</span>
+                <div class="arrowNi">\</div>
+                <span>Create</span>
+                break;
+            case Navigation.MoviesEdit:
+                <span class="mr-10">@text</span>
+                <span>Movies</span>
+                <div class="arrowNi">\</div>
+                <span>Edit</span>
+                break;
+
+
+
+
+
+
+
+
+
+
+            case Navigation.LogowaniaIndex:
+                <span class="mr-10">@text</span>
+                <span>Logowania</span>
+                break;
+            case Navigation.LogowaniaCreate:
+                <span class="mr-10">@text</span>
+                <span>Logowania</span>
+                <div class="arrowNi">\</div>
+                <span>Create</span>
+                break;
+            case Navigation.LogowaniaEdit:
+                <span class="mr-10">@text</span>
+                <span>Logowania</span>
+                <div class="arrowNi">\</div>
+                <span>Edit</span>
+                break;
+
+
+
+        }
+
+    </div>
+
+}
+ *@

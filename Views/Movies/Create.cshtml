@@ -36,8 +36,10 @@
             </td>
             <td class="rightColumn">
                 <div class="db">
-                    <input asp-for="Photo" />
-                    <span asp-validation-for="Photo" class="c-red"></span>
+                    <div id="imageContainer" class="image">
+                        <img id="imagePreview" alt="Uploaded Photo" style="display: none;" />
+                    </div>
+                    <input asp-for="PhotoData" id="fileInput" accept="image/*" onchange="previewImage(event); saveFiles();" style="border: none; background-color: rgb(250,250,250);" />
                 </div>
             </td>
         </tr>

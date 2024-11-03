@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Users;
 using WebApplication71.Models;
+using WebApplication71.Models.Enums;
 using WebApplication71.Services;
 using WebApplication71.Services.Abs;
 
@@ -27,6 +28,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(GetUsersDto model)
         {
+            NI.Navigation = Navigation.UsersIndex;
             try
             {
                 var result = await _usersService.GetAll();
@@ -65,6 +67,7 @@ namespace WebApplication71.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(string s, GetUsersDto model)
         {
+            NI.Navigation = Navigation.UsersIndex;
             try
             {
                 var result = await _usersService.GetAll();
@@ -143,6 +146,8 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
+            NI.Navigation = Navigation.UsersCreate;
+
             // zwraca komunikat błędu związanego z tworzeniem rekordu
             var rolesNames = (await _rolesService.GetAll()).Object
                             .Select(s => s.Name)
@@ -158,6 +163,8 @@ namespace WebApplication71.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateUserDto model)
         {
+            NI.Navigation = Navigation.UsersCreate;
+
             try
             {
                 if (ModelState.IsValid)
@@ -195,6 +202,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(string userId)
         {
+            NI.Navigation = Navigation.UsersEdit;
             try
             {
                 if (string.IsNullOrEmpty(userId))
@@ -230,6 +238,7 @@ namespace WebApplication71.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(GetUserDto model)
         {
+            NI.Navigation = Navigation.UsersEdit;
             try
             {
                 if (ModelState.IsValid)
@@ -283,6 +292,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> ChangeEmail(string userId)
         {
+            NI.Navigation = Navigation.UsersChangeEmail;
             try
             {
                 if (string.IsNullOrEmpty(userId))
@@ -315,6 +325,7 @@ namespace WebApplication71.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangeEmail(ChangeUserEmailDto model)
         {
+            NI.Navigation = Navigation.UsersChangeEmail;
             try
             {
                 if (ModelState.IsValid)
@@ -342,6 +353,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> ChangePassword(string userId)
         {
+            NI.Navigation = Navigation.UsersChangePassword;
             try
             {
                 if (string.IsNullOrEmpty(userId))
@@ -374,6 +386,7 @@ namespace WebApplication71.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangeUserPasswordDto model)
         {
+            NI.Navigation = Navigation.UsersChangePassword;
             try
             {
                 if (ModelState.IsValid)
@@ -404,6 +417,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public IActionResult Delete(string id)
         {
+            NI.Navigation = Navigation.UsersDelete;
             try
             {
                 if (string.IsNullOrEmpty(id))

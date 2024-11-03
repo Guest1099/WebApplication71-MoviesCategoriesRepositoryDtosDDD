@@ -168,6 +168,8 @@
 
                 if (Model.Users.Count > 4)
                 {
+                    bool displayPaginator = false;
+
 
                     <!-- Paginator -->
                     bool hasPrevious = Model.Paginator.HasPreviousPage;
@@ -185,106 +187,121 @@
 
                         </div>
 
-                        <div class="w-60 centery">
-                            <div class="w-100 centery">
-                                <div class="df fs-11 centery">
-                                    @if (hasPrevious)
-                                    {
-                                        <a asp-action="Index"
-                                           asp-controller="Users"
-                                           asp-route-PageSize="@Model.PageSize"
-                                           asp-route-PageIndex="@(Model.Paginator.PageIndex - 1)"
-                                           asp-route-SearchOption="@Model.SortowanieOption"
-                                           asp-route-q="@Model.q"
-                                           asp-route-SortowanieOption="@Model.SortowanieOption"
-                                           class="paginatorButton">
-                                            Prev
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <a asp-action="Index"
-                                           asp-controller="Users"
-                                           class="paginatorButton disable-link">
-                                            Prev
-                                        </a>
-                                    }
+
+                        
+                        @if((Model.PageSize == 10 || Model.PageSize == 15 || Model.PageSize == 20) && Model.Paginator.Count < 10)
+                        {
+                            displayPaginator = false;
+                        }
+                        else
+                        {
+                            displayPaginator = true;
+                        }
 
 
-                                    <div class="df ml-10 mr-10">
-                                        @{
-                                            int length = Model.PageIndex + Model.Paginator.Count;
-
-                                            string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
-
-
-                                            Model.Start = 1;
-                                            Model.End = Model.PageSize + 1;
-                                            int srodek = (int)Math.Round((double)(Model.PageSize / 2));
-
-                                            if (Model.PageIndex > srodek)
-                                            {
-                                                Model.Start = Model.PageIndex - (srodek - 1);
-                                                Model.End = Model.PageIndex + Model.PageSize - srodek;
-                                            }
-
-
-
-                                            for (var i = Model.Start; i < Model.End; i++)
-                                            {
-                                                if (i == Model.PageIndex)
-                                                {
-                                                    style = "padding: 7px 10px; background-color: lightgray; color: black; font-weight: bold";
-                                                }
-                                                else
-                                                {
-                                                    style = "padding: 7px 10px; background-color: white;";
-                                                }
-                                                if (i <= Model.Paginator.TotalPage)
-                                                {
-                                                    <a asp-action="Index"
-                                                       asp-controller="Users"
-                                                       asp-route-PageSize="@Model.PageSize"
-                                                       asp-route-PageIndex="@i"
-                                                       asp-route-SearchOption="@Model.SortowanieOption"
-                                                       asp-route-q="@Model.q"
-                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                       class="paginator-item"
-                                                       style="@style">
-                                                        @i
-                                                    </a>
-                                                }
-                                            }
+                        @if(displayPaginator)
+                        {
+                            <div class="w-60 centery">
+                                <div class="w-100 centery">
+                                    <div class="df fs-11 centery">
+                                        @if (hasPrevious)
+                                        {
+                                            <a asp-action="Index"
+                                               asp-controller="Users"
+                                               asp-route-PageSize="@Model.PageSize"
+                                               asp-route-PageIndex="@(Model.Paginator.PageIndex - 1)"
+                                               asp-route-SearchOption="@Model.SortowanieOption"
+                                               asp-route-q="@Model.q"
+                                               asp-route-SortowanieOption="@Model.SortowanieOption"
+                                               class="paginatorButton">
+                                                Prev
+                                            </a>
                                         }
+                                        else
+                                        {
+                                            <a asp-action="Index"
+                                               asp-controller="Users"
+                                               class="paginatorButton disable-link">
+                                                Prev
+                                            </a>
+                                        }
+
+
+                                        <div class="df ml-10 mr-10">
+                                            @{
+                                                int length = Model.PageIndex + Model.Paginator.Count;
+
+                                                string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
+
+
+                                                Model.Start = 1;
+                                                Model.End = Model.PageSize + 1;
+                                                int srodek = (int)Math.Round((double)(Model.PageSize / 2));
+
+                                                if (Model.PageIndex > srodek)
+                                                {
+                                                    Model.Start = Model.PageIndex - (srodek - 1);
+                                                    Model.End = Model.PageIndex + Model.PageSize - srodek;
+                                                }
+
+
+
+                                                for (var i = Model.Start; i < Model.End; i++)
+                                                {
+                                                    if (i == Model.PageIndex)
+                                                    {
+                                                        style = "padding: 7px 10px; background-color: lightgray; color: black; font-weight: bold";
+                                                    }
+                                                    else
+                                                    {
+                                                        style = "padding: 7px 10px; background-color: white;";
+                                                    }
+                                                    if (i <= Model.Paginator.TotalPage)
+                                                    {
+                                                        <a asp-action="Index"
+                                                           asp-controller="Users"
+                                                           asp-route-PageSize="@Model.PageSize"
+                                                           asp-route-PageIndex="@i"
+                                                           asp-route-SearchOption="@Model.SortowanieOption"
+                                                           asp-route-q="@Model.q"
+                                                           asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                           class="paginator-item"
+                                                           style="@style">
+                                                            @i
+                                                        </a>
+                                                    }
+                                                }
+                                            }
+                                        </div>
+
+
+                                        @if (hasNext)
+                                        {
+                                            <a asp-action="Index"
+                                               asp-controller="Users"
+                                               asp-route-PageSize="@Model.PageSize"
+                                               asp-route-PageIndex="@(Model.Paginator.PageIndex + 1)"
+                                               asp-route-SearchOption="@Model.SortowanieOption"
+                                               asp-route-q="@Model.q"
+                                               asp-route-SortowanieOption="@Model.SortowanieOption"
+                                               class="paginatorButton">
+                                                Next
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a asp-action="Index"
+                                               asp-controller="Users"
+                                               class="paginatorButton disable-link">
+                                                Next
+                                            </a>
+                                        }
+
+
                                     </div>
-
-
-                                    @if (hasNext)
-                                    {
-                                        <a asp-action="Index"
-                                           asp-controller="Users"
-                                           asp-route-PageSize="@Model.PageSize"
-                                           asp-route-PageIndex="@(Model.Paginator.PageIndex + 1)"
-                                           asp-route-SearchOption="@Model.SortowanieOption"
-                                           asp-route-q="@Model.q"
-                                           asp-route-SortowanieOption="@Model.SortowanieOption"
-                                           class="paginatorButton">
-                                            Next
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <a asp-action="Index"
-                                           asp-controller="Users"
-                                           class="paginatorButton disable-link">
-                                            Next
-                                        </a>
-                                    }
-
-
                                 </div>
                             </div>
-                        </div>
+                        }
                     </div>
 
                 }

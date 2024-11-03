@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WebApplication71.Models;
+using WebApplication71.Models.Enums;
 using WebApplication71.Repos.Abs;
 using WebApplication71.Services.Abs;
 
@@ -36,6 +38,8 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            NI.Navigation = Navigation.HomeIndex;
+
             try
             {
                 var users = await _usersService.GetAll();

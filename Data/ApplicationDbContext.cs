@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq.Expressions;
+using System.Net.Http;
 using System.Threading.Tasks;
 using WebApplication71.Models;
 using WebApplication71.Models.Enums;
@@ -208,7 +210,7 @@ namespace WebApplication71.Data
             };
 
 
-            List<string> kategorie = new List<string>() { "Komedia", "Romans", "Fantasy" };
+            List<string> kategorie = new List<string>() { "Komedia", "Romans", "Fantasy", "sadf","wer","cbx","ert","xbh","ysb","wegh","shr","ewtsh","Sgeteh","Sge","ddgege","sdgh","sgwegn","gwegsd","ewhh","bcbn","xcbceg","sdfdd","sssseg","werew","sddgggs","wqwrsdg","gbxfd","hdfh" };
             List<string> kategorieId = new List<string>();
             for (var i = 0; i < kategorie.Count; i++)
             {
@@ -250,12 +252,12 @@ namespace WebApplication71.Data
             {
                 var randomUser = users[rand.Next(0, users.Count - 1)];
                 Movie movie = new Movie(
-                    _dataAutogenerator.Title(),
-                    _dataAutogenerator.Description(1),
-                    photoSource[rand.Next(0, photoSource.Count)],
-                    rand.Next(100, 200),
-                    administratorUser.Id,
-                    kategorieId[rand.Next(0, kategorieId.Count)]
+                    title: _dataAutogenerator.Title(),
+                    description: _dataAutogenerator.Description(1),
+                    photo: GetImageBytesAsync (photoSource[rand.Next(0, photoSource.Count)]),
+                    price: rand.Next(100, 200),
+                    userId: administratorUser.Id,
+                    categoryId: kategorieId[rand.Next(0, kategorieId.Count)]
                     );
                 builder.Entity<Movie>().HasData(movie);
             }
@@ -282,31 +284,33 @@ namespace WebApplication71.Data
 
 
 
-        /// <summary>
-        /// Zamienia zdjęcie na bytes
-        /// </summary>
-        private async Task<byte[]> CreateNewPhoto(IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-            {
-                return null;
-            }
 
+        /// <summary>
+        /// Zamienia zdjęcie pobrane z sieci na byte[]
+        /// </summary>
+        private byte[] GetImageBytesAsync(string imageUrl)
+        {
+            byte[] imageBytes = new byte[0];
             try
             {
-                byte[] photoData;
-                using (var stream = new MemoryStream())
+                using (var httpClient = new HttpClient())
                 {
-                    await file.CopyToAsync(stream);
-                    photoData = stream.ToArray();
-                }
+                    using (var response = httpClient.GetAsync(imageUrl).Result)
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            imageBytes = response.Content.ReadAsByteArrayAsync().Result;
+                        }
+                    }
 
-                return photoData;
+                    return imageBytes;
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                return null;
+
             }
+            return imageBytes;
         }
 
 

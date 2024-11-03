@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication71.DTOs.Movies
@@ -17,7 +18,7 @@ namespace WebApplication71.DTOs.Movies
 
 
         [Required(ErrorMessage = "To pole jest wymagane")]
-        public string Photo { get; set; }
+        public byte[] Photo { get; set; }
 
 
         [Required(ErrorMessage = "To pole jest wymagane")]
@@ -30,6 +31,7 @@ namespace WebApplication71.DTOs.Movies
 
 
 
+        public IFormFile PhotoData { get; set; }
         public string Category { get; set; }
         public SelectList CategoriesList { get; set; }
     }

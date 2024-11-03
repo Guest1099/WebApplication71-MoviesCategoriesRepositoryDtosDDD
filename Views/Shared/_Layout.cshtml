@@ -11,70 +11,89 @@
 </head>
 <body>
 
+     
     @if (SignInManager.IsSignedIn(User))
     {
-        <div class="container df">
-            <partial name="_leftNavigation" />
-
-            <div class="w-100 p-20">
-                @RenderBody()
-            </div>
-        </div>
-    }
-    else
-    {
-        @RenderBody()
-    }
-
-
-@* 
-    <div class="container df">
-        @if (SignInManager.IsSignedIn(User))
-        {
-            <partial name="_leftNavigation" />
-
-            <div class="w-100 p-20">
-                @RenderBody()
-            </div>
-        }
-        else
-        {
-            @RenderBody()
-        }
-    </div>
- *@
-
-
-@* 
-    @if (SignInManager.IsSignedIn(User))
-    {
-
         <div class="db">
 
-            <!-- main content -->
-            <div class="centerx">
-                <div class="w-900px">
-                    <div class="w-100 p-10">
-                        @RenderBody()
+            <div class="df-sb centery" style="position: absolute; left: 0px; top: 0px; right: 0px; height: 65px; box-shadow: 0px 0px 0px rgb(100,100,100); background-color: rgb(255,255,255); border-bottom: 1px solid rgb(220,220,220);">
+                <div class="" style="width: 350px;">
+                    <partial name="_navigationInfo" />
+                </div>
+
+                <div class="w-100 df-sb">
+                    <div>
+                        <span style="font-size: 20px; font-weight: bold;">Panel administracyjny</span>
+                    </div>
+                    <div>
+                        Zalogowany użytkownik
+                        <span style="font-weight: bold;">@User.Identity.Name</span>
+                        <span class="ml-10">Ustawienia</span>
                     </div>
                 </div>
             </div>
 
 
-            <!-- left navigation -->
-            <div style="width: 230px;">
-                <div style="width: 230px">
-                    <partial name="_leftNavigation" />
+
+
+            <div class="container df" style="margin-top: 65px;">
+                <partial name="_leftNavigation" />
+
+                <div class="w-100">
+                    <div class="db">
+
+
+
+                        <div class="p-20">
+                            @RenderBody()
+                        </div>
+                    </div>
                 </div>
             </div>
-
         </div>
+
+        
     }
     else
     {
         @RenderBody()
     }
- *@
+
+
+
+
+    @*
+    @if (SignInManager.IsSignedIn(User))
+    {
+    <div class="container df">
+    <partial name="_leftNavigation" />
+
+    <div class="w-100">
+    <div class="db">
+
+    <div class="df-sb centery" style="height: 65px; background-color: rgb(255,255,255); border-bottom: 1px solid rgb(240,240,240);">
+    <partial name="_navigationInfo" />
+    <div></div>
+    <div>
+    Zalogowany użytkownik
+    <span style="font-weight: bold;">@User.Identity.Name</span>
+    </div>
+    </div>
+
+
+    <div class="p-20">
+    @RenderBody()
+    </div>
+    </div>
+    </div>
+    </div>
+    }
+    else
+    {
+    @RenderBody()
+    } *@
+
+
 
 
 

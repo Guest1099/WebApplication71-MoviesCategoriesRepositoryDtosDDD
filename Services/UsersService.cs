@@ -208,9 +208,10 @@ namespace WebApplication71.Services
                         var createResult = await _userManager.CreateAsync(user, model.Password);
                         if (createResult.Succeeded)
                         {
-                            
+
                             user.EmailConfirmed = false;
                             user.LockoutEnabled = false;
+                            user.SecurityStamp = Guid.NewGuid().ToString();
                             await _userManager.UpdateAsync(user);
 
 
@@ -290,6 +291,7 @@ namespace WebApplication71.Services
 
                         user.EmailConfirmed = false;
                         user.LockoutEnabled = false;
+                        user.SecurityStamp = Guid.NewGuid ().ToString ();
                         await _userManager.UpdateAsync(user);
 
 
@@ -365,6 +367,7 @@ namespace WebApplication71.Services
 
                                 user.EmailConfirmed = false;
                                 user.LockoutEnabled = false;
+                                user.SecurityStamp = Guid.NewGuid ().ToString ();
                                 await _userManager.UpdateAsync(user);
 
                                 //await _signInManager.SignOutAsync ();
@@ -500,6 +503,7 @@ namespace WebApplication71.Services
 
                 user.EmailConfirmed = false;
                 user.LockoutEnabled = false;
+                user.SecurityStamp = Guid.NewGuid().ToString();
                 await _userManager.UpdateAsync(user);
 
 

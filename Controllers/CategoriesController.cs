@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Categories;
 using WebApplication71.Models;
+using WebApplication71.Models.Enums;
 using WebApplication71.Repos.Abs;
 using WebApplication71.Services;
 
@@ -25,6 +26,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(GetCategoriesDto model)
         {
+            NI.Navigation = Navigation.CategoriesIndex;
             try
             {
                 var result = await _categoriesRepository.GetAll();
@@ -36,6 +38,19 @@ namespace WebApplication71.Controllers
 
                 if (categories == null)
                     return View("NotFound");
+
+
+                // Sortowanie
+                switch (model.SortowanieOption)
+                {
+                    case "Nazwa A-Z":
+                        categories = categories.OrderBy(o => o.Name).ToList();
+                        break;
+
+                    case "Nazwa Z-A":
+                        categories = categories.OrderByDescending(o => o.Name).ToList();
+                        break;
+                }
 
 
                 return View(new GetCategoriesDto()
@@ -62,6 +77,7 @@ namespace WebApplication71.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(string s, GetCategoriesDto model)
         {
+            NI.Navigation = Navigation.CategoriesIndex;
             try
             {
                 var result = await _categoriesRepository.GetAll();
@@ -108,12 +124,16 @@ namespace WebApplication71.Controllers
 
         [HttpGet]
         public IActionResult Create()
-            => View();
+        {
+            NI.Navigation = Navigation.CategoriesCreate;
+            return View ();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateCategoryDto model)
         {
+            NI.Navigation = Navigation.CategoriesCreate;
             try
             {
                 if (ModelState.IsValid)
@@ -143,6 +163,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(string categoryId)
         {
+            NI.Navigation = Navigation.CategoriesEdit;
             try
             {
                 if (string.IsNullOrEmpty(categoryId))
@@ -171,6 +192,7 @@ namespace WebApplication71.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(GetCategoryDto model)
         {
+            NI.Navigation = Navigation.CategoriesEdit;
             try
             {
                 if (ModelState.IsValid)
@@ -202,6 +224,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public IActionResult Delete(string id)
         {
+            NI.Navigation = Navigation.CategoriesDelete;
             try
             {
                 if (string.IsNullOrEmpty(id))

@@ -8,28 +8,11 @@ namespace WebApplication71.Models
 
         [Key]
         public string MovieId { get; private set; }
-
-
-        [Required(ErrorMessage = "To pole jest wymagane"), DataType(DataType.Text)]
         public string Title { get; private set; }
-
-
-        [Required(ErrorMessage = "To pole jest wymagane"), DataType(DataType.Text)]
         public string Description { get; private set; }
-
-
-        [Required(ErrorMessage = "To pole jest wymagane"), DataType(DataType.Text)]
-        public string Photo { get; private set; }
-
-
-        [Required(ErrorMessage = "W to pole należy wpisać liczbę")]
-        [RegularExpression("^[0-9]+$", ErrorMessage = "Wprowadź poprawną liczbę.")]
+        public byte [] Photo { get; private set; }
         public double Price { get; private set; }
-
-
         public int Klikniecia { get; private set; }
-
-
         public DateTime DataDodania { get; private set; }
 
 
@@ -43,7 +26,9 @@ namespace WebApplication71.Models
         public Category? Category { get; private set; }
 
 
-        public Movie(string title, string description, string photo, double price, string userId, string categoryId)
+
+
+        public Movie(string title, string description, byte[] photo, double price, string userId, string categoryId)
         {
             MovieId = Guid.NewGuid().ToString();
             Title = title;
@@ -57,7 +42,7 @@ namespace WebApplication71.Models
         }
 
 
-        public void Update(string title, string description, string photo, double price, string categoryId)
+        public void Update(string title, string description, byte[] photo, double price, string categoryId)
         {
             Title = title;
             Description = description;

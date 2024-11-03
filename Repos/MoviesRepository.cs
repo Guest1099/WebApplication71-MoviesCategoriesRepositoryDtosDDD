@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.Data;
@@ -123,7 +125,7 @@ namespace WebApplication71.Repos
                         Movie movie = new Movie(
                             title: model.Title,
                             description: model.Description,
-                            photo: model.Photo,
+                            photo: await ChangeFileToBytes (model.PhotoData),
                             price: model.Price,
                             userId: zalogowanyUser.Id,
                             categoryId: model.CategoryId
@@ -170,7 +172,7 @@ namespace WebApplication71.Repos
                         movie.Update(
                             title: model.Title,
                             description: model.Description,
-                            photo: model.Photo,
+                            photo: await ChangeFileToBytes(model.PhotoData),
                             price: model.Price,
                             categoryId: model.CategoryId
                             );
@@ -236,6 +238,37 @@ namespace WebApplication71.Repos
             }
             return returnResult;
         }
+
+
+
+
+        /// <summary>
+        /// Zamienia zdjęcie na bytes
+        /// </summary>
+        private async Task<byte[]> ChangeFileToBytes(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return null;
+            }
+
+            try
+            {
+                byte[] photoData;
+                using (var stream = new MemoryStream())
+                {
+                    await file.CopyToAsync(stream);
+                    photoData = stream.ToArray();
+                }
+
+                return photoData;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
 
 
     }

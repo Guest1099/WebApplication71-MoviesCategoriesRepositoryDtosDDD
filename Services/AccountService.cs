@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -164,7 +165,8 @@ namespace WebApplication71.Services
 
                             user.EmailConfirmed = false;
                             user.LockoutEnabled = false;
-                            await _userManager.UpdateAsync (user);
+                            user.SecurityStamp = Guid.NewGuid().ToString();
+                            await _userManager.UpdateAsync(user);
 
 
                             // przypisanie roli użytkownikowi
@@ -239,6 +241,7 @@ namespace WebApplication71.Services
 
                             user.EmailConfirmed = false;
                             user.LockoutEnabled = false;
+                            user.SecurityStamp = Guid.NewGuid().ToString();
                             await _userManager.UpdateAsync(user);
 
 
@@ -358,6 +361,7 @@ namespace WebApplication71.Services
 
                                 user.EmailConfirmed = false;
                                 user.LockoutEnabled = false;
+                                user.SecurityStamp = Guid.NewGuid().ToString();
                                 await _userManager.UpdateAsync(user);
 
                                 //await _signInManager.SignOutAsync ();
@@ -873,6 +877,9 @@ namespace WebApplication71.Services
                                     await _userManager.UpdateAsync(user);
 
 
+                                    //await SprawdzCzyZostalaDopisanaDataWylogowania (user);
+
+
                                     returnResult.Success = true;
                                     returnResult.Object = model;
                                 }
@@ -938,6 +945,10 @@ namespace WebApplication71.Services
                                     await _userManager.UpdateAsync(user);
 
 
+
+                                    //await SprawdzCzyZostalaDopisanaDataWylogowania(user);
+
+
                                     returnResult.Success = true;
                                     returnResult.Object = model;
                                 }
@@ -980,6 +991,9 @@ namespace WebApplication71.Services
                                     user.DataZablokowaniaKonta = "";
                                     user.LockoutEnabled = false;
                                     await _userManager.UpdateAsync(user);
+
+
+                                    //await SprawdzCzyZostalaDopisanaDataWylogowania(user);
 
 
                                     returnResult.Success = true;
@@ -1026,6 +1040,9 @@ namespace WebApplication71.Services
                                 await _userManager.UpdateAsync(user);
 
 
+                                //await SprawdzCzyZostalaDopisanaDataWylogowania(user);
+
+
                                 returnResult.Success = true;
                                 returnResult.Object = model;
                             }
@@ -1064,8 +1081,6 @@ namespace WebApplication71.Services
 
             return returnResult;
         }
-
-
 
         private async Task<ResultViewModel<LoginDto>> LoginInternal(ApplicationUser user, LoginDto model)
         {
@@ -1197,79 +1212,67 @@ namespace WebApplication71.Services
         public async Task Logout(string email)
         {
             try
-            {
-                // wyszukuje najnowszy rekord logowania oraz dopisuje do niego datę wylogowania
-                var ostatnieLogowanieUzytkownika = await _context.Logowania
-                    .Include(i => i.User)
-                    .OrderByDescending(o => o.DataLogowania)
-                    .FirstOrDefaultAsync(f => f.User.Email == email);
+            { 
 
-                if (ostatnieLogowanieUzytkownika != null)
-                {
-                    // zapisanie w bazie daty wylogowania użytkownika
-                    ostatnieLogowanieUzytkownika.DodajDateWylogowania(DateTime.Now);
-                    _context.Entry(ostatnieLogowanieUzytkownika).State = EntityState.Modified;
-                    await _context.SaveChangesAsync();
-                }
+                await AktualizacjaRekorduLogowania (email);
 
 
 
+                /*
+                                // USUWANIE ZBĘDNYCH REKORDÓW
 
-/*
-                // USUWANIE ZBĘDNYCH REKORDÓW
-                 
-                // znalezienie wszystkich rekoród posiadających "01.01.0001 00:00:00" w DataWylogowania
-                var logowania = await _context.Logowania
-                    .Include (i=> i.User)
-                    .Where (w=> w.DataWylogowania == DateTime.Parse ("01.01.0001 00:00:00"))
-                    .ToListAsync ();
-
-
-                Dictionary <string, List<Logowanie>> results = new Dictionary<string, List<Logowanie>> ();
-                // najpierwsz pętla przechodzi przez wszystkich użytkowników aby pobrać "01.01.0001 00:00:00" dla indywidualnych użytkowników
-                foreach (var user in _context.Users)
-                {
-                    // pętla przez wszystkie powyższe logowania
-                    foreach (var logowanie in logowania)
-                    {
-                        if (logowanie.UserId == user.Id)
-                        {
-                            List <Logowanie> logowaniaUzytkownika = new List<Logowanie> ();
-                            // jeżeli użytkownik jest już w bazie dodaj do niego kolejny rekord z jego zalogowaniem
-                            if (results.ContainsKey(user.Email))
-                            {
-                                logowaniaUzytkownika = results[user.Email];
-                                logowaniaUzytkownika.Add (logowanie);
-                            }
-                            else
-                            {
-                                logowaniaUzytkownika.Clear ();
-                                logowaniaUzytkownika.Add (logowanie);
-                                results.Add (user.Email, logowaniaUzytkownika);
-                            }
-                        }
-                    }
-                }
-                // usunięcie rekordów logowania według elementeów znajdujących się w słowniku
-                foreach (var result in results)
-                {
-                    result.Value.OrderByDescending (o=> o.DataLogowania); // posortowanie elementów wg. daty logowania
-                    int iloscElementow = result.Value.Count;
-                    var lastElementLogowanie = result.Value.Last();
+                                // znalezienie wszystkich rekoród posiadających "01.01.0001 00:00:00" w DataWylogowania
+                                var logowania = await _context.Logowania
+                                    .Include (i=> i.User)
+                                    .Where (w=> w.DataWylogowania == DateTime.Parse ("01.01.0001 00:00:00"))
+                                    .ToListAsync ();
 
 
-                    var now = DateTime.Now.AddDays(-2); // usinięcie rekordów sprzed dwóch dni
+                                Dictionary <string, List<Logowanie>> results = new Dictionary<string, List<Logowanie>> ();
+                                // najpierwsz pętla przechodzi przez wszystkich użytkowników aby pobrać "01.01.0001 00:00:00" dla indywidualnych użytkowników
+                                foreach (var user in _context.Users.ToList())
+                                {
+                                    // pętla przez wszystkie powyższe logowania
+                                    foreach (var logowanie in logowania)
+                                    {
+                                        if (logowanie.UserId == user.Id)
+                                        {
+                                            List <Logowanie> logowaniaUzytkownika = new List<Logowanie> ();
+                                            // jeżeli użytkownik jest już w bazie dodaj do niego kolejny rekord z jego zalogowaniem
+                                            if (results.ContainsKey(user.Email))
+                                            {
+                                                logowaniaUzytkownika = results[user.Email];
+                                                logowaniaUzytkownika.Add (logowanie);
+                                            }
+                                            else
+                                            {
+                                                logowaniaUzytkownika.Clear ();
+                                                logowaniaUzytkownika.Add (logowanie);
+                                                results.Add (user.Email, logowaniaUzytkownika);
+                                            }
+                                        }
+                                    }
+                                }
+                                // usunięcie rekordów logowania według elementeów znajdujących się w słowniku
+                                foreach (var result in results)
+                                {
+                                    result.Value.OrderByDescending (o=> o.DataLogowania); // posortowanie elementów wg. daty logowania
+                                    int iloscElementow = result.Value.Count;
+                                    var lastElementLogowanie = result.Value.Last();
 
-                    if (lastElementLogowanie.DataLogowania < now)
-                    {
-                        // usunięcie logowania z bazy
-                        _context.Logowania.Remove(lastElementLogowanie);
-                        await _context.SaveChangesAsync();
-                    }
-                }
-*/
 
-                 
+                                    var now = DateTime.Now.AddDays(-2); // usinięcie rekordów sprzed dwóch dni
+
+                                    if (lastElementLogowanie.DataLogowania < now)
+                                    {
+                                        // usunięcie logowania z bazy
+                                        _context.Logowania.Remove(lastElementLogowanie);
+                                        await _context.SaveChangesAsync();
+                                    }
+                                }
+                */
+
+
 
 
 
@@ -1282,7 +1285,270 @@ namespace WebApplication71.Services
             }
         }
 
+
+        private async Task AktualizacjaRekorduLogowania (string email)
+        {
+            await ZaktualizujRekordLogowaniaDopisujacDoNiegoGodzineWylogowania(email);
+
+
+            var zalogowanyUser = await _context.Users.FirstOrDefaultAsync(f => f.Email == email);
+            if (zalogowanyUser != null)
+            {
+                switch (zalogowanyUser.RoleName)
+                {
+                    case "Administrator":
+
+                        // operacja odbywa się wyłącznie przez administratora dla wszystkich użytkowników
+                        await SprawdzCzyZostalaDopisanaDataWylogowania();
+
+                        break;
+
+                    case "User":
+                        // operacja odbywa się przez zalogowanego użytkownika dla zalogowanego użytkownika
+                        //await SprawdzCzyZostalaDopisanaDataWylogowania(email);
+                        break;
+                }
+            }
+        }
+
+
+        /// <summary>
+        ///  Operacja jeszcze nie używana
+        /// </summary>
+        private async Task ZaktualizujRekordLogowaniaDopisujacDoNiegoGodzineWylogowania (string email)
+        {
+            // wyszukuje najnowszy rekord logowania oraz dopisuje do niego datę wylogowania
+            var ostatnieLogowanieUzytkownika = await _context.Logowania
+                .Include(i => i.User)
+                .OrderByDescending(o => o.DataLogowania)
+                .FirstOrDefaultAsync(f => f.User.Email == email);
+
+            if (ostatnieLogowanieUzytkownika != null)
+            {
+                // zapisanie w bazie daty wylogowania użytkownika
+                ostatnieLogowanieUzytkownika.DodajDateWylogowania(DateTime.Now);
+                _context.Entry(ostatnieLogowanieUzytkownika).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+        }
+
+
+
+        /*
+                /// <summary>
+                /// Przy zalogowaniu sprawdza czy do poprzedniego wylogowania została dopisana data wylogowania, jeśli nie to dopisuje
+                /// </summary>
+                private async Task SprawdzCzyZostalaDopisanaDataWylogowania(ApplicationUser user)
+                {
+                    // pobiera logowania zalogowanego użytkownika bez dopisanej daty wylogowania
+                    var logowaniaUzytkownika = await _context.Logowania
+                        .Where(w => w.UserId == user.Id && w.DataWylogowania == DateTime.Parse("01.01.0001 00:00:00"))
+                        .OrderByDescending(o => o.DataLogowania)
+                        .ToListAsync();
+
+                    if (logowaniaUzytkownika.Count > 1)
+                    {
+                        foreach (var logowanieUzytkownika in logowaniaUzytkownika)
+                        {
+                            logowanieUzytkownika.DodajDateWylogowania(
+                                dataWylogowania: DateTime.Now
+                                );
+
+                            _context.Entry(logowanieUzytkownika).State = EntityState.Modified;
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+                }
+        */
+
+
+
+        /// <summary>
+        /// Przy zalogowaniu sprawdza czy do poprzedniego wylogowania została dopisana data wylogowania, jeśli nie to dopisuje
+        /// Operacja odbywa się dla wszystkich użytkowników
+        /// </summary>
+        private async Task SprawdzCzyZostalaDopisanaDataWylogowania()
+        {
+            foreach (var user in await _context.Users.ToListAsync())
+            {
+                foreach (var logowanie in await _context.Logowania.ToListAsync())
+                {
+
+                    var logowaniaUzytkownika = await _context.Logowania.Where(w => w.UserId == user.Id).OrderByDescending(o => o.DataLogowania).ToListAsync(); // pobranie wszytkich logowań dla danego użytkownika
+                    List<Logowanie> logowaniaUzytkownikaKopia = logowaniaUzytkownika;
+                    if (logowaniaUzytkownikaKopia.Count > 1)
+                    {
+                        logowaniaUzytkownikaKopia.RemoveAt(0); // usunięcie pierwszego rekordu i zajęcie się pozostałymi rekordami, ponieważ pierwszy rekord należy do zalogowanego użytkownika
+                        foreach (var logowanieUzytkownikaKopia in logowaniaUzytkownikaKopia)
+                        {
+                            if (logowanieUzytkownikaKopia.DataWylogowania == DateTime.Parse("01.01.0001 00:00:00"))
+                            {
+
+                                var dz = logowanieUzytkownikaKopia.DataLogowania;
+                                var dw = DateTime.Now;
+                                var cp = dw - dz;
+                                TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
+                                logowanieUzytkownikaKopia.DataWylogowania = DateTime.Now;
+                                logowanieUzytkownikaKopia.CzasPracy = czasPracy;
+
+                                _context.Entry(logowanie).State = EntityState.Modified;
+                                await _context.SaveChangesAsync();
+                            }
+
+                        }
+                    }
+                }
+            }
+
+        }
+
+
+
+        /*
+                /// <summary>
+                /// Przy zalogowaniu sprawdza czy do poprzedniego wylogowania została dopisana data wylogowania, jeśli nie to dopisuje
+                /// Operacja odbywa się dla wszystkich użytkowników
+                /// </summary>
+                private async Task SprawdzCzyZostalaDopisanaDataWylogowania()
+                {
+
+                    var users = await _context.Users.ToListAsync();
+
+                    // pobiera tylko i wyłącznie rekordy do których jest przypisana "01.01.0001 00:00:00" data wylogowania 
+                    var logowania = await _context.Logowania
+                        .Where(w => w.DataWylogowania == DateTime.Parse("01.01.0001 00:00:00"))
+                        .OrderByDescending(o => o.DataLogowania)
+                        .ToListAsync();
+
+
+                    foreach (var user in users)
+                    {
+                        foreach (var logowanie in logowania)
+                        {
+
+                            var logowaniaUzytkownika = logowania.Where(w => w.UserId == user.Id).OrderByDescending(o => o.DataLogowania).ToList (); // pobranie wszytkich logowań dla danego użytkownika
+                            List<Logowanie> logowaniaUzytkownikaKopia = logowaniaUzytkownika;
+                            if (logowaniaUzytkownikaKopia.Count > 1)
+                            {
+                                logowaniaUzytkownikaKopia.RemoveAt(0); // usunięcie pierwszego rekordu i zajęcie się pozostałymi rekordami, ponieważ pierwszy rekord należy do zalogowanego użytkownika
+                                foreach (var logowanieUzytkownikaKopia in logowaniaUzytkownikaKopia)
+                                {
+                                    var cp = DateTime.Now - logowanieUzytkownikaKopia.DataLogowania;
+                                    TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
+                                    logowanieUzytkownikaKopia.DataWylogowania = DateTime.Now;
+                                    logowanieUzytkownikaKopia.CzasPracy = czasPracy;
+
+                                    _context.Entry(logowanieUzytkownikaKopia).State = EntityState.Modified;
+                                    await _context.SaveChangesAsync();
+                                }
+                            }
+                        }
+                    }
+
+                }
+        */
+
+
+
+
+        /// <summary>
+        /// Przy zalogowaniu sprawdza czy do poprzedniego wylogowania została dopisana data wylogowania, jeśli nie to dopisuje
+        /// Operacja wykonywana dla pojedyńczego użytkownika
+        /// </summary>
+        private async Task SprawdzCzyZostalaDopisanaDataWylogowania(string email)
+        {
+            var zalogowanyUser = await _context.Users.FirstOrDefaultAsync (f=> f.Email == email);
+            if (zalogowanyUser != null)
+            {
+                // poniższe operacje mogą być wykonywane przez użytkownika oraz przez administratora
+                // administrator sprawdza wszystkich użytkowników, a pojedyńczy user tylko dla siebie
+
+                switch (zalogowanyUser.RoleName)
+                {
+                    case "Administrator": 
+                        // znalezienie wszystkich rekoród posiadających "01.01.0001 00:00:00" w DataWylogowania
+                        var logowania = await _context.Logowania
+                            .Include(i => i.User)
+                            .Where(w => w.DataWylogowania == DateTime.Parse("01.01.0001 00:00:00"))
+                            .ToListAsync();
+
+
+                        Dictionary<string, List<Logowanie>> results = new Dictionary<string, List<Logowanie>>();
+                        // najpierwsz pętla przechodzi przez wszystkich użytkowników aby pobrać "01.01.0001 00:00:00" dla indywidualnych użytkowników
+                        foreach (var user in await _context.Users.ToListAsync ())
+                        {
+                            // pętla przez wszystkie powyższe logowania
+                            foreach (var logowanie in logowania)
+                            {
+                                if (logowanie.UserId == user.Id)
+                                {
+                                    List<Logowanie> logowaniaUzytkownika = new List<Logowanie>();
+                                    // jeżeli użytkownik jest już w bazie dodaj do niego kolejny rekord z jego zalogowaniem
+                                    if (results.ContainsKey(user.Email))
+                                    {
+                                        logowaniaUzytkownika = results[user.Email];
+                                        logowaniaUzytkownika.Add(logowanie);
+                                    }
+                                    else
+                                    {
+                                        logowaniaUzytkownika.Clear();
+                                        logowaniaUzytkownika.Add(logowanie);
+                                        results.Add(user.Email, logowaniaUzytkownika);
+                                    }
+                                }
+                            }
+                        }
+                        // usunięcie rekordów logowania według elementeów znajdujących się w słowniku
+                        foreach (var result in results)
+                        {
+                            result.Value.OrderByDescending(o => o.DataLogowania); // posortowanie elementów wg. daty logowania
+                            int iloscElementow = result.Value.Count;
+                            var lastElementLogowanie = result.Value.Last();
+
+
+                            var now = DateTime.Now.AddDays(-2); // usinięcie rekordów sprzed dwóch dni
+
+                            if (lastElementLogowanie.DataLogowania < now)
+                            {
+                                // usunięcie logowania z bazy
+                                _context.Logowania.Remove(lastElementLogowanie);
+                                await _context.SaveChangesAsync();
+                            }
+                        }
+
+                        break;
+
+
+                    case "User":
+/*
+                        // pobiera logowania zalogowanego użytkownika bez dopisanej daty wylogowania
+                        var logowaniaUzytkownika = await _context.Logowania
+                            .Where(w => w.UserId == zalogowanyUser.Id && w.DataWylogowania == DateTime.Parse("01.01.0001 00:00:00"))
+                            .OrderByDescending(o => o.DataLogowania)
+                            .ToListAsync();
+
+                        if (logowaniaUzytkownika.Count > 1)
+                        {
+                            foreach (var logowanieUzytkownika in logowaniaUzytkownika)
+                            {
+                                logowanieUzytkownika.DodajDateWylogowania(
+                                    dataWylogowania: DateTime.Now
+                                    );
+
+                                _context.Entry(logowanieUzytkownika).State = EntityState.Modified;
+                                await _context.SaveChangesAsync();
+                            }
+                        }
+*/
+                        break;
+                }
+
+            }
+        }
+
          
+
+
 
 
 

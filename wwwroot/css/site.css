@@ -890,3 +890,23 @@ hr {
     margin: 10px 0px;
 }
 
+
+.arrowNi {
+    margin: 0px 5px;
+    /*position: relative;
+    display: inline-block; 
+    background-color: transparent; 
+    margin: 0px 14px 0px 10px;*/
+}
+    .arrowNi::after {
+        /*content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 0;
+        border-top: 4px solid transparent;
+        border-bottom: 4px solid transparent;
+        border-left: 4px solid gray;
+        transform: translateY(-50%);*/
+    }
