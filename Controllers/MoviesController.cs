@@ -166,7 +166,9 @@ namespace WebApplication71.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    model.Email = HttpContext.User.Identity.Name; // pobiera email zalogowanego użytkownika
+                    // przekazanie emaila zalogowanego użytkownika do modelu
+                    model.Email = User.Identity.Name;
+
                     var result = await _moviesRepository.Create(model);
                     if (result != null && result.Success)
                         return RedirectToAction("Index", "Movies");
@@ -235,6 +237,7 @@ namespace WebApplication71.Controllers
                         Title = model.Title,
                         Description = model.Description,
                         Photo = model.Photo,
+                        PhotoData = model.PhotoData,
                         Price = model.Price,
                         CategoryId = model.CategoryId
                     });
@@ -246,7 +249,7 @@ namespace WebApplication71.Controllers
                     ViewData["ErrorMessage"] = result.Message;
                 }
 
-                model.CategoriesList = new SelectList((await _categoriesRepository.GetAll()).Object, "CategoryId", "Name"); // select lista
+                model.CategoriesList = new SelectList((await _categoriesRepository.GetAll()).Object, "CategoryId", "Name", model.CategoryId); // select lista
                 return View(model);
             }
             catch (Exception ex)

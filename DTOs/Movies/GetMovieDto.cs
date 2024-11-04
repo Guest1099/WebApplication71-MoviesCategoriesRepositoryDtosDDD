@@ -17,11 +17,11 @@ namespace WebApplication71.DTOs.Movies
         public string Description { get; set; }
 
 
-        [Required(ErrorMessage = "To pole jest wymagane")]
         public byte[] Photo { get; set; }
 
 
         [Required(ErrorMessage = "To pole jest wymagane")]
+        [RegularExpression("^[0-9]+$", ErrorMessage = "Wprowadź poprawną liczbę")]
         public double Price { get; set; }
 
 

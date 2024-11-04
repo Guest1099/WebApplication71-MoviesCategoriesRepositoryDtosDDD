@@ -13,7 +13,7 @@ namespace WebApplication71.DTOs
         public string q { get; set; } = "";
 
         // Opcje sortowania np. Nazwa A-Z, Nazwa Z-A, i tak dalej
-        public string SortowanieOption { get; set; } = "Nazwa Z-A";
+        public string SortowanieOption { get; set; }
 
 
 

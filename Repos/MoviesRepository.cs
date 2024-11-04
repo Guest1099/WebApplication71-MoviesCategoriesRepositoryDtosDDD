@@ -114,7 +114,7 @@ namespace WebApplication71.Repos
         {
             var returnResult = new ResultViewModel<CreateMovieDto>() { Success = false, Message = "", Object = new CreateMovieDto() };
 
-            if (model != null)
+            if (model != null && !string.IsNullOrEmpty (model.Email))
             {
                 try
                 {
@@ -169,10 +169,13 @@ namespace WebApplication71.Repos
                     var movie = await _context.Movies.FirstOrDefaultAsync(f => f.MovieId == model.MovieId);
                     if (movie != null)
                     {
+                        object photoData = model.PhotoData == null ? movie.Photo : await ChangeFileToBytes(model.PhotoData);
+                        byte[] photo = photoData as byte[];
+
                         movie.Update(
                             title: model.Title,
                             description: model.Description,
-                            photo: await ChangeFileToBytes(model.PhotoData),
+                            photo: photo,
                             price: model.Price,
                             categoryId: model.CategoryId
                             );

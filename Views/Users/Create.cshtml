@@ -21,6 +21,8 @@
         <span class="titleHeader">Dane dotyczące logowania</span>
     </div>
 
+
+    <!-- tabela zawartości -->
     <table>
         <tr>
             <td class="leftColumn">
@@ -194,13 +196,15 @@
 
 
 
+    <!-- dolne przyciski -->
     <div class="w-100 df-sb mt-30 mb-40">
         <a asp-action="Index" asp-controller="Users" class="buttonWstecz w-100px">Wstecz</a>
         <div class="df">
-            <input type="submit" value="Zapisz" class="buttonEdit w-100px" onclick="clearSession()" />
+            <input type="submit" value="Zapisz" class="buttonEdit w-100px" onclick="clearSession();" />
             <a asp-action="Index" asp-controller="Users" class="buttonAnuluj w-100px ml-2">Anuluj</a>
         </div>
     </div>
+
 </form>
 
 

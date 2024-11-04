@@ -5,8 +5,9 @@
 </div>  
 <hr />
 
-<form method="post" asp-action="Edit" asp-controller="Movies">
+<form method="post" asp-action="Edit" asp-controller="Movies" enctype="multipart/form-data">
     <input type="hidden" asp-for="MovieId" />
+    <input type="hidden" asp-for="Photo" />
 
 
     <table>
@@ -80,10 +81,10 @@
 
 
     <div class="w-100 df-sb mt-30 mb-40">
-        <a asp-action="Index" asp-controller="Movies" class="buttonWstecz w-100px">Wstecz</a>
+        <a asp-action="Index" asp-controller="Movies" class="buttonWstecz w-100px" onclick="clearSession();">Wstecz</a>
         <div class="df">
-            <input type="submit" value="Zapisz" class="buttonEdit w-100px" />
-            <a asp-action="Index" asp-controller="Movies" class="buttonAnuluj w-100px ml-2">Anuluj</a>
+            <input type="submit" value="Zapisz" class="buttonEdit w-100px"  onclick="clearSession();" />
+            <a asp-action="Index" asp-controller="Movies" class="buttonAnuluj w-100px ml-2" onclick="clearSession();">Anuluj</a>
         </div>
     </div>
 </form>
@@ -91,3 +92,102 @@
 
 <!-- Zwraca komunikat błędu, o ile takowy się pojawi -->
 <span class="c-red">@ViewData["ErrorMessage"]</span>
+
+
+
+
+
+
+
+
+@section Scripts {
+    <script>
+        var filesInput = document.getElementById('fileInput');
+        var imagePreview = document.getElementById('imagePreview');
+        var displayPhoto = document.getElementById('displayPhoto');
+        var imageContainer = document.getElementById('imageContainer');
+
+        // Funkcja do zapisywania przesłanych plików w sessionStorage
+        function saveFiles() {
+            var files = filesInput.files;
+
+            if (files.length > 0) {
+                var filesArray = Array.from(files);
+                var filesData = filesArray.map(file => {
+                    return {
+                        name: file.name,
+                        type: file.type,
+                        size: file.size
+                    };
+                });
+
+                // Zapisywanie plików w sessionStorage
+                sessionStorage.setItem('uploadPhoto', JSON.stringify(filesData));
+
+                // Konwertowanie plików na Base64
+                var uploadedFilesBase64 = [];
+                filesArray.forEach(file => {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        uploadedFilesBase64.push(e.target.result);
+                        sessionStorage.setItem('uploadedFilesBase64', JSON.stringify(uploadedFilesBase64));
+                    }
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            // Ukryj displayPhoto
+            displayPhoto.style.display = 'none';
+        }
+
+        // Funkcja pobiera dane z sesji do zmiennej po załadowaniu okna
+        window.onload = function () {
+            var uploadedFilesData = sessionStorage.getItem('uploadPhoto');
+            var uploadedFilesBase64 = sessionStorage.getItem('uploadedFilesBase64');
+
+            if (uploadedFilesBase64) {
+                var base64Files = JSON.parse(uploadedFilesBase64);
+                // Wyświetlenie pierwszego obrazu w imagePreview
+                if (base64Files.length > 0) {
+                    imagePreview.src = base64Files[0];
+                    imagePreview.style.display = 'block';
+                    displayPhoto.style.display = 'none'; // Ukryj displayPhoto
+                }
+            }
+
+            if (uploadedFilesData) {
+                var uploadedFiles = JSON.parse(uploadedFilesData);
+                var newFilesList = new DataTransfer();
+
+                uploadedFiles.forEach(file => {
+                    var newFile = new File([], file.name, { type: file.type, size: file.size });
+                    newFilesList.items.add(newFile);
+                });
+
+                filesInput.files = newFilesList.files;
+
+                imageContainer.style.width = '150px';
+                imageContainer.style.height = '150px';
+                displayPhoto.style.display = 'none';
+            }
+        };
+
+        // Funkcja odpowiedzialna za wyświetlenie zdjęcia w img
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+                displayPhoto.style.display = 'none'; // Ukryj displayPhoto
+            }
+        }
+
+
+    </script>
+}

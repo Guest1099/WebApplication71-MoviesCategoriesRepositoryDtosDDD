@@ -4,11 +4,7 @@
     int index = 0;
     index = Model.PageSize * (Model.PageIndex - 1);
 }
-
-
-@Model.SortowanieOption
  
-AAAAAAAAAAAAAa
 
 <div class="overFormContainer">
 
@@ -33,7 +29,7 @@ AAAAAAAAAAAAAa
 
                     <!-- Sortowanie -->
                     <div class="df">
-                        <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption"></select>
+                        <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption" id="sortSelect"></select>
                         <input type="submit" value="Sortuj" class="searchButton" />
                     </div>
                 </div>
@@ -114,9 +110,16 @@ AAAAAAAAAAAAAa
 
 
 
+                <h2>aaaa</h2>
+                <h2>@Model.q</h2>
+                <h2>@Model.SortowanieOption</h2>
+
+
 
                 @if (Model.Paginator.Count > 4)
                 {
+                    bool displayPaginator = false;
+
 
                     <!-- Paginator -->
                     bool hasPrevious = Model.Paginator.HasPreviousPage;
@@ -134,103 +137,112 @@ AAAAAAAAAAAAAa
 
                         </div>
 
-                        <div class="w-60 centery">
-                            <div class="w-100 centery">
-                                <div class="df fs-11 centery">
-                                    @if (hasPrevious)
-                                    {
-                                        <a asp-action="Index"
-                                           asp-controller="Categories"
-                                           asp-route-PageSize="@Model.PageSize"
-                                           asp-route-PageIndex="@(Model.Paginator.PageIndex - 1)"
-                                           asp-route-q="@Model.q"
-                                           asp-route-SortowanieOption="@Model.SortowanieOption"
-                                           class="paginatorButton">
-                                            Prev
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <a asp-action="Index"
-                                           asp-controller="Categories"
-                                           class="paginatorButton disable-link">
-                                            Prev
-                                        </a>
-                                    }
 
 
-                                    <div class="df ml-10 mr-10">
-                                        @{
-                                            int length = Model.PageIndex + Model.Paginator.Count;
-
-                                            string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
-
-
-                                            Model.Start = 1;
-                                            Model.End = Model.PageSize + 1;
-                                            int srodek = (int)Math.Round((double)(Model.PageSize / 2));
-
-                                            if (Model.PageIndex > srodek)
-                                            {
-                                                Model.Start = Model.PageIndex - (srodek - 1);
-                                                Model.End = Model.PageIndex + Model.PageSize - srodek;
-                                            }
+                        @if ((Model.PageSize == 10 || Model.PageSize == 15 || Model.PageSize == 20) && Model.Paginator.Count < 10)
+                        {
+                            displayPaginator = false;
+                        }
+                        else
+                        {
+                            displayPaginator = true;
+                        }
 
 
+                        @if (displayPaginator)
+                        {
+                            <div class="w-60 centery">
+                                <div class="w-100 centery">
+                                    <div class="df fs-11 centery">
+                                        @if (hasPrevious)
+                                        {
+                                            // string sortowanieOption = "Nazwa Z-A";
+                                            string sortowanieOption = Model.SortowanieOption;
 
-                                            for (var i = Model.Start; i < Model.End; i++)
-                                            {
-                                                if (i == Model.PageIndex)
-                                                {
-                                                    style = "padding: 7px 10px; background-color: lightgray; color: black; font-weight: bold";
-                                                }
-                                                else
-                                                {
-                                                    style = "padding: 7px 10px; background-color: white;";
-                                                }
-                                                if (i <= Model.Paginator.TotalPage)
-                                                {
-                                                    <a asp-action="Index"
-                                                       asp-controller="Categories"
-                                                       asp-route-PageSize="@Model.PageSize"
-                                                       asp-route-PageIndex="@i"
-                                                       asp-route-q="@Model.q"
-                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                       class="paginator-item"
-                                                       style="@style">
-                                                        @i
-                                                    </a>
-                                                }
-                                            }
+                                            <a asp-action="Index"
+                                               asp-controller="Categories"
+                                               asp-route-PageSize="@Model.PageSize"
+                                               asp-route-PageIndex="@(Model.Paginator.PageIndex - 1)"
+                                               asp-route-q="@Model.q"
+                                               asp-route-SortowanieOption="@Model.SortowanieOption"
+                                               class="paginatorButton">
+                                                Prev
+                                            </a>
                                         }
+                                        else
+                                        {
+                                            <a asp-action="Index"
+                                               asp-controller="Categories"
+                                               class="paginatorButton disable-link">
+                                                Prev
+                                            </a>
+                                        }
+
+
+                                        <div id="containerIlinks" class="df ml-10 mr-10">
+                                            @{
+                                                int length = Model.PageIndex + Model.Paginator.Count;
+
+                                                string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
+
+
+                                                Model.Start = 1;
+                                                Model.End = Model.PageSize + 1;
+                                                int srodek = (int)Math.Round((double)(Model.PageSize / 2));
+
+                                                if (Model.PageIndex > srodek)
+                                                {
+                                                    Model.Start = Model.PageIndex - (srodek - 1);
+                                                    Model.End = Model.PageIndex + Model.PageSize - srodek;
+                                                }
+
+
+
+                                                for (var i = Model.Start; i < Model.End; i++)
+                                                {
+                                                    if (i == Model.PageIndex)
+                                                    {
+                                                        style = "padding: 7px 10px; background-color: lightgray; color: black; font-weight: bold";
+                                                    }
+                                                    else
+                                                    {
+                                                        style = "padding: 7px 10px; background-color: white;";
+                                                    }
+                                                    if (i <= Model.Paginator.TotalPage)
+                                                    {
+                                                                // <div id="oneLinkContainer"></div>
+                                                    }
+                                                }
+                                            }
+                                        </div>
+
+
+                                        @if (hasNext)
+                                        {
+                                            <a asp-action="Index"
+                                               asp-controller="Categories"
+                                               asp-route-PageSize="@Model.PageSize"
+                                               asp-route-PageIndex="@(Model.Paginator.PageIndex + 1)"
+                                               asp-route-q="@Model.q"
+                                               asp-route-SortowanieOption="@Model.SortowanieOption"
+                                               class="paginatorButton">
+                                                Next
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a asp-action="Index"
+                                               asp-controller="Categories"
+                                               class="paginatorButton disable-link">
+                                                Next
+                                            </a>
+                                        }
+
+
                                     </div>
-
-
-                                    @if (hasNext)
-                                    {
-                                        <a asp-action="Index"
-                                           asp-controller="Categories"
-                                           asp-route-PageSize="@Model.PageSize"
-                                           asp-route-PageIndex="@(Model.Paginator.PageIndex + 1)"
-                                           asp-route-q="@Model.q"
-                                           asp-route-SortowanieOption="@Model.SortowanieOption"
-                                           class="paginatorButton">
-                                            Next
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <a asp-action="Index"
-                                           asp-controller="Categories"
-                                           class="paginatorButton disable-link">
-                                            Next
-                                        </a>
-                                    }
-
-
                                 </div>
                             </div>
-                        </div>
+                        }
                     </div>
 
                 }
@@ -260,6 +272,76 @@ AAAAAAAAAAAAAa
 
 
 
+<div id="oneLinkContainer">SSSSSSSs</div>
 
 
+
+
+@section Scripts {
+
+    <script type="text/javascript">
+
+        // przekazanie wartości pobranej z selecta do tagu a, który ten z kolei przekazuje ją akcji GET Index
+
+
+        let sortSelect = document.getElementById('sortSelect');
+        let sortowanieOption = sortSelect.value;
+
+
+        let linkI = document.getElementById('linkI');
+        linkI.setAttribute('asp-route-SortowanieOption', sortowanieOption);
+
+
+        sortSelect.addEventListener('change', function () {
+            let selectedValue = this.value;
+            linkI.setAttribute('asp-route-SortowanieOption', selectedValue);
+        });
+
+
+        function createLinksInOneLinkContainer() {
+            var container = document.getElementById('oneLinkContainer');
+
+            for (var i = @Model.Start; i < @Model.End; i++) {
+                var link = document.createElement('a');
+
+                // Ustawianie atrybutów
+                link.setAttribute('asp-action', 'Index');
+                link.setAttribute('asp-controller', 'Categories');
+                link.setAttribute('asp-route-PageSize', '@Model.PageSize');
+                link.setAttribute('asp-route-PageIndex', i);
+                link.setAttribute('asp-route-q', '@Model.q');
+                link.setAttribute('asp-route-SortowanieOption', '@Model.SortowanieOption');
+
+                // Ustawianie stylu
+                var style = (i == @Model.PageIndex) ?
+                    "padding: 7px 10px; background-color: lightgray; color: black; font-weight: bold;" :
+                    "padding: 7px 10px; background-color: white;";
+
+                link.style.cssText = style;
+                link.id = 'link' + i; // Możesz ustawić różne id
+                link.textContent = i; // Tekst linku
+
+                // Dodawanie linku do kontenera
+                container.appendChild(link);
+            }
+        }
+
+        // Wywołaj funkcję po załadowaniu strony
+        document.addEventListener('DOMContentLoaded', createLinksInOneLinkContainer);
+
+
+
+        function createLinks(container) {
+            let link = document.createElement('div');
+            link.innerText = "AB";
+            link.style.border = '5px solid orange';
+
+            container.appendChild(link);
+        }
+
+        createLinks(document.getElementById('overFormContainer'));
+
+
+    </script>
+}
 
