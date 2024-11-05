@@ -17,7 +17,6 @@ namespace WebApplication71.Models
         public override bool EmailConfirmed { get; set; }
         public override bool LockoutEnabled { get; set; }
         public override string PasswordHash { get; set; }
-        
 
 
 

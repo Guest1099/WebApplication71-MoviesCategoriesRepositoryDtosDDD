@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.Models;
 using WebApplication71.Models.Enums;
@@ -19,19 +20,16 @@ namespace WebApplication71.Controllers
         private readonly ICategoriesRepository _categoriesRepostiory;
         private readonly IMoviesRepository _moviesRepository;
         private readonly ILogowaniaRepository _logowaniaRepository;
-        //public Dictionary<string, int> StatystykiDictionary { get; set; }
 
         private List <StatystykiViewModel> _statystyki;
+
         public HomeController(IUsersService usersService, IRolesService rolesService, ICategoriesRepository categoriesRepostiory, IMoviesRepository moviesRepository, ILogowaniaRepository logowaniaRepository)
         {
             _usersService = usersService;
             _rolesService = rolesService;
             _categoriesRepostiory = categoriesRepostiory;
             _moviesRepository = moviesRepository;
-            _logowaniaRepository = logowaniaRepository;
-
-
-            //StatystykiDictionary = new Dictionary<string, int>();
+            _logowaniaRepository = logowaniaRepository; 
         }
 
 
@@ -106,9 +104,6 @@ namespace WebApplication71.Controllers
             }
 
         }
-
-
-
 
 
     }

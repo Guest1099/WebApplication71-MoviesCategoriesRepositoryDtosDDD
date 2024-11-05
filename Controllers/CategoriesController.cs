@@ -40,6 +40,12 @@ namespace WebApplication71.Controllers
                     return View("NotFound");
 
 
+                // Wyszukiwanie
+                if (!string.IsNullOrEmpty(model.q))
+                {
+                    categories = categories.Where(w => w.Name.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+
                 // Sortowanie
                 switch (model.SortowanieOption)
                 {
@@ -52,19 +58,20 @@ namespace WebApplication71.Controllers
                         break;
                 }
 
+                
 
-                return View(new GetCategoriesDto()
+                model.End = model.PageSize + 1;
+                int srodek = (int)Math.Round((double)(model.PageSize / 2));
+                if (model.PageIndex > srodek)
                 {
-                    Categories = categories,
-                    Paginator = Paginator<GetCategoryDto>.CreateAsync(categories, model.PageIndex, model.PageSize),
-                    PageIndex = model.PageIndex,
-                    PageSize = model.PageSize,
-                    Start = model.Start,
-                    End = model.End,
-                    q = model.q,
-                    SearchOption = model.SearchOption,
-                    SortowanieOption = model.SortowanieOption
-                });
+                    model.Start = model.PageIndex - (srodek - 1);
+                    model.End = model.PageIndex + model.PageSize - srodek;
+                }
+
+
+                model.Categories = categories;
+                model.Paginator = Paginator<GetCategoryDto>.CreateAsync(categories, model.PageIndex, model.PageSize);
+                return View(model);
             }
             catch (Exception ex)
             {
@@ -108,6 +115,13 @@ namespace WebApplication71.Controllers
                         break;
                 }
 
+                model.End = model.PageSize + 1;
+                int srodek = (int)Math.Round((double)(model.PageSize / 2));
+                if (model.PageIndex > srodek)
+                {
+                    model.Start = model.PageIndex - (srodek - 1);
+                    model.End = model.PageIndex + model.PageSize - srodek;
+                }
 
                 model.Categories = categories;
                 model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)categories.Count / model.PageSize));
@@ -118,6 +132,11 @@ namespace WebApplication71.Controllers
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
+        }
+
+        private async Task InitializeSearchAndFilterData ()
+        {
+
         }
 
 

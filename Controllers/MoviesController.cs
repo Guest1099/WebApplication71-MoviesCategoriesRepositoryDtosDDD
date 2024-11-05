@@ -42,21 +42,53 @@ namespace WebApplication71.Controllers
 
                 if (movies == null)
                     return View("NotFound");
-                 
 
 
-                return View(new GetMoviesDto()
+                // Wyszukiwanie
+                // szuka w tytułach lub w opisach
+                if (!string.IsNullOrEmpty(model.q))
                 {
-                    Movies = movies,
-                    Paginator = Paginator<GetMovieDto>.CreateAsync(movies, model.PageIndex, model.PageSize),
-                    PageIndex = model.PageIndex,
-                    PageSize = model.PageSize,
-                    Start = model.Start,
-                    End = model.End,
-                    q = model.q,
-                    SearchOption = model.SearchOption,
-                    SortowanieOption = model.SortowanieOption
-                });
+                    movies = movies.Where(
+                        w =>
+                            w.Title.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
+                            w.Description.Contains(model.q, StringComparison.OrdinalIgnoreCase)
+                    ).ToList();
+                }
+
+
+                // Sortowanie
+                switch (model.SortowanieOption)
+                {
+                    case "Tytuł A-Z":
+                        movies = movies.OrderBy(o => o.Title).ToList();
+                        break;
+
+                    case "Tytuł Z-A":
+                        movies = movies.OrderByDescending(o => o.Title).ToList();
+                        break;
+
+                    case "Kategoria A-Z":
+                        movies = movies.OrderBy(o => o.Category).ToList();
+                        break;
+
+                    case "Kategoria Z-A":
+                        movies = movies.OrderByDescending(o => o.Category).ToList();
+                        break;
+                }
+
+                model.End = model.PageSize + 1;
+                int srodek = (int)Math.Round((double)(model.PageSize / 2));
+
+                if (model.PageIndex > srodek)
+                {
+                    model.Start = model.PageIndex - (srodek - 1);
+                    model.End = model.PageIndex + model.PageSize - srodek;
+                }
+
+                model.Movies = movies;
+                model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)movies.Count / model.PageSize));
+                model.Paginator = Paginator<GetMovieDto>.CreateAsync(movies, model.PageIndex, model.PageSize);
+                return View(model);
             }
             catch (Exception ex)
             {
@@ -116,6 +148,14 @@ namespace WebApplication71.Controllers
                         break;
                 }
 
+                model.End = model.PageSize + 1;
+                int srodek = (int)Math.Round((double)(model.PageSize / 2));
+
+                if (model.PageIndex > srodek)
+                {
+                    model.Start = model.PageIndex - (srodek - 1);
+                    model.End = model.PageIndex + model.PageSize - srodek;
+                }
 
                 model.Movies = movies;
                 model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)movies.Count / model.PageSize));
