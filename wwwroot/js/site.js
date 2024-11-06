@@ -52,3 +52,8 @@ function clearSession() {
     sessionStorage.removeItem('uploadPhoto');
     sessionStorage.removeItem('uploadedFilesBase64');
 }
+
+
+function removeSessionPageIndex() {
+    sessionStorage.removeItem('pageIndex');
+}

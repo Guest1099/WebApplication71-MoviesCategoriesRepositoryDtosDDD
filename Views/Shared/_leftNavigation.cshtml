@@ -54,7 +54,7 @@
 
 
                 <li>
-                    <a asp-action="Index" asp-controller="Categories" class="buttonEdit">Categories (@categories.Count)</a>
+                    <a asp-action="Index" asp-controller="Categories" class="buttonEdit" onclick="removeSessionPageIndex();">Categories (@categories.Count)</a>
                 </li>
                 <li>
                     <a asp-action="Index" asp-controller="Movies" class="buttonDelete" onclick="clearSessions();">Movies (@movies.Count)</a>

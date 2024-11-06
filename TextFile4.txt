@@ -265,7 +265,6 @@
         let start = 0;
         let end = 0;
         let srodek = 0;
-        let totalPage = @Model.Paginator.TotalPage;
 
 
         // SortowanieOption
@@ -279,14 +278,19 @@
         // PageSize
         // pobieranie zaznaczonego elementu z listy SortowanieOptions i przekazywanie go do zmiennej, która jest przekazywana do atrybutu przycisku
         let pageSizeSelectList = document.getElementById('pageSizeSelectList');
-        let pageSize = parseInt (pageSizeSelectList.value); // może mieć 5, 10, 15 lub 20
-        obliczPaginacje();
+        let pageSize = pageSizeSelectList.value; // może mieć 5, 10, 15 lub 20
+        srodek = pageSize / 2;
+        end = pageSize + 1;
+        if (pageIndex > srodek) {
+            start = pageIndex - (srodek-1);
+            end = pageIndex + pageSize - srodek;
+        }
         pageSizeSelectList.addEventListener('change', function () {
             pageSize = parseInt (this.value);
-            obliczPaginacje();
-            refreshGenerateLinks();
         });
 
+
+        let ileLinkowDoWyswietlenia = 0;
 
 
         let linksContainer = document.getElementById('linksContainer');
@@ -316,41 +320,16 @@
             container.appendChild(link);
         }
 
-        function generateLinks(container) { 
-            //linksContainer.replaceChildren();
-
-            for (let i = start; i < end; i++) {
-                if (i <= totalPage-1) {
-                    generateLink(container, i);
-                }
-            } 
-            //emptyContainer ();
-        }
-         
-
-        function refreshGenerateLinks () {
-            generateLinks(linksContainer);
-        }
-        refreshGenerateLinks();
-
-
-        
-        function emptyContainer () {
-            //alert (linksContainer.children.length);
-            for (let i = linksContainer.children.length - 1; i >= 0; i--) {
-    linksContainer.removeChild(linksContainer.children[i]);
-}
-            alert (childrens.length);
-        }
-
-        function obliczPaginacje() {
-            srodek = pageSize / 2;
-            end = pageSize + 1;
-            if (pageIndex > srodek) {
-                start = pageIndex - (srodek - 1);
-                end = pageIndex + pageSize - srodek;
+        function generateLinks(container) {
+            alert(end);
+            for (let i = start; i < 11; i++) {
+                generateLink(container, i);
             }
         }
+        generateLinks(linksContainer);
+
+
+
 
         let buttonNext = document.getElementById('buttonNext');
         // tutaj pilnujemy aby pageIndex wartość dodatnią, wtedy można przejść do poprzedniej podstrony

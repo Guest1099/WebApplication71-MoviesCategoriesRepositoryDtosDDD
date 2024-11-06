@@ -63,7 +63,7 @@
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="tbodyElements">
                         @foreach (var category in Model.Paginator)
                         {
                             index++;
@@ -178,12 +178,12 @@
                                         {
                                             if (i <= Model.Paginator.TotalPage)
                                             {
-                                                <a asp-action="Index"
-                                                   asp-controller="Categories"
-                                                   class="paginator-item"
-                                                   id="button">
-                                                    @i
-                                                </a>
+                                                    <a asp-action="Index"
+                                                       asp-controller="Categories"
+                                                       class="paginator-item"
+                                                       id="button">
+                                                        @i
+                                                    </a>
                                             }
                                         }
 
@@ -252,11 +252,12 @@
     <script type="text/javascript">
 
         let queryValue = '';
-        let pageIndex = 0;
+        let pageIndex = 1;
         let hasPrevious = false;
 
-        let searchInput = document.getElementById('searchInput');
-
+        // let searchInput = document.getElementById('searchInput');
+        // let tbodyElements = document.getElementById('tbodyElements'); pobiera ilość elementów znajdujących się w tbody w tabeli
+        // alert('tbodyElements.length');
 
         // SortowanieOption
         // pobieranie zaznaczonego elementu z listy SortowanieOptions i przekazywanie go do zmiennej, która jest przekazywana do atrybutu przycisku
@@ -283,7 +284,12 @@
             link.addEventListener('click', function (event) {
                 event.preventDefault();
                 queryValue = searchInput.value;  //Zbieramy wartość z formularza
+
                 pageIndex = i + 1;
+
+                // osadzenie zmiennej pageIndex w sessionStorage
+                sessionStorage.setItem('pageIndex', pageIndex);
+
                 this.setAttribute('asp-action', 'Index');
                 this.setAttribute('asp-controller', 'Categories');
                 this.setAttribute('asp-route-PageSize', pageSize);
@@ -301,46 +307,67 @@
         let buttonPrev = document.getElementById('buttonPrev');
         // tutaj pilnujemy aby pageIndex wartość dodatnią, wtedy można przejść do poprzedniej podstrony
         //if (pageIndex >= 0) {
-        buttonPrev.addEventListener('click', function (event) {
-            event.preventDefault();
-            queryValue = searchInput.value;
-            pageIndex = pageIndex - 1;
-            this.setAttribute('asp-action', 'Index');
-            this.setAttribute('asp-controller', 'Categories');
-            this.setAttribute('asp-route-PageSize', pageSize);
-            this.setAttribute('asp-route-PageIndex', pageIndex);
-            this.setAttribute('asp-route-q', queryValue);
-            this.setAttribute('asp-route-SortowanieOption', sortowanieOptionSelectListValue);
-            let linkUrl = `/${this.getAttribute('asp-controller')}/${this.getAttribute('asp-action')}?PageSize=${this.getAttribute('asp-route-PageSize')}&PageIndex=${this.getAttribute('asp-route-PageIndex')}&q=${encodeURIComponent(queryValue)}&SortowanieOption=${this.getAttribute('asp-route-SortowanieOption')}`;
-            window.location.href = linkUrl;
-        });
+            buttonPrev.addEventListener('click', function (event) {
+                event.preventDefault();
+                queryValue = searchInput.value;
+
+                // pobranie zmiennejPageIndex z sessionStorage
+                pageIndex = parseInt(sessionStorage.getItem('pageIndex')) || pageIndex;
+
+                pageIndex = pageIndex - 1;
+
+
+                // osadzenie zmiennej pageIndex w sessionStorage
+                sessionStorage.setItem('pageIndex', pageIndex);
+
+
+                this.setAttribute('asp-action', 'Index');
+                this.setAttribute('asp-controller', 'Categories');
+                this.setAttribute('asp-route-PageSize', pageSize);
+                this.setAttribute('asp-route-PageIndex', pageIndex);
+                this.setAttribute('asp-route-q', queryValue);
+                this.setAttribute('asp-route-SortowanieOption', sortowanieOptionSelectListValue);
+                let linkUrl = `/${this.getAttribute('asp-controller')}/${this.getAttribute('asp-action')}?PageSize=${this.getAttribute('asp-route-PageSize')}&PageIndex=${this.getAttribute('asp-route-PageIndex')}&q=${encodeURIComponent(queryValue)}&SortowanieOption=${this.getAttribute('asp-route-SortowanieOption')}`;
+                window.location.href = linkUrl;
+            });
         //}
-
-
-        // NEW-----------------------------------------------------------------------------------------
 
 
 
         let buttonNext = document.getElementById('buttonNext');
         // tutaj pilnujemy aby pageIndex wartość dodatnią, wtedy można przejść do poprzedniej podstrony
-        if (pageIndex >= 0) {
-        buttonNext.addEventListener('click', function (event) {
-            event.preventDefault();
-            queryValue = searchInput.value;
-            pageIndex = pageIndex + 1;
-            this.setAttribute('asp-action', 'Index');
-            this.setAttribute('asp-controller', 'Categories');
-            this.setAttribute('asp-route-PageSize', pageSize);
-            this.setAttribute('asp-route-PageIndex', pageIndex);
-            this.setAttribute('asp-route-q', queryValue);
-            this.setAttribute('asp-route-SortowanieOption', sortowanieOptionSelectListValue);
-            let linkUrl = `/${this.getAttribute('asp-controller')}/${this.getAttribute('asp-action')}?PageSize=${this.getAttribute('asp-route-PageSize')}&PageIndex=${this.getAttribute('asp-route-PageIndex')}&q=${encodeURIComponent(queryValue)}&SortowanieOption=${this.getAttribute('asp-route-SortowanieOption')}`;
+        //if (pageIndex <= ) {
+            buttonNext.addEventListener('click', function (event) {
+                event.preventDefault();
+                queryValue = searchInput.value;
 
-            //let linkUrl = `${this.getAttribute('href')}?PageSize=${this.getAttribute('asp-route-PageSize')}&PageIndex=${this.getAttribute('asp-route-PageIndex')}&q=${encodeURIComponent(queryValue)}&SortowanieOption=${this.getAttribute('asp-route-SortowanieOption')}`;
-            window.location.href = linkUrl;
-        });
-        }
 
+                // pobranie zmiennejPageIndex z sessionStorage
+                pageIndex = parseInt(sessionStorage.getItem('pageIndex')) || pageIndex;
+
+                pageIndex = pageIndex + 1;
+
+
+                // osadzenie zmiennej pageIndex w sessionStorage
+                sessionStorage.setItem('pageIndex', pageIndex);
+
+
+                this.setAttribute('asp-action', 'Index');
+                this.setAttribute('asp-controller', 'Categories');
+                this.setAttribute('asp-route-PageSize', pageSize);
+                this.setAttribute('asp-route-PageIndex', pageIndex);
+                this.setAttribute('asp-route-q', queryValue);
+                this.setAttribute('asp-route-SortowanieOption', sortowanieOptionSelectListValue);
+                let linkUrl = `/${this.getAttribute('asp-controller')}/${this.getAttribute('asp-action')}?PageSize=${this.getAttribute('asp-route-PageSize')}&PageIndex=${this.getAttribute('asp-route-PageIndex')}&q=${encodeURIComponent(queryValue)}&SortowanieOption=${this.getAttribute('asp-route-SortowanieOption')}`;
+
+                //let linkUrl = `${this.getAttribute('href')}?PageSize=${this.getAttribute('asp-route-PageSize')}&PageIndex=${this.getAttribute('asp-route-PageIndex')}&q=${encodeURIComponent(queryValue)}&SortowanieOption=${this.getAttribute('asp-route-SortowanieOption')}`;
+                window.location.href = linkUrl;
+            });
+        //}
+
+
+
+        // NEW-----------------------------------------------------------------------------------------
 
 
         // function setNecessaryAttributesAndReturnUrl(object) {
@@ -356,6 +383,7 @@
 
 
         //alert('A');
+
 
     </script>
 

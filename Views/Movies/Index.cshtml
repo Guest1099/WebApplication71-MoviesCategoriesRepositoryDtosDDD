@@ -78,7 +78,7 @@
                                     <div class="image">
                                         <partial name="_displayPhoto" model="@movie.Photo" class="rounded-image" />
                                     </div>
-                                    
+
                                 </td>
 
 
@@ -90,7 +90,7 @@
                                 <td style="min-width: 100px;">
                                     @{
                                         string price = $"{movie.Price},00 zł";
-                                                <span>@price</span>
+                                        <span>@price</span>
                                     }
                                 </td>
 
@@ -129,7 +129,7 @@
 
 
                 if (Model.Movies.Count > 4)
-                { 
+                {
 
 
                     <!-- Paginator -->
@@ -180,23 +180,30 @@
 
                                     <div class="df ml-10 mr-10">
                                         @{
-                                           
+
 
                                             for (var i = Model.Start; i < Model.End; i++)
-                                            { 
+                                            {
                                                 if (i <= Model.Paginator.TotalPage)
                                                 {
-                                                            <a asp-action="Index"
-                                                               asp-controller="Movies"
-                                                               asp-route-PageSize="@Model.PageSize"
-                                                               asp-route-PageIndex="@i"
-                                                               asp-route-q="@Model.q"
-                                                               asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                               class="paginator-item"
-                                                               id="button"
-                                                               onclick="buttonClick(this);">
-                                                                @i
-                                                            </a>
+
+                                                    // <a asp-action="Index"
+                                                    //    asp-controller="Movies"
+                                                    //    asp-route-PageSize="@Model.PageSize"
+                                                    //    asp-route-PageIndex="@i"
+                                                    //    asp-route-q="@Model.q"
+                                                    //    asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                    //    class="paginator-item"
+                                                    //    id="button"
+                                                    //    onclick="buttonClick(this);">
+                                                    //     @i
+                                                    // </a>
+
+                                                    <a class="paginator-item"
+                                                       id="button"
+                                                       onclick="buttonClick3(event, this);">
+                                                        @i
+                                                    </a>
                                                 }
                                             }
                                         }
@@ -262,35 +269,62 @@
 @section Scripts {
 
     <script type="text/javascript">
-        
-    
-        // function buttonClick (object) {
+
+
+
+        // function buttonClick(object) {
         //     object.setAttribute('asp-action', 'Index');
         //     object.setAttribute('asp-controller', 'Movies');
         //     object.setAttribute('asp-route-PageSize', 5);
         //     object.setAttribute('asp-route-PageIndex', 1);
         //     object.setAttribute('asp-route-q', 'ssssss');
         //     object.setAttribute('asp-route-SortowanieOption', 'Nazwa Z-A');
+
+        //     let linkUrl = `/Movies/Index`;
+
         //     let linkUrl = `/${this.getAttribute('asp-controller')}/${this.getAttribute('asp-action')}?PageSize=${this.getAttribute('asp-route-PageSize')}&PageIndex=${this.getAttribute('asp-route-PageIndex')}&q=${encodeURIComponent(queryValue)}&SortowanieOption=${this.getAttribute('asp-route-SortowanieOption')}`;
         //     window.location.href = linkUrl;
         // }
 
 
-        function buttonClick(object) {
-            object.setAttribute('asp-action', 'Index');
-            object.setAttribute('asp-controller', 'Movies');
-            object.setAttribute('asp-route-PageSize', 5);
-            object.setAttribute('asp-route-PageIndex', 1);
-            object.setAttribute('asp-route-q', 'ssssss');
-            object.setAttribute('asp-route-SortowanieOption', 'Nazwa Z-A');
-            
-            let linkUrl = `/Movies/Index`;
 
-            //let linkUrl = `/${this.getAttribute('asp-controller')}/${this.getAttribute('asp-action')}?PageSize=${this.getAttribute('asp-route-PageSize')}&PageIndex=${this.getAttribute('asp-route-PageIndex')}&q=${encodeURIComponent(queryValue)}&SortowanieOption=${this.getAttribute('asp-route-SortowanieOption')}`;
+
+        function buttonClick3(event, object) {
+            event.preventDefault();
+
+
+            // pobranie parametów do zmiennych, które potem zostają przekazane w linku do metody get index
+
+            // const action = object.getAttribute('asp-action', 'Index');
+            // const controller = object.getAttribute('asp-controller', 'Movies');
+            // const pageSize = object.getAttribute('asp-route-PageSize', '5');
+            // const pageIndex = object.getAttribute('asp-route-PageIndex', '1');
+            // const q = object.getAttribute('asp-route-q', 'ssssss');
+            // const sortowanieOption = object.getAttribute('asp-route-SortowanieOption', 'Nazwa Z-A');
+
+
+            let pageSize = 10;
+            let pageIndex = 1
+            let q = 'aaaaaaaaaaaaa'
+            let sortowanieOption = 'Nazwa A-Z';
+
+            // object.setAttribute('asp-route-PageSize', pageSize);
+            // object.setAttribute('asp-route-PageIndex', pageIndex);
+            // object.setAttribute('asp-route-q', q);
+            // object.setAttribute('asp-route-SortowanieOption', sortowanieOption);
+
+
+
+            // Tworzenie pełnego URL z parametrami
+            const linkUrl = `/Movies/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${encodeURIComponent(sortowanieOption)}`;
+
+            // Przekierowanie na stworzony URL
             window.location.href = linkUrl;
         }
-    
-    
+
+
+
+
     </script>
 }
 
