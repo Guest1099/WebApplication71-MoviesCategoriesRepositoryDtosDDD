@@ -145,11 +145,28 @@
                             <div class="df fs-11 centery">
 
 
-                                
-                                    <a class="paginatorButton"
+                                @if (hasPrevious)
+                                {
+                                    <a asp-action="Index"
+                                       asp-controller="Categories"
+                                       asp-route-PageSize="@Model.PageSize"
+                                       asp-route-PageIndex="@(Model.Paginator.PageIndex - 1)"
+                                       asp-route-q="@Model.q"
+                                       asp-route-SortowanieOption="@Model.SortowanieOption"
+                                       class="paginatorButton"
                                        id="buttonPrev">
                                         Prev
                                     </a>
+                                }
+                                else
+                                {
+                                    <a asp-action="Index"
+                                       asp-controller="Categories"
+                                       class="paginatorButton disable-link"
+                                       id="buttonPrev">
+                                        Prev
+                                    </a>
+                                }
 
 
                                 <div id="linksContainer" class="df ml-10 mr-10">
@@ -161,7 +178,22 @@
                                     <a class="paginatorButton"
                                        id="buttonNext">
                                         Next
-                                    </a> 
+                                    </a>@* 
+                                @if (hasNext)
+                                {
+                                    <a class="paginatorButton"
+                                       id="buttonNext">
+                                        Next
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a class="paginatorButton disable-link"
+                                       id="buttonNext">
+                                        Next
+                                    </a>
+                                } *@
+
 
                             </div>
                         </div>
@@ -333,29 +365,29 @@
 
         let buttonNext = document.getElementById('buttonNext');
         if (pageIndex < totalPage) {
-            buttonNext.addEventListener('click', function (event) {
-                event.preventDefault();
-                queryValue = searchInput.value;
+        buttonNext.addEventListener('click', function (event) {
+            event.preventDefault();
+            queryValue = searchInput.value;
 
-                // pobranie zmiennejPageIndex z sessionStorage
-                pageIndex = parseInt(sessionStorage.getItem('pageIndex')) || pageIndex;
+            // pobranie zmiennejPageIndex z sessionStorage
+            pageIndex = parseInt(sessionStorage.getItem('pageIndex')) || pageIndex;
 
-                pageIndex = pageIndex + 1;
+            pageIndex = pageIndex + 1;
 
-                // osadzenie zmiennej pageIndex w sessionStorage
-                sessionStorage.setItem('pageIndex', pageIndex);
+            // osadzenie zmiennej pageIndex w sessionStorage
+            sessionStorage.setItem('pageIndex', pageIndex);
 
-                this.setAttribute('asp-action', 'Index');
-                this.setAttribute('asp-controller', 'Categories');
-                this.setAttribute('asp-route-PageSize', pageSize);
-                this.setAttribute('asp-route-PageIndex', pageIndex);
-                this.setAttribute('asp-route-q', queryValue);
-                this.setAttribute('asp-route-SortowanieOption', sortowanieOptionSelectListValue);
-                let linkUrl = `/${this.getAttribute('asp-controller')}/${this.getAttribute('asp-action')}?PageSize=${this.getAttribute('asp-route-PageSize')}&PageIndex=${this.getAttribute('asp-route-PageIndex')}&q=${encodeURIComponent(queryValue)}&SortowanieOption=${this.getAttribute('asp-route-SortowanieOption')}`;
+            this.setAttribute('asp-action', 'Index');
+            this.setAttribute('asp-controller', 'Categories');
+            this.setAttribute('asp-route-PageSize', pageSize);
+            this.setAttribute('asp-route-PageIndex', pageIndex);
+            this.setAttribute('asp-route-q', queryValue);
+            this.setAttribute('asp-route-SortowanieOption', sortowanieOptionSelectListValue);
+            let linkUrl = `/${this.getAttribute('asp-controller')}/${this.getAttribute('asp-action')}?PageSize=${this.getAttribute('asp-route-PageSize')}&PageIndex=${this.getAttribute('asp-route-PageIndex')}&q=${encodeURIComponent(queryValue)}&SortowanieOption=${this.getAttribute('asp-route-SortowanieOption')}`;
 
-                //let linkUrl = `${this.getAttribute('href')}?PageSize=${this.getAttribute('asp-route-PageSize')}&PageIndex=${this.getAttribute('asp-route-PageIndex')}&q=${encodeURIComponent(queryValue)}&SortowanieOption=${this.getAttribute('asp-route-SortowanieOption')}`;
-                window.location.href = linkUrl;
-            });
+            //let linkUrl = `${this.getAttribute('href')}?PageSize=${this.getAttribute('asp-route-PageSize')}&PageIndex=${this.getAttribute('asp-route-PageIndex')}&q=${encodeURIComponent(queryValue)}&SortowanieOption=${this.getAttribute('asp-route-SortowanieOption')}`;
+            window.location.href = linkUrl;
+        });
         }
 
           

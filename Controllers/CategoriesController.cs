@@ -44,6 +44,7 @@ namespace WebApplication71.Controllers
                 if (!string.IsNullOrEmpty(model.q))
                 {
                     categories = categories.Where(w => w.Name.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
+                    model.PageIndex = 1; // kiedy w wyszukiwarce znajduje się jakieś słowo wtedy, po kliknięciu na przycisk szukaj, sortuj lub wybierz PageIndex powraca do pierwszej pozycji
                 }
 
                 // Sortowanie
@@ -67,7 +68,6 @@ namespace WebApplication71.Controllers
                     model.Start = model.PageIndex - (srodek - 1);
                     model.End = model.PageIndex + model.PageSize - srodek;
                 }
-
 
                 model.Categories = categories;
                 model.Paginator = Paginator<GetCategoryDto>.CreateAsync(categories, model.PageIndex, model.PageSize);
@@ -101,6 +101,7 @@ namespace WebApplication71.Controllers
                 if (!string.IsNullOrEmpty(model.q))
                 {
                     categories = categories.Where(w => w.Name.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
+                    model.PageIndex = 1; // kiedy w wyszukiwarce znajduje się jakieś słowo wtedy, po kliknięciu na przycisk szukaj, sortuj lub wybierz PageIndex powraca do pierwszej pozycji
                 }
 
                 // Sortowanie

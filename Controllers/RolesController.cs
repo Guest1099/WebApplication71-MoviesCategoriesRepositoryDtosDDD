@@ -34,23 +34,34 @@ namespace WebApplication71.Controllers
                     return View("NotFound");
 
                 var roles = result.Object;
-
                 if (roles == null)
                     return View("NotFound");
 
 
-                return View(new GetRolesDto()
+                // Wyszukiwanie
+                if (!string.IsNullOrEmpty(model.q))
                 {
-                    Roles = roles,
-                    Paginator = Paginator<GetRoleDto>.CreateAsync(roles, model.PageIndex, model.PageSize),
-                    PageIndex = model.PageIndex,
-                    PageSize = model.PageSize,
-                    Start = model.Start,
-                    End = model.End,
-                    q = model.q,
-                    SearchOption = model.SearchOption,
-                    SortowanieOption = model.SortowanieOption
-                });
+                    roles = roles.Where(w => w.Name.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
+                    model.PageIndex = 1; // kiedy w wyszukiwarce znajduje się jakieś słowo wtedy, po kliknięciu na przycisk szukaj, sortuj lub wybierz PageIndex powraca do pierwszej pozycji
+                }
+
+                // Sortowanie
+                switch (model.SortowanieOption)
+                {
+                    case "Nazwa A-Z":
+                        roles = roles.OrderBy(o => o.Name).ToList();
+                        break;
+
+                    case "Nazwa Z-A":
+                        roles = roles.OrderByDescending(o => o.Name).ToList();
+                        break;
+                }
+
+
+                model.Roles = roles;
+                model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)roles.Count / model.PageSize));
+                model.Paginator = Paginator<GetRoleDto>.CreateAsync(roles, model.PageIndex, model.PageSize);
+                return View(model);
             }
             catch (Exception ex)
             {
@@ -80,6 +91,7 @@ namespace WebApplication71.Controllers
                 if (!string.IsNullOrEmpty(model.q))
                 {
                     roles = roles.Where(w => w.Name.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
+                    model.PageIndex = 1; // kiedy w wyszukiwarce znajduje się jakieś słowo wtedy, po kliknięciu na przycisk szukaj, sortuj lub wybierz PageIndex powraca do pierwszej pozycji
                 }
 
                 // Sortowanie
@@ -94,6 +106,10 @@ namespace WebApplication71.Controllers
                         break;
                 }
 
+                // jeśli zaznaczona strona w paginatorze jest np 5 i zmienimy ilość wyświetlanych elementów na stronie np z 10 na 5 to wtedy strona powraca do pierszego elementu paginacji
+                if (model.PageIndex > 1)
+                    model.PageIndex = 1;
+                 
 
                 model.Roles = roles;
                 model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)roles.Count / model.PageSize));

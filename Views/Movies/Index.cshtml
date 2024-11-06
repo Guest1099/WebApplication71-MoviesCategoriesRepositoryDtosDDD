@@ -5,6 +5,15 @@
     index = Model.PageSize * (Model.PageIndex - 1);
 }
 
+@Model.PageSize
+<br />
+@Model.PageIndex
+<br />
+@Model.q
+<br />
+@Model.SortowanieOption
+<br />
+
 
 
 <div class="overFormContainer">
@@ -24,14 +33,14 @@
                     <div class="df">
                         <!-- Wyszukiwarka -->
                         <div class="df">
-                            <input asp-for="q" class="searchInput" />
+                            <input asp-for="q" class="searchInput" id="searchInput" />
                             <input type="submit" value="Szukaj" class="searchButton" />
                         </div>
                     </div>
 
                     <div class="df">
                         <!-- Sortowanie -->
-                        <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption"></select>
+                        <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption" id="sortowanieOptionSelectList"></select>
                         <input type="submit" value="Sortuj" class="searchButton" />
                     </div>
                 </div>
@@ -90,7 +99,7 @@
                                 <td style="min-width: 100px;">
                                     @{
                                         string price = $"{movie.Price},00 zł";
-                                        <span>@price</span>
+                                                            <span>@price</span>
                                     }
                                 </td>
 
@@ -142,7 +151,7 @@
 
                             <div class="df centery">
                                 <p>Pokaż</p>
-                                <select asp-for="PageSize" asp-items='@Model.SelectListNumberItems' class="selectOption"></select>
+                            <select asp-for="PageSize" asp-items='@Model.SelectListNumberItems' class="selectOption" id="pageSizeSelectList"></select>
                                 <input type="submit" value="Wybierz" class="selectOptionButton" />
                             </div>
 
@@ -199,11 +208,30 @@
                                                     //     @i
                                                     // </a>
 
-                                                    <a class="paginator-item"
-                                                       id="button"
-                                                       onclick="buttonClick3(event, this);">
+
+                                                     
+                                                    <a asp-action="Index"
+                                                       asp-controller="Movies"
+                                                       asp-route-PageSize="@Model.PageSize"
+                                                       asp-route-PageIndex="@i"
+                                                       class="paginator-item"
+                                                       onclick="buttonClick(event,this);">
                                                         @i
                                                     </a>
+
+
+                                                                        // <a asp-action="Index"
+                                                                        //    asp-controller="Movies"
+                                                                        //    class="paginator-item"
+                                                                        //    onclick="buttonClick(this);">
+                                                                        //     @i
+                                                                        // </a>
+
+                                                    // <a class="paginator-item"
+                                                    //    id="button"
+                                                    //    onclick="buttonClick(event, this);">
+                                                    //     @i
+                                                    // </a>
                                                 }
                                             }
                                         }
@@ -270,59 +298,52 @@
 
     <script type="text/javascript">
 
+        let pageSize = 10;
+        
+        let searchInput = document.getElementById('searchInput');
+
+        
+        // SortowanieOption
+        // pobieranie zaznaczonego elementu z listy SortowanieOptions i przekazywanie go do zmiennej, która jest przekazywana do atrybutu przycisku
+        let sortowanieOptionSelectList = document.getElementById('sortowanieOptionSelectList');
+        let sortowanieOptionSelectListValue = sortowanieOptionSelectList.value;
+        sortowanieOptionSelectList.addEventListener('change', function () {
+            sortowanieOptionSelectListValue = this.value;
+        });
+
+        // PageSize
+        // pobieranie zaznaczonego elementu z listy SortowanieOptions i przekazywanie go do zmiennej, która jest przekazywana do atrybutu przycisku
+        // let pageSizeSelectList = document.getElementById('pageSizeSelectList');
+        // pageSize = parseInt (pageSizeSelectList.value); może mieć 5, 10, 15 lub 20
+        // pageSizeSelectList.addEventListener('change', function () {
+        //     pageSize = parseInt (this.value);
+        // });
+
+          
+
+         
 
 
-        // function buttonClick(object) {
-        //     object.setAttribute('asp-action', 'Index');
-        //     object.setAttribute('asp-controller', 'Movies');
-        //     object.setAttribute('asp-route-PageSize', 5);
-        //     object.setAttribute('asp-route-PageIndex', 1);
-        //     object.setAttribute('asp-route-q', 'ssssss');
-        //     object.setAttribute('asp-route-SortowanieOption', 'Nazwa Z-A');
-
-        //     let linkUrl = `/Movies/Index`;
-
-        //     let linkUrl = `/${this.getAttribute('asp-controller')}/${this.getAttribute('asp-action')}?PageSize=${this.getAttribute('asp-route-PageSize')}&PageIndex=${this.getAttribute('asp-route-PageIndex')}&q=${encodeURIComponent(queryValue)}&SortowanieOption=${this.getAttribute('asp-route-SortowanieOption')}`;
-        //     window.location.href = linkUrl;
-        // }
-
-
-
-
-        function buttonClick3(event, object) {
+        function buttonClick(event, object) {
             event.preventDefault();
+             
+            alert (pageSize);
 
+            object.setAttribute('asp-route-PageSize', '15');
+            object.setAttribute('asp-route-PageIndex', 3);
+            object.setAttribute('asp-route-q', searchInput.value);
+            object.setAttribute('asp-route-SortowanieOption', sortowanieOptionSelectListValue);
 
-            // pobranie parametów do zmiennych, które potem zostają przekazane w linku do metody get index
+            let pageSize = object.getAttribute('asp-route-PageSize');
+            let pageIndex = object.getAttribute('asp-route-PageIndex');
+            let q = object.getAttribute('asp-route-q');
+            let sortowanieOption = object.getAttribute('asp-route-SortowanieOption');
+             
 
-            // const action = object.getAttribute('asp-action', 'Index');
-            // const controller = object.getAttribute('asp-controller', 'Movies');
-            // const pageSize = object.getAttribute('asp-route-PageSize', '5');
-            // const pageIndex = object.getAttribute('asp-route-PageIndex', '1');
-            // const q = object.getAttribute('asp-route-q', 'ssssss');
-            // const sortowanieOption = object.getAttribute('asp-route-SortowanieOption', 'Nazwa Z-A');
-
-
-            let pageSize = 10;
-            let pageIndex = 1
-            let q = 'aaaaaaaaaaaaa'
-            let sortowanieOption = 'Nazwa A-Z';
-
-            // object.setAttribute('asp-route-PageSize', pageSize);
-            // object.setAttribute('asp-route-PageIndex', pageIndex);
-            // object.setAttribute('asp-route-q', q);
-            // object.setAttribute('asp-route-SortowanieOption', sortowanieOption);
-
-
-
-            // Tworzenie pełnego URL z parametrami
-            const linkUrl = `/Movies/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${encodeURIComponent(sortowanieOption)}`;
-
-            // Przekierowanie na stworzony URL
+            let linkUrl = `/Movies/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${q}&SortowanieOption=${sortowanieOption}`;
+             
             window.location.href = linkUrl;
         }
-
-
 
 
     </script>
