@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Roles;
@@ -68,7 +67,7 @@ namespace WebApplication71.Controllers
 
             model.ShowPaginator = true;
             model.DisplayNumersListAndPaginatorLinks = true;
-            model.DisplayCenterPaginator = true; 
+            model.DisplayCenterPaginator = true;
 
             // Sortowanie
             switch (model.SortowanieOption)
@@ -82,27 +81,18 @@ namespace WebApplication71.Controllers
                     break;
             }
 
-             
+
+
             // Wyszukiwanie
             if (!string.IsNullOrEmpty(model.q))
             {
                 roles = roles.Where(w => w.Name.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
-                //model.PageIndex = 1; // kiedy w wyszukiwarce znajduje się jakieś słowo wtedy, po kliknięciu na przycisk szukaj, sortuj lub wybierz PageIndex powraca do pierwszej pozycji
+                // model.PageIndex = 1; // kiedy w wyszukiwarce znajduje się jakieś słowo wtedy, po kliknięciu na przycisk szukaj, sortuj lub wybierz PageIndex powraca do pierwszej pozycji
 
-                if (roles.Count < 5)
+                /*if (roles.Count < 5)
                 {
                     model.DisplayNumersListAndPaginatorLinks = false;
-                }
-
-                // jeżeli jesteśmy na stronie paginacji np 4 i wpiszemy słowo wyszukiwania w wyszukiwarkę wtedy po wciśnięciu przycisku szukaj wracamy do pierwszej storny paginacji i wyświetlane są wyszukane pozycje
-
-                //if (model.NoweWyszukiwanie)
-                //{
-                //    if (model.PageIndex > 1)
-                //        model.PageIndex = 1;
-                //}
-                //model.NoweWyszukiwanie = false;
-
+                }*/
             }
 
             model.Roles = roles;
@@ -165,33 +155,24 @@ namespace WebApplication71.Controllers
                         /*if (!string.IsNullOrEmpty(model.q))
                             if (model.Paginator.TotalPage <= 1)
                                 model.DisplayCenterPaginator = false;*/
-
-                        if (string.IsNullOrEmpty(model.q)) // pole wyszukiwarki musi być puste
-                             model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList (new List <string> () { "5" });
                         break;
 
                     case 10:
                         /*if (!string.IsNullOrEmpty(model.q))
                             if (model.Paginator.TotalPage <= 1)
                                 model.DisplayCenterPaginator = false;*/
-                        if (string.IsNullOrEmpty(model.q)) // pole wyszukiwarki musi być puste
-                            model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10" });
                         break;
 
                     case 15:
                         /*if (!string.IsNullOrEmpty(model.q))
                             if (model.Paginator.Count <= 1)
                                 model.DisplayCenterPaginator = false;*/
-                        if (string.IsNullOrEmpty(model.q)) // pole wyszukiwarki musi być puste
-                            model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10", "15" });
                         break;
 
                     case 20:
                         /*if (!string.IsNullOrEmpty(model.q))
                             if (model.Paginator.Count <= 1)
                                 model.DisplayCenterPaginator = false;*/
-                        if (string.IsNullOrEmpty(model.q)) // pole wyszukiwarki musi być puste
-                            model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10", "15", "20" });
                         break;
                 }
 

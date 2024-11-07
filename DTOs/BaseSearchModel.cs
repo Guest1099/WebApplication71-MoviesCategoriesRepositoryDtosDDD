@@ -26,7 +26,12 @@ namespace WebApplication71.DTOs
 
         public int IlePokazac { get; set; } = 0;
         public bool WyswietlPrzycisk { get; set; } = true;
+        public bool ShowListOfNumersAnd { get; set; } = true;
         public bool LastPage { get; set; } = false;
+        public bool ShowPaginator { get; set; } = false;
+        public bool DisplayNumersListAndPaginatorLinks { get; set; } = true;
+        public bool DisplayCenterPaginator { get; set; } = true;
+        public bool NoweWyszukiwanie { get; set; } = true;
 
 
 

@@ -12,8 +12,6 @@ Model.ShowPaginator @Model.ShowPaginator
 Model.DisplayNumersListAndPaginatorLinks @Model.DisplayNumersListAndPaginatorLinks
 <br />
 Model.WyswietlPrzycisk @Model.WyswietlPrzycisk
-<br />
-Model.NoweWyszukiwanie @Model.NoweWyszukiwanie
 
 
 
@@ -34,24 +32,7 @@ Model.NoweWyszukiwanie @Model.NoweWyszukiwanie
                     <!-- Wyszukiwarka -->
                     <div class="df">
                         <input asp-for="q" class="searchInput" id="searchInput" />
-
-
-                        @* link przekazuje dane do metody post *@
-                        @* <input 
-                            type="submit" 
-                            value="Szukaj"
-                            class="searchButton"
-                            /> *@
-
-
-                        @* link przekazuje dane do metody get *@
-                        <a asp-action="Index"
-                           asp-controller="Roles"
-                           class="searchButton"
-                           id="searchButton">
-                            Szukaj B
-                        </a>
-
+                        <input type="submit" value="Szukaj" class="searchButton" />
                     </div>
 
                     <!-- Sortowanie -->
@@ -233,17 +214,17 @@ Model.NoweWyszukiwanie @Model.NoweWyszukiwanie
                                                     }
                                                     if (i <= Model.Paginator.TotalPage)
                                                     {
-                                                                <a asp-action="Index"
-                                                                   asp-controller="Roles"
-                                                                   asp-route-PageSize="@Model.PageSize"
-                                                                   asp-route-PageIndex="@i"
-                                                                   asp-route-q="@Model.q"
-                                                                   asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                                   class="paginator-item"
-                                                                   style="@style"
-                                                                   id="button">
-                                                                    @i
-                                                                </a>
+                                                        <a asp-action="Index"
+                                                           asp-controller="Roles"
+                                                           asp-route-PageSize="@Model.PageSize"
+                                                           asp-route-PageIndex="@i"
+                                                           asp-route-q="@Model.q"
+                                                           asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                           class="paginator-item"
+                                                           style="@style"
+                                                           id="button">
+                                                            @i
+                                                        </a>
                                                     }
                                                 }
                                             }
@@ -363,23 +344,6 @@ Model.NoweWyszukiwanie @Model.NoweWyszukiwanie
 
             }
              
-        });
-
-
-        let searchButton = document.getElementById('searchButton');
-        searchButton.addEventListener('click', function (event) {
-            event.preventDefault();
-
-            controller = 'Roles';
-            action = 'Index';
-            pageSizeSecond = '10';
-            pageIndex = '1';
-            q = searchInput.value.toString();
-            q = q.trim();
-            sortowanieOption = 'Nazwa A-Z';
-
-            let linkUrl = `/${controller}/${action}?PageSize=${pageSizeSecond}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
-            window.location.href = linkUrl;
         });
 
     </script>
