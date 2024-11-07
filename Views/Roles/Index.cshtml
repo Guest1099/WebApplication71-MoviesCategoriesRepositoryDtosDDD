@@ -5,7 +5,8 @@
     index = Model.PageSize * (Model.PageIndex - 1);
 }
 
-@Model.Paginator.TotalPage
+@Model.SortowanieOption
+
 
 <div class="overFormContainer">
 
@@ -143,7 +144,10 @@
                             <div class="df centery">
                                 <p>Pokaż</p>
                                 <select asp-for="PageSize" asp-items='@Model.SelectListNumberItems' class="selectOption" id="pageSizeSelectList"></select>
-                                <input type="submit" value="Wybierz" class="selectOptionButton" />
+                                @if (Model.WyswietlPrzycisk)
+                                {
+                                    <input type="submit" value="Wybierz" class="selectOptionButton" />
+                                }
                             </div>
 
                         </div>
@@ -154,6 +158,12 @@
                         <div class="w-60 centery">
                             <div class="w-100 centery">
                                 <div class="df fs-11 centery">
+
+
+
+
+
+
                                     @if (hasPrevious)
                                     {
                                         <a asp-action="Index"
@@ -183,17 +193,39 @@
                                             string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
 
 
-                                            Model.Start = 1;
-                                            Model.End = Model.PageSize + 1;
-                                            int srodek = (int)Math.Round((double)(Model.PageSize / 2));
+                                            // Model.Start = 1; start jest zaczynany od 1 ale potem jest przesówany
+                                            // Model.End = Model.PageSize + 1;
+                                            // int srodek = (int)Math.Round((double)(Model.PageSize / 2));
 
-                                            if (Model.PageIndex > srodek)
-                                            {
-                                                Model.Start = Model.PageIndex - (srodek - 1);
-                                                Model.End = Model.PageIndex + Model.PageSize - srodek;
-                                            }
+                                            // if (Model.PageIndex > srodek)
+                                            // {
+                                            //     Model.Start = Model.PageIndex - (srodek - 1);
+                                            //     Model.End = Model.PageIndex + Model.PageSize - srodek;
+                                            // }
 
 
+
+
+                                            // <div class="fs-14">
+                                            //     Model.PageSize @Model.PageSize
+                                            //     <br />
+                                            //     Model.PageIndex @Model.PageIndex
+                                            //     <br />
+                                            //     Model.Paginator.TotalPage @Model.Paginator.TotalPage
+                                            //     <br />
+                                            //     Model.Paginator.Count @Model.Paginator.Count
+                                            //     <br />
+                                            //     Model.Paginator.PageIndex @Model.Paginator.PageIndex
+                                            //     <br />
+                                            //     Model.Paginator.TotalPage @Model.Paginator.TotalPage
+                                            //     <br />
+                                            //     Model.Start @Model.Start
+                                            //     <br />
+                                            //     Model.End @Model.End
+                                            //     <br />
+                                            //     Model.WyswietlPrzycisk @Model.WyswietlPrzycisk
+                                            //     Model.LastPage @Model.LastPage
+                                            // </div>
 
                                             for (var i = Model.Start; i < Model.End; i++)
                                             {
@@ -207,22 +239,24 @@
                                                 }
                                                 if (i <= Model.Paginator.TotalPage)
                                                 {
-                                                    <a asp-action="Index"
-                                                       asp-controller="Roles"
-                                                       asp-route-PageSize="@Model.PageSize"
-                                                       asp-route-PageIndex="@i"
-                                                       asp-route-q="@Model.q"
-                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                       class="paginator-item"
-                                                       style="@style">
-                                                        @i
-                                                    </a>
+                                                        <a asp-action="Index"
+                                                           asp-controller="Roles"
+                                                           asp-route-PageSize="@Model.PageSize"
+                                                           asp-route-PageIndex="@i"
+                                                           asp-route-q="@Model.q"
+                                                           asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                           class="paginator-item"
+                                                           style="@style"
+                                                           id="button">
+                                                            @i
+                                                        </a>
                                                 }
                                             }
                                         }
                                     </div>
 
 
+                                    
                                     @if (hasNext)
                                     {
                                         <a asp-action="Index"
@@ -243,6 +277,7 @@
                                             Next
                                         </a>
                                     }
+                                     
 
 
                                 </div>
@@ -278,10 +313,12 @@
 
 @section Scripts {
     <script type="text/javascript">
-
+         
         let q = '';
         let pageSize = 10;
-        let sortowanieOption = ''
+        let pageIndex = 0;
+        let sortowanieOption = '';
+        let getItems = false;
 
         let searchInput = document.getElementById('searchInput');
 
@@ -299,26 +336,38 @@
         // pobieranie zaznaczonego elementu z listy SortowanieOptions i przekazywanie go do zmiennej, która jest przekazywana do atrybutu przycisku
         let pageSizeSelectList = document.getElementById('pageSizeSelectList');
         pageSize = parseInt(pageSizeSelectList.value); // może mieć 5, 10, 15 lub 20
+
         pageSizeSelectList.addEventListener('change', function () {
-            pageSize = parseInt(this.value);
-
+            let pageSizeSecond = parseInt(this.value);
             q = searchInput.value;
-
             let action = 'Index';
-            let controller = 'Roles';  
+            let controller = 'Roles';
+            pageIndex = parseInt(@Model.PageIndex); 
             
-            alert (q + "; " +action + "; " +controller + "; " +sortowanieOption + "; " +pageSize + "; " +@Model.PageIndex);
+
+            let lastPage = @Model.PageIndex == @Model.Paginator.TotalPage; // czy została kliknięta ostatnia strona paginacji
             
+                          
+            let linkUrl = '';
             //let linkUrl = `/${controller}/${action}?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${this.getAttribute('asp-route-SortowanieOption')}`;
-            //window.location.href = linkUrl;
+
+            if (!lastPage) {
+                linkUrl = `/${controller}/${action}?PageSize=${pageSizeSecond}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
+
+                window.location.href = linkUrl;
+            } 
+            else {
+                // czy nowowybrana ilość wyświetlanych elementów na stronie jest większa od poprzednich
+                 if (pageSize > pageSizeSecond) { 
+                linkUrl = `/${controller}/${action}?PageSize=${pageSizeSecond}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
+
+                    window.location.href = linkUrl;
+                     
+                 }
+
+            }
+             
         });
-
-
-        function informationTogether () {
-
-        }
-
-
 
     </script>
 }

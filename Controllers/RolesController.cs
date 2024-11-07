@@ -56,11 +56,80 @@ namespace WebApplication71.Controllers
                         roles = roles.OrderByDescending(o => o.Name).ToList();
                         break;
                 }
+                /*
+                                // jeśli zaznaczona strona w paginatorze jest np 5 i zmienimy ilość wyświetlanych elementów na stronie np z 10 na 5 to wtedy strona powraca do pierszego elementu paginacji
+                                if (model.PageIndex > 1)
+                                    model.PageIndex = 1;
+                                 */
+
+                /*if (model.PageIndex > 1)
+                {
+                    model.WyswietlElementOd = (model.PageSize * (model.PageIndex - 1));
+                    roles = roles.Skip (model.WyswietlElementOd).ToList ();
+                    //model.PageIndex = 1; 
+                }*/
+
+
+                model.End = model.PageSize + 1;
+                int srodek = (int)Math.Round((double)(model.PageSize / 2));
+                if (model.PageIndex > srodek)
+                {
+                    model.Start = model.PageIndex - (srodek - 1);
+                    model.End = model.PageIndex + model.PageSize - srodek;
+                }
+
 
 
                 model.Roles = roles;
                 model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)roles.Count / model.PageSize));
                 model.Paginator = Paginator<GetRoleDto>.CreateAsync(roles, model.PageIndex, model.PageSize);
+
+
+                model.LastPage = model.PageIndex == model.Paginator.TotalPage;
+                // działania dla ostatniej strony
+                if (model.LastPage)
+                {
+                     
+                    if (model.Paginator.Count < 5)
+                    {
+                        model.WyswietlPrzycisk = false;
+                    }
+
+                    /*
+                                        switch (model.SelectListNumberItems.SelectedValue)
+                                        {
+                                            case "5":
+                                                if (model.Paginator.Count < 5)
+                                                {
+                                                    model.WyswietlPrzycisk = false;
+                                                }
+                                                break;
+
+                                            case "10":
+                                                if (roles.Count < 5)
+                                                {
+                                                    //SetObliczenia(model);
+                                                }
+                                                break;
+
+                                            case "15":
+                                                if (roles.Count < 5)
+                                                {
+                                                    //SetObliczenia(model);
+                                                }
+                                                break;
+
+                                            case "20":
+                                                if (roles.Count < 5)
+                                                {
+                                                    //SetObliczenia(model);
+                                                }
+                                                break;
+                                        }
+                    */
+                }
+
+
                 return View(model);
             }
             catch (Exception ex)
@@ -105,20 +174,97 @@ namespace WebApplication71.Controllers
                         roles = roles.OrderByDescending(o => o.Name).ToList();
                         break;
                 }
+                /*
+                                // jeśli zaznaczona strona w paginatorze jest np 5 i zmienimy ilość wyświetlanych elementów na stronie np z 10 na 5 to wtedy strona powraca do pierszego elementu paginacji
+                                if (model.PageIndex > 1)
+                                    model.PageIndex = 1;
+                                 */
 
-                // jeśli zaznaczona strona w paginatorze jest np 5 i zmienimy ilość wyświetlanych elementów na stronie np z 10 na 5 to wtedy strona powraca do pierszego elementu paginacji
-                if (model.PageIndex > 1)
-                    model.PageIndex = 1;
-                 
+                /*if (model.PageIndex > 1)
+                {
+                    model.WyswietlElementOd = (model.PageSize * (model.PageIndex - 1));
+                    roles = roles.Skip (model.WyswietlElementOd).ToList ();
+                    //model.PageIndex = 1; 
+                }*/
+
+
+                model.End = model.PageSize + 1;
+                int srodek = (int)Math.Round((double)(model.PageSize / 2));
+                if (model.PageIndex > srodek)
+                {
+                    model.Start = model.PageIndex - (srodek - 1);
+                    model.End = model.PageIndex + model.PageSize - srodek;
+                }
+
+
 
                 model.Roles = roles;
                 model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)roles.Count / model.PageSize));
                 model.Paginator = Paginator<GetRoleDto>.CreateAsync(roles, model.PageIndex, model.PageSize);
+
+
+                model.LastPage = model.PageIndex == model.Paginator.TotalPage;
+                // działania dla ostatniej strony
+                if (model.LastPage)
+                {
+
+                    model.WyswietlPrzycisk = false;
+                    if (model.Paginator.Count < 5)
+                    {
+                        model.WyswietlPrzycisk = false;
+                    }
+
+/*
+                    switch (model.SelectListNumberItems.SelectedValue)
+                    {
+                        case "5":
+                            if (model.Paginator.Count < 5)
+                            {
+                                model.WyswietlPrzycisk = false;
+                            }
+                            break;
+
+                        case "10":
+                            if (roles.Count < 5)
+                            {
+                                //SetObliczenia(model);
+                            }
+                            break;
+
+                        case "15":
+                            if (roles.Count < 5)
+                            {
+                                //SetObliczenia(model);
+                            }
+                            break;
+
+                        case "20":
+                            if (roles.Count < 5)
+                            {
+                                //SetObliczenia(model);
+                            }
+                            break;
+                    }
+*/
+                }
+                
+
                 return View(model);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        private void SetObliczenia (GetRolesDto model)
+        {
+            model.End = model.PageSize + 1;
+            int srodek = (int)Math.Round((double)(model.PageSize / 2));
+            if (model.PageIndex > srodek)
+            {
+                model.Start = model.PageIndex - (srodek - 1);
+                model.End = model.PageIndex + model.PageSize - srodek;
             }
         }
 

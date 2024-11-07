@@ -50,6 +50,12 @@ namespace WebApplication71.Data
             builder.Entity<ApplicationRole>().HasData(adminRole, userRole);
 
 
+            for (var i=0; i<50; i++)
+            {
+                var role = new ApplicationRole (i.ToString ());
+                builder.Entity<ApplicationRole>().HasData(role);
+            }
+
 
             // USERS   
 
@@ -231,16 +237,22 @@ namespace WebApplication71.Data
                 aaaUser, bbbUser, cccUser, dddUser, userUser, administratorUser
             };
 
-
-            List<string> kategorie = new List<string>() { "Komedia", "Romans", "Fantasy", "sadf","wer","cbx","ert","xbh","ysb","wegh","shr","ewtsh","Sgeteh","Sge","ddgege","sdgh","sgwegn","gwegsd","ewhh","bcbn","xcbceg","sdfdd","sssseg","werew","sddgggs","wqwrsdg","gbxfd","hdfh", "mnhj", "jtu", "eryerj", "jeujfg", "fgjeryrr", "rhffffdd", "dfhdjdfj", "fgjgjfg", "ghgg", "kykyyy", "kgkggg", "khgkkk", "yghhhhk", "ghkyyy", "yyhhhhh", "kgyyyy", "yggggk", "kkktttt", "titykkk", "hhyyt", "ytytghhh", "kghkyi", "wekukt", "asfwet", "ewqwwas", "irtewur", "sdglukty", "fdhjhwet", "twtwewgs", "dhfdgmgh", "yhfhdjd", "sdshjgghj", "hwehsds", "dfhdjhh", "sdsherhf", "fhfhfjjjjdf", "dfhhrrr", "dfhju6d", "wetwedfs3", "dfhturts", "yryrufgk", "dduererj", "fffhfjjjjfd", "hdfhrrry", "jrtueery", "eruyjfg", "ccse" };
-            List<string> kategorieId = new List<string>();
-            for (var i = 0; i < kategorie.Count; i++)
+            
+                        List<string> kategorie = new List<string>() { "Komedia", "Romans", "Fantasy", "sadf","wer","cbx","ert","xbh","ysb","wegh","shr","ewtsh","Sgeteh","Sge","ddgege","sdgh","sgwegn","gwegsd","ewhh","bcbn","xcbceg","sdfdd","sssseg","werew","sddgggs","wqwrsdg","gbxfd","hdfh", "mnhj", "jtu", "eryerj", "jeujfg", "fgjeryrr", "rhffffdd", "dfhdjdfj", "fgjgjfg", "ghgg", "kykyyy", "kgkggg", "khgkkk", "yghhhhk", "ghkyyy", "yyhhhhh", "kgyyyy", "yggggk", "kkktttt", "titykkk", "hhyyt", "ytytghhh", "kghkyi", "wekukt", "asfwet", "ewqwwas", "irtewur", "sdglukty", "fdhjhwet", "twtwewgs", "dhfdgmgh", "yhfhdjd", "sdshjgghj", "hwehsds", "dfhdjhh", "sdsherhf", "fhfhfjjjjdf", "dfhhrrr", "dfhju6d", "wetwedfs3", "dfhturts", "yryrufgk", "dduererj", "fffhfjjjjfd", "hdfhrrry", "jrtueery", "eruyjfg", "ccse" };
+                        List<string> kategorieId = new List<string>();
+            /*for (var i = 0; i < kategorie.Count; i++)
             {
                 Category category = new Category(kategorie[i]);
                 builder.Entity<Category>().HasData(category);
                 kategorieId.Add(category.CategoryId);
             }
-
+*/
+            for (var i = 0; i < 51; i++)
+            {
+                Category category = new Category("CateoryName_" + i.ToString ());
+                builder.Entity<Category>().HasData(category);
+                kategorieId.Add(category.CategoryId);
+            }
 
 
             List<string> photoSource = new List<string>()

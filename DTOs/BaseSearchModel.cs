@@ -25,6 +25,8 @@ namespace WebApplication71.DTOs
         public int End { get; set; } = 0;
 
         public int IlePokazac { get; set; } = 0;
+        public bool WyswietlPrzycisk { get; set; } = true;
+        public bool LastPage { get; set; } = false;
 
 
 
