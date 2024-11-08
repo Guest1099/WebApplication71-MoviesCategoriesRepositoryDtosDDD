@@ -3,17 +3,12 @@
 @{
     int index = 0;
     index = Model.PageSize * (Model.PageIndex - 1);
-}
 
-Model.SortowanieOption @Model.SortowanieOption
-<br />
-Model.ShowPaginator @Model.ShowPaginator
-<br />
-Model.DisplayNumersListAndPaginatorLinks @Model.DisplayNumersListAndPaginatorLinks
-<br />
-Model.WyswietlPrzycisk @Model.WyswietlPrzycisk
-<br />
-Model.NoweWyszukiwanie @Model.NoweWyszukiwanie
+    if (index <= 0)
+    {
+        index = 0;
+    }
+}
 
 
 
@@ -49,14 +44,14 @@ Model.NoweWyszukiwanie @Model.NoweWyszukiwanie
                            asp-controller="Roles"
                            class="searchButton"
                            id="searchButton">
-                            Szukaj B
+                            Szukaj
                         </a>
 
                     </div>
 
                     <!-- Sortowanie -->
                     <div class="df">
-                        <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption" id="sortowanieOptionSelectList"></select>
+                        <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption" id="sortowanieOptionSelectList"></select>                        
                         <input type="submit" value="Sortuj" class="searchButton" />
                     </div>
                 </div>
@@ -173,9 +168,9 @@ Model.NoweWyszukiwanie @Model.NoweWyszukiwanie
                             <div class="df centery">
                                 <p>Pokaż</p>
                                 <select asp-for="PageSize" asp-items='@Model.SelectListNumberItems' class="selectOption" id="pageSizeSelectList"></select>
-                                 
+                                 @* 
                                     <input type="submit" value="Wybierz" class="selectOptionButton" />
-                                
+                                 *@
                             </div>
 
                         </div>
@@ -290,11 +285,11 @@ Model.NoweWyszukiwanie @Model.NoweWyszukiwanie
             {
                 if (!string.IsNullOrEmpty(Model.q))
                 {
-                    <p>Nie znaleziono użytkowników pasujących do Twojego zapytania: <strong>@Model.q</strong>.</p>
+                    <p>Nie znaleziono ról pasujących do Twojego zapytania: <strong>@Model.q</strong>.</p>
                 }
                 else
                 {
-                    <p>Brak użytkowników w bazie danych.</p>
+                    <p>Brak elementów w bazie danych.</p>
                 }
             }
 
@@ -315,6 +310,7 @@ Model.NoweWyszukiwanie @Model.NoweWyszukiwanie
         let pageIndex = 0;
         let sortowanieOption = '';
         let getItems = false;
+        let linkUrl = '';
 
         let searchInput = document.getElementById('searchInput');
 
@@ -325,6 +321,14 @@ Model.NoweWyszukiwanie @Model.NoweWyszukiwanie
         sortowanieOption = sortowanieOptionSelectList.value;
         sortowanieOptionSelectList.addEventListener('change', function () {
             sortowanieOption = this.value;
+
+            q = searchInput.value;
+            pageIndex = parseInt(@Model.PageIndex);  
+            let action = 'Index';
+            let controller = 'Roles';
+
+            linkUrl = `/${controller}/${action}?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;    
+            window.location.href = linkUrl;  
         });
 
 
@@ -332,37 +336,15 @@ Model.NoweWyszukiwanie @Model.NoweWyszukiwanie
         // pobieranie zaznaczonego elementu z listy SortowanieOptions i przekazywanie go do zmiennej, która jest przekazywana do atrybutu przycisku
         let pageSizeSelectList = document.getElementById('pageSizeSelectList');
         pageSize = parseInt(pageSizeSelectList.value); // może mieć 5, 10, 15 lub 20
-
         pageSizeSelectList.addEventListener('change', function () {
-            let pageSizeSecond = parseInt(this.value);
+            pageSize = parseInt(this.value);
             q = searchInput.value;
+            pageIndex = parseInt(@Model.PageIndex);  
             let action = 'Index';
             let controller = 'Roles';
-            pageIndex = parseInt(@Model.PageIndex); 
-            
 
-            let lastPage = @Model.PageIndex == @Model.Paginator.TotalPage; // czy została kliknięta ostatnia strona paginacji
-
-
-            let linkUrl = `/${controller}/${action}?PageSize=${pageSizeSecond}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
-            //let linkUrl = `/${controller}/${action}?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${this.getAttribute('asp-route-SortowanieOption')}`;
-
-            if (!lastPage) {
-                
-
-                window.location.href = linkUrl;
-            } 
-            else {
-                // czy nowowybrana ilość wyświetlanych elementów na stronie jest większa od poprzednich
-                 if (pageSize > pageSizeSecond) { 
-                
-
-                    window.location.href = linkUrl;
-                     
-                 }
-
-            }
-             
+            linkUrl = `/${controller}/${action}?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;    
+            window.location.href = linkUrl;             
         });
 
 
@@ -372,15 +354,15 @@ Model.NoweWyszukiwanie @Model.NoweWyszukiwanie
 
             controller = 'Roles';
             action = 'Index';
-            pageSizeSecond = '10';
-            pageIndex = '1';
+            pageIndex = '1'; // musi być ustawiona pierwsza pozycja
             q = searchInput.value.toString();
             q = q.trim();
-            sortowanieOption = 'Nazwa A-Z';
 
-            let linkUrl = `/${controller}/${action}?PageSize=${pageSizeSecond}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
+            linkUrl = `/${controller}/${action}?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
             window.location.href = linkUrl;
         });
+
+
 
     </script>
 }

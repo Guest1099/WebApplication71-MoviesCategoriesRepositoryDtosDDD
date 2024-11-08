@@ -1276,7 +1276,8 @@ namespace WebApplication71.Services
             }
             catch (Exception ex)
             {
-
+                // w przypadku niepowodzenia operacji wywoływana jest alternatywna metoda o mniej rozbudowanej strukturze bez zapisywania danych do bazy o zalogowaniu
+                //await _signInManager.SignOutAsync();
             }
         }
 
@@ -1362,7 +1363,7 @@ namespace WebApplication71.Services
         /// Przy zalogowaniu sprawdza czy do poprzedniego wylogowania została dopisana data wylogowania, jeśli nie to dopisuje
         /// Operacja odbywa się dla wszystkich użytkowników
         /// </summary>
-        private async Task SprawdzCzyZostalaDopisanaDataWylogowania()
+        /*private async Task SprawdzCzyZostalaDopisanaDataWylogowania()
         {
             foreach (var user in await _context.Users.ToListAsync())
             {
@@ -1395,6 +1396,52 @@ namespace WebApplication71.Services
                 }
             }
 
+        }
+*/
+
+
+        private async Task SprawdzCzyZostalaDopisanaDataWylogowania()
+        {
+
+            // Pobranie wszystkich logowań dla użytkowników z bazy danych, użyj asynchronicznego zapytania
+            var logowaniaUzytkownikow = await _context.Logowania
+                .Include(l => l.User) // Zakładając, że Logowanie ma referencję do User
+                .OrderByDescending(l => l.DataLogowania) // Upewnij się, że masz odpowiednią kolejność logowań
+                .ToListAsync();
+
+            // Przejdź przez wszystkich użytkowników
+            foreach (var user in await _context.Users.ToListAsync())
+            {
+                // Filtruj logowania dla danego użytkownika
+                var logowaniaUzytkownika = logowaniaUzytkownikow
+                    .Where(l => l.UserId == user.Id)
+                    .ToList();
+
+                if (logowaniaUzytkownika.Count > 1)
+                {
+                    // Przesuń pierwszy element na bok, bo jest to najnowsze logowanie
+                    var ostatnieLogowanie = logowaniaUzytkownika.First();
+
+                    // Iteruj po pozostałych logowaniach
+                    foreach (var logowanieUzytkownika in logowaniaUzytkownika.Skip(1)) // Skip(1) pomija pierwszy element
+                    {
+                        // Sprawdzenie, czy nie zostało dopisane DataWylogowania
+                        if (logowanieUzytkownika.DataWylogowania == DateTime.MinValue)
+                        {
+                            // Oblicz czas pracy
+                            var czasPracy = DateTime.Now - logowanieUzytkownika.DataLogowania;
+                            logowanieUzytkownika.DataWylogowania = DateTime.Now;
+                            logowanieUzytkownika.CzasPracy = new TimeSpan(czasPracy.Days, czasPracy.Hours, czasPracy.Minutes, czasPracy.Seconds);
+
+                            // Oznaczenie obiektu do aktualizacji
+                            _context.Entry(logowanieUzytkownika).State = EntityState.Modified;
+                        }
+                    }
+                }
+            }
+
+            // Zapisz wszystkie zmiany na raz, aby zoptymalizować wydajność
+            await _context.SaveChangesAsync();
         }
 
 

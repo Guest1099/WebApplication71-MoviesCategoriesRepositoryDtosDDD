@@ -34,6 +34,12 @@ namespace WebApplication71.DTOs
         public bool NoweWyszukiwanie { get; set; } = true;
 
 
+        public int IloscObecnychElementow5 { get; set; } = 0;
+        public int IloscObecnychElementow10 { get; set; } = 0;
+        public int IloscObecnychElementow15 { get; set; } = 0;
+        public int IloscObecnychElementow20 { get; set; } = 0;
+
+
 
 
         public SelectList SelectListNumberItems { get; set; } = new SelectList(new List<string>() { "5", "10", "15", "20" });

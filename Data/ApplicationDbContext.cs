@@ -247,7 +247,7 @@ namespace WebApplication71.Data
                 kategorieId.Add(category.CategoryId);
             }
 */
-            for (var i = 0; i < 51; i++)
+            for (var i = 0; i < 150; i++)
             {
                 Category category = new Category("CateoryName_" + i.ToString ());
                 builder.Entity<Category>().HasData(category);

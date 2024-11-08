@@ -403,6 +403,7 @@ tbody tr:nth-child(even) {
 .searchButton {
     flex: 1;
     padding: 10px;
+    color: rgb(30,30,30);
     border: 1px solid rgb(220,220,220);
     border-radius: 5px 5px 5px 5px;
     margin: 0px 5px;
@@ -411,6 +412,7 @@ tbody tr:nth-child(even) {
 }
     .searchButton:hover {
         background-color: rgb(220,220,220);
+        text-decoration: none;
     }
 
 
