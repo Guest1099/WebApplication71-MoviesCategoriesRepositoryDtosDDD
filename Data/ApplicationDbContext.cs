@@ -50,7 +50,7 @@ namespace WebApplication71.Data
             builder.Entity<ApplicationRole>().HasData(adminRole, userRole);
 
 
-            for (var i=0; i<50; i++)
+            for (var i=0; i<1250; i++)
             {
                 var role = new ApplicationRole (i.ToString ());
                 builder.Entity<ApplicationRole>().HasData(role);

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Movies;
@@ -25,70 +26,14 @@ namespace WebApplication71.Controllers
         }
 
 
+
         [HttpGet]
         public async Task<IActionResult> Index(GetMoviesDto model)
         {
-            NI.Navigation = Navigation.MoviesIndex;
-
-
+            NI.Navigation = Navigation.RolesIndex;
             try
             {
-                var result = await _moviesRepository.GetAll();
-
-                if (result == null || !result.Success)
-                    return View("NotFound");
-
-                var movies = result.Object;
-
-                if (movies == null)
-                    return View("NotFound");
-
-
-                // Wyszukiwanie
-                // szuka w tytułach lub w opisach
-                if (!string.IsNullOrEmpty(model.q))
-                {
-                    movies = movies.Where(
-                        w =>
-                            w.Title.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
-                            w.Description.Contains(model.q, StringComparison.OrdinalIgnoreCase)
-                    ).ToList();
-                }
-
-
-                // Sortowanie
-                switch (model.SortowanieOption)
-                {
-                    case "Tytuł A-Z":
-                        movies = movies.OrderBy(o => o.Title).ToList();
-                        break;
-
-                    case "Tytuł Z-A":
-                        movies = movies.OrderByDescending(o => o.Title).ToList();
-                        break;
-
-                    case "Kategoria A-Z":
-                        movies = movies.OrderBy(o => o.Category).ToList();
-                        break;
-
-                    case "Kategoria Z-A":
-                        movies = movies.OrderByDescending(o => o.Category).ToList();
-                        break;
-                }
-
-                model.End = model.PageSize + 1;
-                int srodek = (int)Math.Round((double)(model.PageSize / 2));
-
-                if (model.PageIndex > srodek)
-                {
-                    model.Start = model.PageIndex - (srodek - 1);
-                    model.End = model.PageIndex + model.PageSize - srodek;
-                }
-
-                model.Movies = movies;
-                model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)movies.Count / model.PageSize));
-                model.Paginator = Paginator<GetMovieDto>.CreateAsync(movies, model.PageIndex, model.PageSize);
-                return View(model);
+                return await SearchAndFiltringResutl(model);
             }
             catch (Exception ex)
             {
@@ -101,74 +46,198 @@ namespace WebApplication71.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(string s, GetMoviesDto model)
         {
-            NI.Navigation = Navigation.MoviesIndex;
-
+            NI.Navigation = Navigation.RolesIndex;
             try
             {
-                var result = await _moviesRepository.GetAll();
-
-                if (result == null || !result.Success)
-                    return View("NotFound");
-
-                var movies = result.Object;
-
-                if (movies == null)
-                    return View("NotFound");
-
-
-                // Wyszukiwanie
-                // szuka w tytułach lub w opisach
-                if (!string.IsNullOrEmpty(model.q))
-                {
-                    movies = movies.Where(
-                        w =>
-                            w.Title.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
-                            w.Description.Contains(model.q, StringComparison.OrdinalIgnoreCase)
-                    ).ToList();
-                }
-
-
-                // Sortowanie
-                switch (model.SortowanieOption)
-                {
-                    case "Tytuł A-Z":
-                        movies = movies.OrderBy(o => o.Title).ToList();
-                        break;
-
-                    case "Tytuł Z-A":
-                        movies = movies.OrderByDescending(o => o.Title).ToList();
-                        break;
-
-                    case "Kategoria A-Z":
-                        movies = movies.OrderBy(o => o.Category).ToList();
-                        break;
-
-                    case "Kategoria Z-A":
-                        movies = movies.OrderByDescending(o => o.Category).ToList();
-                        break;
-                }
-
-                model.End = model.PageSize + 1;
-                int srodek = (int)Math.Round((double)(model.PageSize / 2));
-
-                if (model.PageIndex > srodek)
-                {
-                    model.Start = model.PageIndex - (srodek - 1);
-                    model.End = model.PageIndex + model.PageSize - srodek;
-                }
-
-                model.Movies = movies;
-                model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)movies.Count / model.PageSize));
-                model.Paginator = Paginator<GetMovieDto>.CreateAsync(movies, model.PageIndex, model.PageSize);
-                return View(model);
+                return await SearchAndFiltringResutl(model);
             }
-
-
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+
+        private async Task<IActionResult> SearchAndFiltringResutl(GetMoviesDto model)
+        {
+            if (model == null)
+                return View("NotFound");
+
+            var result = await _moviesRepository.GetAll();
+
+            if (result == null || !result.Success)
+                return View("NotFound");
+
+            var movies = result.Object;
+            if (movies == null)
+                return View("NotFound");
+
+
+            model.ShowPaginator = true;
+            model.DisplayNumersListAndPaginatorLinks = true;
+
+
+
+            // Wyszukiwanie
+            if (!string.IsNullOrEmpty(model.q))
+            {
+                movies = movies.Where(
+                    w =>
+                        w.Title.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
+                        w.Description.Contains(model.q, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                if (movies.Count < 5)
+                {
+                    model.DisplayNumersListAndPaginatorLinks = false;
+                }
+
+                /*
+                                // ustawienie dla ostatniej strony paginacji możliwą ilość wyświetlenia elementów na stronie
+                                switch (model.PageSize)
+                                {
+                                    case 5:
+                                        model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5" });
+                                        break;
+
+                                    case 10:
+                                        model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10" });
+                                        break;
+
+                                    case 15:
+                                        model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10", "15" });
+                                        break;
+
+                                    case 20:
+                                        model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10", "15", "20" });
+                                        break;
+                                }*/
+            }
+
+
+            // Sortowanie
+            switch (model.SortowanieOption)
+            {
+                case "Tytuł A-Z":
+                    movies = movies.OrderBy(o => o.Title).ToList();
+                    break;
+
+                case "Tytuł Z-A":
+                    movies = movies.OrderByDescending(o => o.Title).ToList();
+                    break;
+            }
+
+
+            model.Movies = movies;
+            model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)movies.Count / model.PageSize));
+            model.Paginator = Paginator<GetMovieDto>.CreateAsync(movies, model.PageIndex, model.PageSize);
+
+
+
+            if (model.Paginator.Count > 4)
+                model.ShowPaginator = true;
+
+            if (model.PageIndex == model.Paginator.TotalPage)
+                model.ShowPaginator = true;
+
+
+
+
+            model.End = model.PageSize + 1;
+            int srodek = (int)Math.Round((double)(model.PageSize / 2));
+            if (model.PageIndex > srodek)
+            {
+                model.Start = model.PageIndex - (srodek);
+                model.End = model.PageIndex + model.PageSize - srodek;
+            }
+
+
+
+
+
+            if (string.IsNullOrEmpty(model.q))
+            {
+                // działania dla ostatniej strony
+                model.LastPage = model.PageIndex == model.Paginator.TotalPage;
+                if (model.LastPage)
+                {
+                    if (model.Paginator.Count < 5)
+                    {
+                        model.WyswietlPrzycisk = false;
+                    }
+
+                    /*
+                                        // ustawienie dla ostatniej strony paginacji możliwą ilość wyświetlenia elementów na stronie
+                                        switch (model.PageSize)
+                                        {
+                                            case 5:
+                                                model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5" });
+                                                break;
+
+                                            case 10:
+                                                model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10" });
+                                                break;
+
+                                            case 15:
+                                                model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10", "15" });
+                                                break;
+
+                                            case 20:
+                                                model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10", "15", "20" });
+                                                break;
+                                        }
+                    */
+
+                }
+            }
+
+
+
+            // ustawienie dla ostatniej strony paginacji możliwą ilość wyświetlenia elementów na stronie
+            switch (model.PageSize)
+            {
+                case 5:
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5" });
+                    break;                            
+                                                      
+                case 10:                              
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" });
+                    break;                            
+                                                      
+                case 15:                              
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15" });
+                    break;                            
+                                                      
+                case 20:                              
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20" });
+                    break;
+            }
+
+
+
+
+            int iloscWszystkichElementow = movies.Count;
+
+            // * jeśli chcesz uogólnić wyświetlanie filtrowanych wyników usuń poniższe warunki, a filtrowania nadal będzie działało poprawnie
+            if (5 * model.PageIndex <= iloscWszystkichElementow)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5" });
+            if (10 * model.PageIndex <= iloscWszystkichElementow)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" });
+            if (15 * model.PageIndex <= iloscWszystkichElementow)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15" });
+            if (20 * model.PageIndex <= iloscWszystkichElementow)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20" });
+
+            // alternatywny sposób do powyższego
+            /*if (iloscObecnychElementow > iloscWszystkichElementow)
+                model.Roles = new List<GetRoleDto>();*/
+
+
+
+
+            return View(model);
+        }
+
 
 
 

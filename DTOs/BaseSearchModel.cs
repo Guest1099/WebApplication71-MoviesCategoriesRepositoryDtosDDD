@@ -24,14 +24,14 @@ namespace WebApplication71.DTOs
         public int Start { get; set; } = 1;
         public int End { get; set; } = 0;
 
-        public int IlePokazac { get; set; } = 0;
+        //public int IlePokazac { get; set; } = 0;
         public bool WyswietlPrzycisk { get; set; } = true;
         public bool ShowListOfNumersAnd { get; set; } = true;
         public bool LastPage { get; set; } = false;
         public bool ShowPaginator { get; set; } = false;
+        //public bool ShowPaginatorNumbers { get; set; } = true;
+        public bool DisplayButton { get; set; } = true;
         public bool DisplayNumersListAndPaginatorLinks { get; set; } = true;
-        public bool DisplayCenterPaginator { get; set; } = true;
-        public bool NoweWyszukiwanie { get; set; } = true;
 
 
         public int IloscObecnychElementow5 { get; set; } = 0;

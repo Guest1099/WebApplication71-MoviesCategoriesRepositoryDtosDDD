@@ -32,11 +32,11 @@
 
 
                         @* link przekazuje dane do metody post *@
-                        @* <input 
-                            type="submit" 
-                            value="Szukaj"
-                            class="searchButton"
-                            /> *@
+                        @* <input
+                        type="submit"
+                        value="Szukaj"
+                        class="searchButton"
+                        /> *@
 
 
                         @* link przekazuje dane do metody get *@
@@ -44,7 +44,7 @@
                            asp-controller="Roles"
                            class="searchButton"
                            id="searchButton">
-                            Szukaj B
+                            Szukaj
                         </a>
 
                     </div>
@@ -147,15 +147,6 @@
 
 
                 <!-- Paginator -->
-
-@* 
-                if (Model.Paginator.Count > 4)
-                    Model.ShowPaginator = true;
-
-                if (Model.PageIndex == Model.Paginator.TotalPage)
-                    Model.ShowPaginator = true;
- *@
-
                 if (Model.ShowPaginator == Model.DisplayNumersListAndPaginatorLinks)
                 {
                     bool hasPrevious = Model.Paginator.HasPreviousPage;
@@ -168,9 +159,9 @@
                             <div class="df centery">
                                 <p>Pokaż</p>
                                 <select asp-for="PageSize" asp-items='@Model.SelectListNumberItems' class="selectOption" id="pageSizeSelectList"></select>
-                                 @* 
-                                    <input type="submit" value="Wybierz" class="selectOptionButton" />
-                                 *@
+                                @*
+                        <input type="submit" value="Wybierz" class="selectOptionButton" />
+                        *@
                             </div>
 
                         </div>
@@ -184,11 +175,12 @@
 
 
 
+                                    @{
 
-                                    @if (Model.DisplayCenterPaginator) // wyświetla lub nie środkową paginację, zależną od wyników wyszukiwania oraz ilości wyświetlanych elementów na stronie
-                                    {
 
-                                        if (hasPrevious)
+                                        @* @if (Model.Paginator.TotalPage > 1) // paginacja będzie wyświetlona tylko wtedy gdy ilość stron będzie większa od 1
+                            { *@
+                                        @if (hasPrevious)
                                         {
                                             <a asp-action="Index"
                                                asp-controller="Roles"
@@ -214,7 +206,7 @@
                                             @{
 
                                                 string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
-                                                 
+
 
                                                 for (var i = Model.Start; i < Model.End; i++)
                                                 {
@@ -228,17 +220,17 @@
                                                     }
                                                     if (i <= Model.Paginator.TotalPage)
                                                     {
-                                                                <a asp-action="Index"
-                                                                   asp-controller="Roles"
-                                                                   asp-route-PageSize="@Model.PageSize"
-                                                                   asp-route-PageIndex="@i"
-                                                                   asp-route-q="@Model.q"
-                                                                   asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                                   class="paginator-item"
-                                                                   style="@style"
-                                                                   id="button">
-                                                                    @i
-                                                                </a>
+                                                        <a asp-action="Index"
+                                                           asp-controller="Roles"
+                                                           asp-route-PageSize="@Model.PageSize"
+                                                           asp-route-PageIndex="@i"
+                                                           asp-route-q="@Model.q"
+                                                           asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                           class="paginator-item"
+                                                           style="@style"
+                                                           id="button">
+                                                            @i
+                                                        </a>
                                                     }
                                                 }
                                             }
@@ -267,14 +259,14 @@
                                             </a>
                                         }
 
+                                        @* } *@
                                     }
-
 
 
                                 </div>
                             </div>
                         </div>
-                        
+
                     </div>
 
                 }
@@ -304,38 +296,47 @@
 
 @section Scripts {
     <script type="text/javascript">
-         
+
         let q = '';
         let pageSize = 10;
         let pageIndex = 0;
         let sortowanieOption = '';
-        let getItems = false;
+        let linkUrl = '';
 
+        pole wyszukiwania
         let searchInput = document.getElementById('searchInput');
 
-        
-        // SortowanieOption
-        // pobieranie zaznaczonego elementu z listy SortowanieOptions i przekazywanie go do zmiennej, która jest przekazywana do atrybutu przycisku
+
+        SortowanieOption
+        pobieranie zaznaczonego elementu z listy SortowanieOptions i przekazywanie go do zmiennej, która jest przekazywana do atrybutu przycisku
         let sortowanieOptionSelectList = document.getElementById('sortowanieOptionSelectList');
         sortowanieOption = sortowanieOptionSelectList.value;
         sortowanieOptionSelectList.addEventListener('change', function () {
             sortowanieOption = this.value;
-        });
 
-
-        // PageSize
-        // pobieranie zaznaczonego elementu z listy SortowanieOptions i przekazywanie go do zmiennej, która jest przekazywana do atrybutu przycisku
-        let pageSizeSelectList = document.getElementById('pageSizeSelectList');
-        pageSize = parseInt(pageSizeSelectList.value); // może mieć 5, 10, 15 lub 20
-        pageSizeSelectList.addEventListener('change', function () {
-            pageSize = parseInt(this.value);
             q = searchInput.value;
-            pageIndex = parseInt(@Model.PageIndex);  
+            pageIndex = parseInt(@Model.PageIndex);
             let action = 'Index';
             let controller = 'Roles';
 
-            let linkUrl = `/${controller}/${action}?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;    
-            window.location.href = linkUrl;             
+            linkUrl = `/${controller}/${action}?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
+            window.location.href = linkUrl;
+        });
+
+
+        PageSize
+        pobieranie zaznaczonego elementu z listy SortowanieOptions i przekazywanie go do zmiennej, która jest przekazywana do atrybutu przycisku
+        let pageSizeSelectList = document.getElementById('pageSizeSelectList');
+        pageSize = parseInt(pageSizeSelectList.value); może mieć 5, 10, 15 lub 20
+        pageSizeSelectList.addEventListener('change', function () {
+            pageSize = parseInt(this.value);
+            q = searchInput.value;
+            pageIndex = parseInt(@Model.PageIndex);
+            let action = 'Index';
+            let controller = 'Roles';
+
+            linkUrl = `/${controller}/${action}?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
+            window.location.href = linkUrl;
         });
 
 
@@ -345,11 +346,11 @@
 
             controller = 'Roles';
             action = 'Index';
-            pageIndex = '1'; // musi być ustawiona pierwsza pozycja
+            pageIndex = '1'; musi być ustawiona pierwsza pozycja
             q = searchInput.value.toString();
             q = q.trim();
 
-            let linkUrl = `/${controller}/${action}?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
+            linkUrl = `/${controller}/${action}?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
             window.location.href = linkUrl;
         });
 

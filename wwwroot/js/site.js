@@ -57,3 +57,8 @@ function clearSession() {
 function removeSessionPageIndex() {
     sessionStorage.removeItem('pageIndex');
 }
+
+
+function test() {
+    alert('test');
+}

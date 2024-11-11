@@ -72,7 +72,6 @@ namespace WebApplication71.Controllers
 
             model.ShowPaginator = true;
             model.DisplayNumersListAndPaginatorLinks = true;
-            model.DisplayCenterPaginator = true;
 
 
             // Sortowanie
@@ -137,10 +136,6 @@ namespace WebApplication71.Controllers
                         model.WyswietlPrzycisk = false;
                     }
 
-                    // jeżeli z ilości wyszukanych wyników wynika, że należy wyświetlić tylko jedną stronę wtedy linki paginacji wraz z przyciskami left, right nie są wyświetlane
-                    if (model.Paginator.TotalPage <= 1)
-                        model.DisplayCenterPaginator = false;
-
 
                     switch (model.PageSize)
                     {
@@ -182,6 +177,9 @@ namespace WebApplication71.Controllers
             // alternatywny sposób do powyższego
             /*if (iloscObecnychElementow > iloscWszystkichElementow)
                 model.Roles = new List<GetRoleDto>();*/
+
+
+
 
             return View(model);
         }

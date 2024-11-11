@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor.Extensions;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,7 +73,42 @@ namespace WebApplication71.Controllers
 
             model.ShowPaginator = true;
             model.DisplayNumersListAndPaginatorLinks = true;
-            model.DisplayCenterPaginator = true;
+            model.DisplayButton = false;
+
+
+            // Wyszukiwanie
+            if (!string.IsNullOrEmpty(model.q))
+            {
+                roles = roles.Where(w => w.Name.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
+
+                if (roles.Count < 5)
+                {
+                    model.DisplayNumersListAndPaginatorLinks = false;
+                }
+
+/*
+                // ustawienie dla ostatniej strony paginacji możliwą ilość wyświetlenia elementów na stronie
+                switch (model.PageSize)
+                {
+                    case 5:
+                        model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5" });
+                        break;
+
+                    case 10:
+                        model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10" });
+                        break;
+
+                    case 15:
+                        model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10", "15" });
+                        break;
+
+                    case 20:
+                        model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10", "15", "20" });
+                        break;
+                }*/
+            }
+
+
 
 
             // Sortowanie
@@ -87,17 +123,6 @@ namespace WebApplication71.Controllers
                     break;
             }
 
-
-            // Wyszukiwanie
-            if (!string.IsNullOrEmpty(model.q))
-            {
-                roles = roles.Where(w => w.Name.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
-
-                if (roles.Count < 5)
-                {
-                    model.DisplayNumersListAndPaginatorLinks = false;
-                }
-            }
 
             model.Roles = roles;
             model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)roles.Count / model.PageSize));
@@ -114,17 +139,6 @@ namespace WebApplication71.Controllers
 
 
 
-            model.End = model.PageSize + 1;
-            int srodek = (int)Math.Round((double)(model.PageSize / 2));
-            if (model.PageIndex > srodek)
-            {
-                model.Start = model.PageIndex - (srodek - 1);
-                model.End = model.PageIndex + model.PageSize - srodek;
-            }
-
-
-
-
 
             if (string.IsNullOrEmpty(model.q))
             {
@@ -137,11 +151,8 @@ namespace WebApplication71.Controllers
                         model.WyswietlPrzycisk = false;
                     }
 
-                    // jeżeli z ilości wyszukanych wyników wynika, że należy wyświetlić tylko jedną stronę wtedy linki paginacji wraz z przyciskami left, right nie są wyświetlane
-                    if (model.Paginator.TotalPage <= 1)
-                        model.DisplayCenterPaginator = false;
-
-
+/*
+                    // ustawienie dla ostatniej strony paginacji możliwą ilość wyświetlenia elementów na stronie
                     switch (model.PageSize)
                     {
                         case 5:
@@ -160,10 +171,34 @@ namespace WebApplication71.Controllers
                             model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10", "15", "20" });
                             break;
                     }
-
+*/
 
                 }
             }
+
+
+
+            // ustawienie dla ostatniej strony paginacji możliwą ilość wyświetlenia elementów na stronie
+            switch (model.PageSize)
+            {
+                case 5:
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5" });
+                    break;
+
+                case 10:
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" });
+                    break;
+
+                case 15:
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15" });
+                    break;
+
+                case 20:
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20" });
+
+                    break;
+            }
+
 
 
 
@@ -171,17 +206,46 @@ namespace WebApplication71.Controllers
 
             // * jeśli chcesz uogólnić wyświetlanie filtrowanych wyników usuń poniższe warunki, a filtrowania nadal będzie działało poprawnie
             if (5 * model.PageIndex <= iloscWszystkichElementow)
-                model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5" });
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5" });
             if (10 * model.PageIndex <= iloscWszystkichElementow)
-                model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10" });
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" });
             if (15 * model.PageIndex <= iloscWszystkichElementow)
-                model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10", "15" });
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15" });
             if (20 * model.PageIndex <= iloscWszystkichElementow)
-                model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10", "15", "20" });
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20" });
 
             // alternatywny sposób do powyższego
             /*if (iloscObecnychElementow > iloscWszystkichElementow)
                 model.Roles = new List<GetRoleDto>();*/
+
+
+
+
+            // dlugość paginacji zależna od ilości elementów znajdujących się na liście, im więcej elementów tym więcej elementów w paginacji
+
+            int ilosc = 9;
+            if (roles.Count < 10)
+                ilosc = 5;
+            if (roles.Count > 10 && roles.Count < 50)
+                ilosc = 7;
+            if (roles.Count > 50)
+                ilosc = 9;
+
+            model.End = ilosc;
+            int srodek = (int)Math.Round((double)(ilosc / 2)) + 1;
+            if (model.PageIndex > srodek)
+            {
+                model.Start = model.PageIndex - (srodek - 1);
+                model.End = model.PageIndex + ilosc - srodek;
+            }
+
+
+
+            // button z trzema kropaki na końcu wyświetlany jest tylko wtedy gdy ilość stron paginacji jest większa od 9
+            if (model.Paginator.TotalPage > ilosc)
+                model.DisplayButton = true;
+
+
 
             return View(model);
         }
