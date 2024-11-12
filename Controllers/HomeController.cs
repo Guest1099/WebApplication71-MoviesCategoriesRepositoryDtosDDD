@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.Models;
 using WebApplication71.Models.Enums;
@@ -21,7 +20,7 @@ namespace WebApplication71.Controllers
         private readonly IMoviesRepository _moviesRepository;
         private readonly ILogowaniaRepository _logowaniaRepository;
 
-        private List <StatystykiViewModel> _statystyki;
+        private List<StatystykiViewModel> _statystyki;
 
         public HomeController(IUsersService usersService, IRolesService rolesService, ICategoriesRepository categoriesRepostiory, IMoviesRepository moviesRepository, ILogowaniaRepository logowaniaRepository)
         {
@@ -29,7 +28,7 @@ namespace WebApplication71.Controllers
             _rolesService = rolesService;
             _categoriesRepostiory = categoriesRepostiory;
             _moviesRepository = moviesRepository;
-            _logowaniaRepository = logowaniaRepository; 
+            _logowaniaRepository = logowaniaRepository;
         }
 
 
@@ -59,7 +58,7 @@ namespace WebApplication71.Controllers
                     logowania != null && logowania.Success)
                 {
 
-                    _statystyki = new List<StatystykiViewModel> ()
+                    _statystyki = new List<StatystykiViewModel>()
                     {
                         new StatystykiViewModel ()
                         {
@@ -91,7 +90,7 @@ namespace WebApplication71.Controllers
                             IloscElementow = logowania.Object.Count,
                             Controller = "Logowania"
                         },
-                    }; 
+                    };
 
                     return View(_statystyki);
                 }

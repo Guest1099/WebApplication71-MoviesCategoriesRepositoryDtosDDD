@@ -30,7 +30,7 @@ namespace WebApplication71.Models
         public Logowanie(DateTime dataLogowania, DateTime dataWylogowania, string userId)
         {
             LogowanieId = Guid.NewGuid().ToString();
-            DataLogowania = new DateTime (dataLogowania.Year, dataLogowania.Month, dataLogowania.Day, dataLogowania.Hour, dataLogowania.Minute, dataLogowania.Second);
+            DataLogowania = new DateTime(dataLogowania.Year, dataLogowania.Month, dataLogowania.Day, dataLogowania.Hour, dataLogowania.Minute, dataLogowania.Second);
             DataWylogowania = new DateTime(dataWylogowania.Year, dataWylogowania.Month, dataWylogowania.Day, dataWylogowania.Hour, dataWylogowania.Minute, dataWylogowania.Second);
             var cp = dataWylogowania - dataLogowania;
             CzasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);

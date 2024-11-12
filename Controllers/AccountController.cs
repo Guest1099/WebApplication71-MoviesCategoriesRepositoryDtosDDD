@@ -160,7 +160,7 @@ namespace WebApplication71.Controllers
         public IActionResult ChangePassword()
         {
             NI.Navigation = Navigation.AccountChangePassword;
-            return View ();
+            return View();
         }
 
 

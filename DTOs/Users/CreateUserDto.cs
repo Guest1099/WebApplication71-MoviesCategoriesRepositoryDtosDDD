@@ -54,7 +54,7 @@ namespace WebApplication71.DTOs.Users
         [DataType(DataType.Date)]
         public DateTime DataUrodzenia { get; set; } = DateTime.Now;
 
-         
+
         public Plec Plec { get; set; }
 
 

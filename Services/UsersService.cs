@@ -267,8 +267,8 @@ namespace WebApplication71.Services
                 {
                     var user = await _context.Users.FirstOrDefaultAsync(f => f.Id == model.Id);
                     if (user != null)
-                    { 
-                        object photoData = model.PhotoData == null ? user.Photo : await ChangeFileToBytes(model.PhotoData);                          
+                    {
+                        object photoData = model.PhotoData == null ? user.Photo : await ChangeFileToBytes(model.PhotoData);
                         byte[] photo = photoData as byte[];
 
                         user.Update(
@@ -291,7 +291,7 @@ namespace WebApplication71.Services
 
                         user.EmailConfirmed = false;
                         user.LockoutEnabled = false;
-                        user.SecurityStamp = Guid.NewGuid ().ToString ();
+                        user.SecurityStamp = Guid.NewGuid().ToString();
                         await _userManager.UpdateAsync(user);
 
 
@@ -367,7 +367,7 @@ namespace WebApplication71.Services
 
                                 user.EmailConfirmed = false;
                                 user.LockoutEnabled = false;
-                                user.SecurityStamp = Guid.NewGuid ().ToString ();
+                                user.SecurityStamp = Guid.NewGuid().ToString();
                                 await _userManager.UpdateAsync(user);
 
                                 //await _signInManager.SignOutAsync ();

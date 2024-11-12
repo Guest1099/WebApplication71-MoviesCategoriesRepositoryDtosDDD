@@ -114,7 +114,7 @@ namespace WebApplication71.Repos
         {
             var returnResult = new ResultViewModel<CreateMovieDto>() { Success = false, Message = "", Object = new CreateMovieDto() };
 
-            if (model != null && !string.IsNullOrEmpty (model.Email))
+            if (model != null && !string.IsNullOrEmpty(model.Email))
             {
                 try
                 {
@@ -125,7 +125,7 @@ namespace WebApplication71.Repos
                         Movie movie = new Movie(
                             title: model.Title,
                             description: model.Description,
-                            photo: await ChangeFileToBytes (model.PhotoData),
+                            photo: await ChangeFileToBytes(model.PhotoData),
                             price: model.Price,
                             userId: zalogowanyUser.Id,
                             categoryId: model.CategoryId

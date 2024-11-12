@@ -32,7 +32,7 @@ namespace WebApplication71.Services
             try
             {
                 var roles = await _context.Roles
-                    .OrderBy (o => o.Name)
+                    .OrderBy(o => o.Name)
                     .ToListAsync();
                 if (roles != null)
                 {

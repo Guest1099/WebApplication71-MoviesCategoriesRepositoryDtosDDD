@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq.Expressions;
 using System.Net.Http;
-using System.Threading.Tasks;
 using WebApplication71.Models;
 using WebApplication71.Models.Enums;
 
@@ -50,9 +46,9 @@ namespace WebApplication71.Data
             builder.Entity<ApplicationRole>().HasData(adminRole, userRole);
 
 
-            for (var i=0; i<1250; i++)
+            for (var i = 0; i < 1250; i++)
             {
-                var role = new ApplicationRole (i.ToString ());
+                var role = new ApplicationRole(i.ToString());
                 builder.Entity<ApplicationRole>().HasData(role);
             }
 
@@ -60,7 +56,7 @@ namespace WebApplication71.Data
             // USERS   
 
             DateTime dataUrodzenia = new DateTime(rand.Next(1980, 2000), rand.Next(1, 12), rand.Next(1, 30), rand.Next(1, 24), rand.Next(1, 60), rand.Next(1, 60));
-            string pesel = $"{rand.Next(2,9)}{rand.Next(100000000, 999999999)}";
+            string pesel = $"{rand.Next(2, 9)}{rand.Next(100000000, 999999999)}";
 
             var administratorUser = new ApplicationUser(
                 email: "admin@admin.pl",
@@ -237,9 +233,9 @@ namespace WebApplication71.Data
                 aaaUser, bbbUser, cccUser, dddUser, userUser, administratorUser
             };
 
-            
-                        List<string> kategorie = new List<string>() { "Komedia", "Romans", "Fantasy", "sadf","wer","cbx","ert","xbh","ysb","wegh","shr","ewtsh","Sgeteh","Sge","ddgege","sdgh","sgwegn","gwegsd","ewhh","bcbn","xcbceg","sdfdd","sssseg","werew","sddgggs","wqwrsdg","gbxfd","hdfh", "mnhj", "jtu", "eryerj", "jeujfg", "fgjeryrr", "rhffffdd", "dfhdjdfj", "fgjgjfg", "ghgg", "kykyyy", "kgkggg", "khgkkk", "yghhhhk", "ghkyyy", "yyhhhhh", "kgyyyy", "yggggk", "kkktttt", "titykkk", "hhyyt", "ytytghhh", "kghkyi", "wekukt", "asfwet", "ewqwwas", "irtewur", "sdglukty", "fdhjhwet", "twtwewgs", "dhfdgmgh", "yhfhdjd", "sdshjgghj", "hwehsds", "dfhdjhh", "sdsherhf", "fhfhfjjjjdf", "dfhhrrr", "dfhju6d", "wetwedfs3", "dfhturts", "yryrufgk", "dduererj", "fffhfjjjjfd", "hdfhrrry", "jrtueery", "eruyjfg", "ccse" };
-                        List<string> kategorieId = new List<string>();
+
+            List<string> kategorie = new List<string>() { "Komedia", "Romans", "Fantasy", "sadf", "wer", "cbx", "ert", "xbh", "ysb", "wegh", "shr", "ewtsh", "Sgeteh", "Sge", "ddgege", "sdgh", "sgwegn", "gwegsd", "ewhh", "bcbn", "xcbceg", "sdfdd", "sssseg", "werew", "sddgggs", "wqwrsdg", "gbxfd", "hdfh", "mnhj", "jtu", "eryerj", "jeujfg", "fgjeryrr", "rhffffdd", "dfhdjdfj", "fgjgjfg", "ghgg", "kykyyy", "kgkggg", "khgkkk", "yghhhhk", "ghkyyy", "yyhhhhh", "kgyyyy", "yggggk", "kkktttt", "titykkk", "hhyyt", "ytytghhh", "kghkyi", "wekukt", "asfwet", "ewqwwas", "irtewur", "sdglukty", "fdhjhwet", "twtwewgs", "dhfdgmgh", "yhfhdjd", "sdshjgghj", "hwehsds", "dfhdjhh", "sdsherhf", "fhfhfjjjjdf", "dfhhrrr", "dfhju6d", "wetwedfs3", "dfhturts", "yryrufgk", "dduererj", "fffhfjjjjfd", "hdfhrrry", "jrtueery", "eruyjfg", "ccse" };
+            List<string> kategorieId = new List<string>();
             /*for (var i = 0; i < kategorie.Count; i++)
             {
                 Category category = new Category(kategorie[i]);
@@ -249,7 +245,7 @@ namespace WebApplication71.Data
 */
             for (var i = 0; i < 150; i++)
             {
-                Category category = new Category("CateoryName_" + i.ToString ());
+                Category category = new Category("CateoryName_" + i.ToString());
                 builder.Entity<Category>().HasData(category);
                 kategorieId.Add(category.CategoryId);
             }
@@ -288,7 +284,7 @@ namespace WebApplication71.Data
                 Movie movie = new Movie(
                     title: _dataAutogenerator.Title(),
                     description: _dataAutogenerator.Description(1),
-                    photo: GetImageBytesAsync (photoSource[rand.Next(0, photoSource.Count)]),
+                    photo: GetImageBytesAsync(photoSource[rand.Next(0, photoSource.Count)]),
                     price: rand.Next(100, 200),
                     userId: administratorUser.Id,
                     categoryId: kategorieId[rand.Next(0, kategorieId.Count)]

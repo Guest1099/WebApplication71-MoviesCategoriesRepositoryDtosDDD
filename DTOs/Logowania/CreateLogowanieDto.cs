@@ -29,7 +29,7 @@ namespace WebApplication71.DTOs.Logowania
 
 
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
-        public DateTime DataWylogowania { get; set; } = DateTime.Now.AddHours (2);
+        public DateTime DataWylogowania { get; set; } = DateTime.Now.AddHours(2);
 
         public string UserId { get; set; }
 

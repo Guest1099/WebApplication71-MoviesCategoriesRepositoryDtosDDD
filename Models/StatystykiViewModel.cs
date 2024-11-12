@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace WebApplication71.Models
+﻿namespace WebApplication71.Models
 {
     public class StatystykiViewModel
     {

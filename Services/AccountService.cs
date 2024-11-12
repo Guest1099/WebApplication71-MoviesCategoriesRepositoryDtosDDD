@@ -6,14 +6,12 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using WebApplication71.Controllers;
 using WebApplication71.Data;
 using WebApplication71.DTOs;
 using WebApplication71.DTOs.Account;
@@ -1201,15 +1199,15 @@ namespace WebApplication71.Services
                 }
         */
 
-         
+
 
 
         public async Task Logout(string email)
         {
             try
-            { 
+            {
 
-                await AktualizacjaRekorduLogowania (email);
+                await AktualizacjaRekorduLogowania(email);
 
 
 
@@ -1282,7 +1280,7 @@ namespace WebApplication71.Services
         }
 
 
-        private async Task AktualizacjaRekorduLogowania (string email)
+        private async Task AktualizacjaRekorduLogowania(string email)
         {
             await ZaktualizujRekordLogowaniaDopisujacDoNiegoGodzineWylogowania(email);
 
@@ -1311,7 +1309,7 @@ namespace WebApplication71.Services
         /// <summary>
         ///  Operacja jeszcze nie używana
         /// </summary>
-        private async Task ZaktualizujRekordLogowaniaDopisujacDoNiegoGodzineWylogowania (string email)
+        private async Task ZaktualizujRekordLogowaniaDopisujacDoNiegoGodzineWylogowania(string email)
         {
             // wyszukuje najnowszy rekord logowania oraz dopisuje do niego datę wylogowania
             var ostatnieLogowanieUzytkownika = await _context.Logowania

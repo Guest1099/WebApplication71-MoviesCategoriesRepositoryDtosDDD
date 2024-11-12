@@ -25,15 +25,11 @@ namespace WebApplication71.DTOs
         public int End { get; set; } = 0;
 
         //public int IlePokazac { get; set; } = 0;
-        public bool WyswietlPrzycisk { get; set; } = true;
-        public bool ShowListOfNumersAnd { get; set; } = true;
         public bool LastPage { get; set; } = false;
         public bool ShowPaginator { get; set; } = false;
-        //public bool ShowPaginatorNumbers { get; set; } = true;
-        public bool DisplayButton { get; set; } = true;
+        public bool DisplayButtonLeftTrzyKropki { get; set; } = false;
+        public bool DisplayButtonRightTrzyKropki { get; set; } = false;
         public bool DisplayNumersListAndPaginatorLinks { get; set; } = true;
-
-
         public int IloscObecnychElementow5 { get; set; } = 0;
         public int IloscObecnychElementow10 { get; set; } = 0;
         public int IloscObecnychElementow15 { get; set; } = 0;

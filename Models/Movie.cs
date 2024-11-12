@@ -10,7 +10,7 @@ namespace WebApplication71.Models
         public string MovieId { get; private set; }
         public string Title { get; private set; }
         public string Description { get; private set; }
-        public byte [] Photo { get; private set; }
+        public byte[] Photo { get; private set; }
         public double Price { get; private set; }
         public int Klikniecia { get; private set; }
         public DateTime DataDodania { get; private set; }

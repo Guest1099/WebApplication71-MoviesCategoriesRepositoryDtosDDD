@@ -14,7 +14,7 @@ namespace WebApplication71.DTOs.Movies
         public string Description { get; set; }
 
 
-        public byte [] Photo { get; set; }
+        public byte[] Photo { get; set; }
 
 
         [Required(ErrorMessage = "To pole jest wymagane")]

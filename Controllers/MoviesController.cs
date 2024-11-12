@@ -198,17 +198,17 @@ namespace WebApplication71.Controllers
             {
                 case 5:
                     model.SelectListNumberItems = new SelectList(new List<string>() { "5" });
-                    break;                            
-                                                      
-                case 10:                              
+                    break;
+
+                case 10:
                     model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" });
-                    break;                            
-                                                      
-                case 15:                              
+                    break;
+
+                case 15:
                     model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15" });
-                    break;                            
-                                                      
-                case 20:                              
+                    break;
+
+                case 20:
                     model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20" });
                     break;
             }

@@ -15,7 +15,7 @@ namespace WebApplication71.Repos
     public class LogowaniaRepository : ILogowaniaRepository
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager <ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public LogowaniaRepository(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
@@ -36,12 +36,12 @@ namespace WebApplication71.Repos
                     .ToListAsync();
 
 
-                var zalogowanyUser = await _context.Users.FirstOrDefaultAsync (f=> f.Email == email);
+                var zalogowanyUser = await _context.Users.FirstOrDefaultAsync(f => f.Email == email);
                 if (zalogowanyUser != null)
                 {
-                    if (await _userManager.IsInRoleAsync (zalogowanyUser, "User"))
+                    if (await _userManager.IsInRoleAsync(zalogowanyUser, "User"))
                     {
-                        logowania = logowania.Where (w=> w.User.Email == email).ToList ();
+                        logowania = logowania.Where(w => w.User.Email == email).ToList();
                     }
                 }
 

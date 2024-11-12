@@ -10,9 +10,7 @@
     }
 }
 
-<div onclick="test();">
-    AAAAAAAa
-</div>
+
 
 
 <div class="overFormContainer">
@@ -33,7 +31,7 @@
                     <div class="df">
                         <input asp-for="q" class="searchInput" id="searchInput" />
 
-                                
+
                         @* link przekazuje dane do metody post *@
                         @* <input
                         type="submit"
@@ -157,19 +155,17 @@
 
 
                     <div class="df mt-30 pb-30">
-                        <div class="w-40 centery">  
+                        <div class="w-40 centery">
 
                             <div class="df centery">
                                 <p>Pokaż</p>
                                 <select asp-for="PageSize" asp-items='@Model.SelectListNumberItems' class="selectOption" id="pageSizeSelectList"></select>
-                                @*
-                        <input type="submit" value="Wybierz" class="selectOptionButton" />
-                        *@
+                                <input type="submit" value="Wybierz" class="selectOptionButton" id="selectButton" />
                             </div>
 
                         </div>
 
-                         
+
 
                         <div class="w-60 centery">
                             <div class="w-100 centery">
@@ -181,9 +177,9 @@
 
 
                                         @* @if (Model.Paginator.TotalPage > 1) // paginacja będzie wyświetlona tylko wtedy gdy ilość stron będzie większa od 1
-                                        { *@
+                            { *@
 
-                                            
+
                                         <!-- przycisk prev -->
                                         @if (hasPrevious)
                                         {
@@ -211,25 +207,25 @@
                                             @{
 
                                                 string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
-                                                
+
                                                 <!-- przeniesienie do pierwszej strony -->
-                                                if (Model.PageIndex > 4)
+                                                if (Model.DisplayButtonLeftTrzyKropki)
                                                 {
-                                                        <a asp-action="Index"
-                                                           asp-controller="Roles"
-                                                           asp-route-PageSize="@Model.PageSize"
-                                                           asp-route-PageIndex="1"
-                                                           asp-route-q="@Model.q"
-                                                           asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                           class="paginator-item"
-                                                           style="backgroun-color: transparent"
-                                                           id="buttonLeftTrzyKropki">
-                                                            ...
-                                                        </a>
+                                                    <a asp-action="Index"
+                                                       asp-controller="Roles"
+                                                       asp-route-PageSize="@Model.PageSize"
+                                                       asp-route-PageIndex="1"
+                                                       asp-route-q="@Model.q"
+                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                       class="paginator-item"
+                                                       style="backgroun-color: transparent"
+                                                       id="buttonLeftTrzyKropki">
+                                                        ...
+                                                    </a>
                                                 }
 
 
-                                                
+
                                                 <!-- środkowe przyciski paginacji -->
                                                 for (var i = Model.Start; i <= Model.End; i++)
                                                 {
@@ -256,29 +252,29 @@
                                                         </a>
                                                     }
                                                 }
-                                                 
-                                                
+
+
                                                 <!-- przeniesienie do ostatniej strony -->
-                                                if (Model.DisplayButton)
+                                                if (Model.DisplayButtonRightTrzyKropki)
                                                 {
-                                                        <a asp-action="Index"
-                                                           asp-controller="Roles"
-                                                           asp-route-PageSize="@Model.PageSize"
-                                                           asp-route-PageIndex="@Model.Roles.Count"
-                                                           asp-route-q="@Model.q"
-                                                           asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                           class="paginator-item"
-                                                           style="backgroun-color: transparent"
-                                                           id="buttonRightTrzyKropki">
-                                                            ...
-                                                        </a>
+                                                    <a asp-action="Index"
+                                                       asp-controller="Roles"
+                                                       asp-route-PageSize="@Model.PageSize"
+                                                       asp-route-PageIndex="@Model.Roles.Count"
+                                                       asp-route-q="@Model.q"
+                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                       class="paginator-item"
+                                                       style="backgroun-color: transparent"
+                                                       id="buttonRightTrzyKropki">
+                                                        ...
+                                                    </a>
                                                 }
                                             }
                                         </div>
 
 
 
-                                        
+
                                         <!-- przycisk next -->
                                         if (hasNext)
                                         {
@@ -340,8 +336,15 @@
 
 @section Scripts {
     <script type="text/javascript">
-        let pag = new Paginator('Roles', 1, document.getElementById('sortowanieOptionSelectList'));
 
+        new Paginator(
+            'Roles',
+            @Model.PageIndex,
+            document.getElementById('sortowanieOptionSelectList'),
+            document.getElementById('pageSizeSelectList'),
+            document.getElementById('searchButton'),
+            document.getElementById('selectButton')
+            );
 
     </script>
 }
