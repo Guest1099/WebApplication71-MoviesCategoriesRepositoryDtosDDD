@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Users;
@@ -31,30 +32,7 @@ namespace WebApplication71.Controllers
             NI.Navigation = Navigation.UsersIndex;
             try
             {
-                var result = await _usersService.GetAll();
-
-                if (result == null || !result.Success)
-                    return View("NotFound");
-
-                var users = result.Object;
-
-                if (users == null)
-                    return View("NotFound");
-
-
-
-                return View(new GetUsersDto()
-                {
-                    Users = users,
-                    Paginator = Paginator<GetUserDto>.CreateAsync(users, model.PageIndex, model.PageSize),
-                    PageIndex = model.PageIndex,
-                    PageSize = model.PageSize,
-                    Start = model.Start,
-                    End = model.End,
-                    q = model.q,
-                    SearchOption = model.SearchOption,
-                    SortowanieOption = model.SortowanieOption
-                });
+                return await SearchAndFiltringResutl(model);
             }
             catch (Exception ex)
             {
@@ -70,75 +48,226 @@ namespace WebApplication71.Controllers
             NI.Navigation = Navigation.UsersIndex;
             try
             {
-                var result = await _usersService.GetAll();
-
-                if (result == null || !result.Success)
-                    return View("NotFound");
-
-                var users = result.Object;
-                if (users == null)
-                    return View("NotFound");
-
-
-                // Wyszukiwanie
-                if (!string.IsNullOrEmpty(model.q))
-                {
-                    users = users.Where(
-                        w =>
-                            w.Email.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
-                            w.Nazwisko.Contains(model.q, StringComparison.OrdinalIgnoreCase)
-                        ).ToList();
-                }
-
-
-                // Opcje wyszukiwania 
-                if (!string.IsNullOrEmpty(model.q) && !string.IsNullOrEmpty(model.SearchOption))
-                {
-                    switch (model.SearchOption)
-                    {
-                        case "Email":
-                            users = users.Where(w => w.Email.Contains(model.q)).ToList();
-                            break;
-
-                        case "Nazwisko":
-                            users = users.Where(w => w.Nazwisko.Contains(model.q)).ToList();
-                            break;
-
-                        case "Wszędzie": break;
-                    }
-                }
-
-                // Sortowanie
-                switch (model.SortowanieOption)
-                {
-                    case "Email A-Z":
-                        users = users.OrderBy(o => o.Email).ToList();
-                        break;
-
-                    case "Email Z-A":
-                        users = users.OrderByDescending(o => o.Email).ToList();
-                        break;
-
-                    case "Nazwisko A-Z":
-                        users = users.OrderBy(o => o.Nazwisko).ToList();
-                        break;
-
-                    case "Nazwisko Z-A":
-                        users = users.OrderByDescending(o => o.Nazwisko).ToList();
-                        break;
-                }
-
-
-                model.Users = users;
-                model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)users.Count / model.PageSize));
-                model.Paginator = Paginator<GetUserDto>.CreateAsync(users, model.PageIndex, model.PageSize);
-                return View(model);
+                return await SearchAndFiltringResutl(model);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+
+
+
+        private async Task<IActionResult> SearchAndFiltringResutl(GetUsersDto model)
+        {
+            if (model == null)
+                return View("NotFound");
+
+            var result = await _usersService.GetAll();
+
+            if (result == null || !result.Success)
+                return View("NotFound");
+
+            var users = result.Object;
+            if (users == null)
+                return View("NotFound");
+                
+
+            model.ShowPaginator = true;
+            model.DisplayNumersListAndPaginatorLinks = true;
+            model.DisplayButtonLeftTrzyKropki = false;
+            model.DisplayButtonRightTrzyKropki = false;
+            model.SelectListSearchOptionItems = new SelectList(new List<string>() { "Email", "Nazwisko", "Wszędzie" }, "Wszędzie");
+            model.SortowanieOptionItems = new SelectList(new List<string>() { "Email A-Z", "Email Z-A", "Nazwisko A-Z", "Nazwisko Z-A" }, "Email A-Z");
+
+
+
+
+
+            // Opcje sortowania
+            switch (model.SearchOption)
+            {
+                case "Email":
+                    users = users.OrderBy(o => o.Email).ToList();
+                    break;
+
+                case "Nazwisko":
+                    users = users.OrderByDescending(o => o.Nazwisko).ToList();
+                    break;
+
+                case "Wszędzie":
+
+                    break;
+            }
+
+
+
+            // Wyszukiwanie
+            if (!string.IsNullOrEmpty(model.q))
+            {
+                users = users.Where(w => w.Nazwisko.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
+
+                if (users.Count < 5)
+                {
+                    model.DisplayNumersListAndPaginatorLinks = false;
+                }
+            }
+
+
+
+
+
+            // Sortowanie
+            switch (model.SortowanieOption)
+            {
+                case "Email A-Z":
+                    users = users.OrderBy(o => o.Email).ToList();
+                    break;
+
+                case "Email Z-A":
+                    users = users.OrderByDescending(o => o.Email).ToList();
+                    break;
+
+                case "Nazwisko A-Z":
+                    users = users.OrderBy(o => o.Nazwisko).ToList();
+                    break;
+
+                case "Nazwisko Z-A":
+                    users = users.OrderByDescending(o => o.Nazwisko).ToList();
+                    break;
+            }
+
+
+
+            model.Users = users;
+            model.Paginator = Paginator<GetUserDto>.CreateAsync(users, model.PageIndex, model.PageSize);
+
+
+
+            // ustawienie dla wszystkich stron paginacji możliwą ilość wyświetlenia elementów na stronie
+            switch (model.PageSize)
+            {
+                case 5:
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5" });
+                    break;
+
+                case 10:
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", }, "10");
+                    break;
+
+                case 15:
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15" }, "15");
+                    break;
+
+                case 20:
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20" }, "20");
+                    break;
+            }
+
+
+
+
+            int iloscWszystkichElementow = users.Count;
+
+            // * jeśli chcesz uogólnić wyświetlanie filtrowanych wyników usuń poniższe warunki, a filtrowania nadal będzie działało poprawnie
+            if (5 * model.PageIndex <= iloscWszystkichElementow)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5" });
+            if (10 * model.PageIndex <= iloscWszystkichElementow)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" }, "10");
+            if (15 * model.PageIndex <= iloscWszystkichElementow)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15" }, "15");
+            if (20 * model.PageIndex <= iloscWszystkichElementow)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20" }, "20");
+
+
+            // alternatywny sposób do powyższego
+            /*if (iloscObecnychElementow > iloscWszystkichElementow)
+                model.Roles = new List<GetRoleDto>();*/
+
+
+            
+
+                
+
+
+            // obliczenia dla ostatniej strony
+            model.LastPage = model.PageIndex == model.Paginator.TotalPage;
+            if (model.LastPage)
+            {
+                model.DisplayNumersListAndPaginatorLinks = true;
+                switch (model.PageSize)
+                {
+                    case 5:
+                        model.SelectListNumberItems = new SelectList(new List<string>() { "5" });
+                        break;
+
+                    case 10:
+                        model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", });
+                        break;
+
+                    case 15:
+                        model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15" }, "15");
+                        break;
+
+                    case 20:
+                        model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20" }, "20");
+                        break;
+                }
+            }
+
+
+
+
+            if (model.PageIndex == 1 && model.Paginator.TotalPage <= 2 && model.Paginator.Count <= 10)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" }, "10");
+
+
+
+            // paginator wyświetlany jest tylko wtedy gdy ilość elementów tabeli wynosi minimum 5
+            if (model.Paginator.Count < 5 && model.Paginator.PageIndex != model.Paginator.TotalPage)
+                model.ShowPaginator = false;
+
+
+/*
+            if (users.Count < 10 && model.PageIndex == 1 && model.Paginator.TotalPage == 1)
+                model.DisplayNumersListAndPaginatorLinks = false;
+*/
+
+
+
+            // dlugość paginacji zależna od ilości elementów znajdujących się na liście, im więcej elementów tym więcej elementów w paginacji
+
+            int ilosc = 9;
+            if (users.Count < 10)
+                ilosc = 5;
+            if (users.Count > 10 && users.Count < 50)
+                ilosc = 7;
+            if (users.Count > 50)
+                ilosc = 9;
+
+            model.End = ilosc;
+            int srodek = (int)Math.Round((double)(ilosc / 2)) + 1;
+            if (model.PageIndex > srodek)
+            {
+                model.Start = model.PageIndex - (srodek - 1);
+                model.End = model.PageIndex + ilosc - srodek;
+            }
+
+
+
+            // button z trzema kropaki na końcu wyświetlany jest tylko wtedy gdy ilość stron paginacji jest większa od 9
+            if (model.Paginator.TotalPage >= 6 && model.PageIndex >= 6)
+                model.DisplayButtonLeftTrzyKropki = true;
+
+            if (model.Paginator.TotalPage > ilosc)
+                model.DisplayButtonRightTrzyKropki = true;
+
+
+
+            return View(model);
+        }
+
 
 
 

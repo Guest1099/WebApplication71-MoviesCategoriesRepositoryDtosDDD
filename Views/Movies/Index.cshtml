@@ -12,6 +12,7 @@
 
 
 
+
 <div class="overFormContainer">
 
     <form method="post" asp-action="Index" asp-controller="Movies" class="formContainer">
@@ -73,6 +74,7 @@
                         <h3>@Model.Movies.Count</h3>
                     </div>
                 }
+
 
 
 
@@ -161,11 +163,6 @@
 
 
 
-
-
-
-
-
                 <!-- Paginator -->
                 if (Model.ShowPaginator == Model.DisplayNumersListAndPaginatorLinks)
                 {
@@ -179,13 +176,10 @@
                             <div class="df centery">
                                 <p>Pokaż</p>
                                 <select asp-for="PageSize" asp-items='@Model.SelectListNumberItems' class="selectOption" id="pageSizeSelectList"></select>
-                                @*
-                        <input type="submit" value="Wybierz" class="selectOptionButton" />
-                        *@
+                                <input type="submit" value="Wybierz" class="selectOptionButton" id="selectButton" />
                             </div>
 
                         </div>
-
 
 
 
@@ -200,6 +194,9 @@
 
                                         @* @if (Model.Paginator.TotalPage > 1) // paginacja będzie wyświetlona tylko wtedy gdy ilość stron będzie większa od 1
                             { *@
+
+
+                                        <!-- przycisk prev -->
                                         @if (hasPrevious)
                                         {
                                             <a asp-action="Index"
@@ -227,7 +224,25 @@
 
                                                 string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
 
+                                                <!-- przeniesienie do pierwszej strony -->
+                                                if (Model.DisplayButtonLeftTrzyKropki)
+                                                {
+                                                    <a asp-action="Index"
+                                                       asp-controller="Movies"
+                                                       asp-route-PageSize="@Model.PageSize"
+                                                       asp-route-PageIndex="1"
+                                                       asp-route-q="@Model.q"
+                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                       class="paginator-item"
+                                                       style="backgroun-color: transparent"
+                                                       id="buttonLeftTrzyKropki">
+                                                        ...
+                                                    </a>
+                                                }
 
+
+
+                                                <!-- środkowe przyciski paginacji -->
                                                 for (var i = Model.Start; i <= Model.End; i++)
                                                 {
                                                     if (i == Model.PageIndex)
@@ -253,11 +268,30 @@
                                                         </a>
                                                     }
                                                 }
+
+
+                                                <!-- przeniesienie do ostatniej strony -->
+                                                if (Model.DisplayButtonRightTrzyKropki)
+                                                {
+                                                    <a asp-action="Index"
+                                                       asp-controller="Movies"
+                                                       asp-route-PageSize="@Model.PageSize"
+                                                       asp-route-PageIndex="@Model.Movies.Count"
+                                                       asp-route-q="@Model.q"
+                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                       class="paginator-item"
+                                                       style="backgroun-color: transparent"
+                                                       id="buttonRightTrzyKropki">
+                                                        ...
+                                                    </a>
+                                                }
                                             }
                                         </div>
 
 
 
+
+                                        <!-- przycisk next -->
                                         if (hasNext)
                                         {
                                             <a asp-action="Index"
@@ -316,66 +350,17 @@
 
 
 
-
-
-
-
 @section Scripts {
     <script type="text/javascript">
 
-        let q = '';
-        let pageSize = 10;
-        let pageIndex = 0;
-        let sortowanieOption = '';
-        let linkUrl = '';
-        let controller = 'Movies'
-
-        // pole wyszukiwania
-        let searchInput = document.getElementById('searchInput');
-
-
-        // SortowanieOption
-        // pobieranie zaznaczonego elementu z listy SortowanieOptions i przekazywanie go do zmiennej, która jest przekazywana do atrybutu przycisku
-        let sortowanieOptionSelectList = document.getElementById('sortowanieOptionSelectList');
-        sortowanieOption = sortowanieOptionSelectList.value;
-        sortowanieOptionSelectList.addEventListener('change', function () {
-            sortowanieOption = this.value;
-
-            q = searchInput.value;
-            pageIndex = parseInt(@Model.PageIndex);
-
-            linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
-            window.location.href = linkUrl;
-        });
-
-
-        // PageSize
-        // pobieranie zaznaczonego elementu z listy SortowanieOptions i przekazywanie go do zmiennej, która jest przekazywana do atrybutu przycisku
-        let pageSizeSelectList = document.getElementById('pageSizeSelectList');
-        pageSize = parseInt(pageSizeSelectList.value); // może mieć 5, 10, 15 lub 20
-        pageSizeSelectList.addEventListener('change', function () {
-            pageSize = parseInt(this.value);
-            q = searchInput.value;
-            pageIndex = parseInt(@Model.PageIndex);
-
-            linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
-            window.location.href = linkUrl;
-        });
-
-
-        let searchButton = document.getElementById('searchButton');
-        searchButton.addEventListener('click', function (event) {
-            event.preventDefault();
-
-            pageIndex = '1'; // musi być ustawiona pierwsza pozycja
-            q = searchInput.value.toString();
-            q = q.trim();
-
-            linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
-            window.location.href = linkUrl;
-        });
-
-
+        new Paginator(
+            'Movies',
+            @Model.PageIndex,
+            document.getElementById('sortowanieOptionSelectList'),
+            document.getElementById('pageSizeSelectList'),
+            document.getElementById('searchButton'),
+            document.getElementById('selectButton')
+        );
 
     </script>
 }

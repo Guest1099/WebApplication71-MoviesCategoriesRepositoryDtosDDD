@@ -72,8 +72,10 @@ namespace WebApplication71.Controllers
 
             model.ShowPaginator = true;
             model.DisplayNumersListAndPaginatorLinks = true;
+            model.DisplayNumersListAndPaginatorLinks = true;
             model.DisplayButtonLeftTrzyKropki = false;
             model.DisplayButtonRightTrzyKropki = false;
+            model.SortowanieOptionItems = new SelectList(new List<string>() { "Nazwa A-Z", "Nazwa Z-A" });
 
 
             // Wyszukiwanie
@@ -105,7 +107,6 @@ namespace WebApplication71.Controllers
 
 
             model.Roles = roles;
-            model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)roles.Count / model.PageSize));
             model.Paginator = Paginator<GetRoleDto>.CreateAsync(roles, model.PageIndex, model.PageSize);
 
 
@@ -117,48 +118,7 @@ namespace WebApplication71.Controllers
             if (model.PageIndex == model.Paginator.TotalPage)
                 model.ShowPaginator = true;
 
-
-
-
-            /*
-                        if (string.IsNullOrEmpty(model.q))
-                        {
-                            // działania dla ostatniej strony
-                            if (model.LastPage)
-                            {
-                                if (model.Paginator.Count < 5)
-                                {
-                                    //model.WyswietlPrzycisk = false;
-                                }
-
-
-                                // ustawienie dla ostatniej strony paginacji możliwą ilość wyświetlenia elementów na stronie
-                                *//*switch (model.PageSize)
-                                {
-                                    case 5:
-                                        model.SelectListNumberItems = new SelectList(new List<string>() { "5" });
-                                        break;
-
-                                    case 10:
-                                        model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" });
-                                        break;
-
-                                    case 15:
-                                        model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15" });
-                                        break;
-
-                                    case 20:
-                                        model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20" });
-                                        break;
-                                }*//*
-
-
-                            }
-                        }
-            */
-
-
-
+             
 
 
             // ustawienie dla wszystkich stron paginacji możliwą ilość wyświetlenia elementów na stronie
@@ -169,7 +129,7 @@ namespace WebApplication71.Controllers
                     break;
 
                 case 10:
-                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", }, "5");
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", }, "10");
                     break;
 
                 case 15:
@@ -200,6 +160,19 @@ namespace WebApplication71.Controllers
             // alternatywny sposób do powyższego
             /*if (iloscObecnychElementow > iloscWszystkichElementow)
                 model.Roles = new List<GetRoleDto>();*/
+
+
+
+            if (model.PageIndex == 1 && model.Paginator.TotalPage <= 2 && model.Paginator.Count <= 10)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" }, "10");
+
+
+
+            if (roles.Count < 5)
+                model.ShowPaginator = false;
+
+            if (roles.Count < 10)
+                model.DisplayNumersListAndPaginatorLinks = false;
 
 
 

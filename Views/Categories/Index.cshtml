@@ -1,17 +1,23 @@
 ﻿@model GetCategoriesDto
 
-
 @{
     int index = 0;
-    index = Model.PageSize * (Model.PageIndex - 1); // obliczenie liczby porządkowej
+    index = Model.PageSize * (Model.PageIndex - 1);
+
+    if (index <= 0)
+    {
+        index = 0;
+    }
 }
+
+
+
 
 
 <div class="overFormContainer">
 
     <form method="post" asp-action="Index" asp-controller="Categories" class="formContainer">
         <input type="hidden" asp-for="PageIndex" value="@Model.PageIndex" />
-
 
 
         <div class="topContainer">
@@ -25,7 +31,24 @@
                     <!-- Wyszukiwarka -->
                     <div class="df">
                         <input asp-for="q" class="searchInput" id="searchInput" />
-                        <input type="submit" value="Szukaj" class="searchButton" />
+
+
+                        @* link przekazuje dane do metody post *@
+                        @* <input
+                        type="submit"
+                        value="Szukaj"
+                        class="searchButton"
+                        /> *@
+
+
+                        @* link przekazuje dane do metody get *@
+                        <a asp-action="Index"
+                           asp-controller="Categories"
+                           class="searchButton"
+                           id="searchButton">
+                            Szukaj
+                        </a>
+
                     </div>
 
                     <!-- Sortowanie -->
@@ -36,11 +59,11 @@
                 </div>
 
             </div>
+
         </div>
 
 
         <div class="tableContainer">
-
 
             @if (Model.Categories != null && Model.Categories.Any())
             {
@@ -52,6 +75,12 @@
                         <h3>@Model.Categories.Count</h3>
                     </div>
                 }
+
+
+
+
+
+
 
 
 
@@ -116,58 +145,168 @@
 
 
 
+
                 <!-- Paginator -->
-                @* if (Model.Paginator.Count > 4)
-            { *@
+                if (Model.ShowPaginator == Model.DisplayNumersListAndPaginatorLinks)
+                {
+                    bool hasPrevious = Model.Paginator.HasPreviousPage;
+                    bool hasNext = Model.Paginator.HasNexPage;
 
 
+                    <div class="df mt-30 pb-30">
+                        <div class="w-40 centery">
 
-                bool hasPrevious = Model.Paginator.HasPreviousPage;
-                bool hasNext = Model.Paginator.HasNexPage;
+                            <div class="df centery">
+                                <p>Pokaż</p>
+                                <select asp-for="PageSize" asp-items='@Model.SelectListNumberItems' class="selectOption" id="pageSizeSelectList"></select>
+                                <input type="submit" value="Wybierz" class="selectOptionButton" id="selectButton" />
+                            </div>
 
-
-                <div class="df mt-30 pb-30">
-                    <div class="w-40 centery">
-
-                        <div class="df centery">
-                            <p>Pokaż</p>
-                            <select asp-for="PageSize" asp-items='@Model.SelectListNumberItems' class="selectOption" id="pageSizeSelectList"></select>
-                            <input type="submit" value="Wybierz" class="selectOptionButton" />
                         </div>
 
-                    </div>
+
+
+                        <div class="w-60 centery">
+                            <div class="w-100 centery">
+                                <div class="df fs-11 centery">
+
+
+
+                                    @{
+
+
+                                        @* @if (Model.Paginator.TotalPage > 1) // paginacja będzie wyświetlona tylko wtedy gdy ilość stron będzie większa od 1
+                            { *@
+
+
+                                        <!-- przycisk prev -->
+                                        @if (hasPrevious)
+                                        {
+                                            <a asp-action="Index"
+                                               asp-controller="Categories"
+                                               asp-route-PageSize="@Model.PageSize"
+                                               asp-route-PageIndex="@(Model.Paginator.PageIndex - 1)"
+                                               asp-route-q="@Model.q"
+                                               asp-route-SortowanieOption="@Model.SortowanieOption"
+                                               class="paginatorButton">
+                                                Prev
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a asp-action="Index"
+                                               asp-controller="Categories"
+                                               class="paginatorButton disable-link">
+                                                Prev
+                                            </a>
+                                        }
+
+
+                                        <div class="df ml-10 mr-10">
+                                            @{
+
+                                                string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
+
+                                                <!-- przeniesienie do pierwszej strony -->
+                                                if (Model.DisplayButtonLeftTrzyKropki)
+                                                {
+                                                    <a asp-action="Index"
+                                                       asp-controller="Categories"
+                                                       asp-route-PageSize="@Model.PageSize"
+                                                       asp-route-PageIndex="1"
+                                                       asp-route-q="@Model.q"
+                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                       class="paginator-item"
+                                                       style="backgroun-color: transparent"
+                                                       id="buttonLeftTrzyKropki">
+                                                        ...
+                                                    </a>
+                                                }
+
+
+
+                                                <!-- środkowe przyciski paginacji -->
+                                                for (var i = Model.Start; i <= Model.End; i++)
+                                                {
+                                                    if (i == Model.PageIndex)
+                                                    {
+                                                        style = "padding: 7px 10px; background-color: lightgray; color: black; font-weight: bold";
+                                                    }
+                                                    else
+                                                    {
+                                                        style = "padding: 7px 10px; background-color: white;";
+                                                    }
+                                                    if (i <= Model.Paginator.TotalPage)
+                                                    {
+                                                        <a asp-action="Index"
+                                                           asp-controller="Categories"
+                                                           asp-route-PageSize="@Model.PageSize"
+                                                           asp-route-PageIndex="@i"
+                                                           asp-route-q="@Model.q"
+                                                           asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                           class="paginator-item"
+                                                           style="@style"
+                                                           id="button">
+                                                            @i
+                                                        </a>
+                                                    }
+                                                }
+
+
+                                                <!-- przeniesienie do ostatniej strony -->
+                                                if (Model.DisplayButtonRightTrzyKropki)
+                                                {
+                                                    <a asp-action="Index"
+                                                       asp-controller="Categories"
+                                                       asp-route-PageSize="@Model.PageSize"
+                                                       asp-route-PageIndex="@Model.Categories.Count"
+                                                       asp-route-q="@Model.q"
+                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                       class="paginator-item"
+                                                       style="backgroun-color: transparent"
+                                                       id="buttonRightTrzyKropki">
+                                                        ...
+                                                    </a>
+                                                }
+                                            }
+                                        </div>
 
 
 
 
-                    <div class="w-60 centery">
-                        <div class="w-100 centery">
-                            <div class="df fs-11 centery">
+                                        <!-- przycisk next -->
+                                        if (hasNext)
+                                        {
+                                            <a asp-action="Index"
+                                               asp-controller="Categories"
+                                               asp-route-PageSize="@Model.PageSize"
+                                               asp-route-PageIndex="@(Model.Paginator.PageIndex + 1)"
+                                               asp-route-q="@Model.q"
+                                               asp-route-SortowanieOption="@Model.SortowanieOption"
+                                               class="paginatorButton">
+                                                Next
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a asp-action="Index"
+                                               asp-controller="Categories"
+                                               class="paginatorButton disable-link">
+                                                Next
+                                            </a>
+                                        }
+
+                                        @* } *@
+                                    }
 
 
-                                
-                                    <a class="paginatorButton"
-                                       id="buttonPrev">
-                                        Prev
-                                    </a>
-
-
-                                <div id="linksContainer" class="df ml-10 mr-10">
-                                    @* tutaj pętla elementów *@
                                 </div>
-
-
-                                
-                                    <a class="paginatorButton"
-                                       id="buttonNext">
-                                        Next
-                                    </a> 
-
                             </div>
                         </div>
-                    </div>
-                </div>
 
+                    </div>
+
+                }
 
 
             }
@@ -175,19 +314,18 @@
             {
                 if (!string.IsNullOrEmpty(Model.q))
                 {
-                    <p>Nie znaleziono kategorii pasujących do Twojego zapytania: <strong>@Model.q</strong>.</p>
+                    <p>Nie znaleziono ról pasujących do Twojego zapytania: <strong>@Model.q</strong>.</p>
                 }
                 else
                 {
-                    <p>Brak kategorii w bazie danych.</p>
+                    <p>Brak elementów w bazie danych.</p>
                 }
             }
 
         </div>
 
-
-
     </form>
+
 </div>
 
 
@@ -196,171 +334,16 @@
 
 
 @section Scripts {
-
     <script type="text/javascript">
-         
 
-        let paginacja = {
-            queryValue: '',
-            pageSize: 10,
-            pageIndex: 0,
-            start: 0,
-            end: 0,
-            srodek: 0,
-            totalPage: 0
-        };
-         
-        
-        
-        let queryValue = '';
-        let pageSize = 10;
-        let pageIndex = parseInt(sessionStorage.getItem('pageIndex')) || 1;
-        let start = 0;
-        let end = 0;
-        let srodek = 0;
-        let totalPage = 0;
-        
-        let searchInput = document.getElementById('searchInput');
-        
-        // SortowanieOption
-        // pobieranie zaznaczonego elementu z listy SortowanieOptions i przekazywanie go do zmiennej, która jest przekazywana do atrybutu przycisku
-        let sortowanieOptionSelectList = document.getElementById('sortowanieOptionSelectList');
-        let sortowanieOptionSelectListValue = sortowanieOptionSelectList.value;
-        sortowanieOptionSelectList.addEventListener('change', function () {
-            sortowanieOptionSelectListValue = this.value;
-        });
-
-        // PageSize
-        // pobieranie zaznaczonego elementu z listy SortowanieOptions i przekazywanie go do zmiennej, która jest przekazywana do atrybutu przycisku
-        let pageSizeSelectList = document.getElementById('pageSizeSelectList');
-        pageSize = parseInt (pageSizeSelectList.value); // może mieć 5, 10, 15 lub 20
-
-        obliczPaginacje();
-        pageSizeSelectList.addEventListener('change', function () {
-            pageSize = parseInt (this.value);
-            obliczPaginacje();
-            refreshGenerateLinks();
-        });
-        
-
-
-        let linksContainer = document.getElementById('linksContainer');
-        function generateLink(container, i) {
-
-            let link = document.createElement('a');
-            link.style.padding = '5px';
-            link.style.border = '1px solid rgb(220,220,220)';
-            link.innerText = (i + 1).toString();
-            link.setAttribute('asp-action', 'Index');
-            link.setAttribute('asp-controller', 'Categories');
-
-            // Listener dla kliknięcia
-            link.addEventListener('click', function (event) {
-                event.preventDefault();
-                
-            queryValue = searchInput.value;
-
-                pageIndex = i + 1;
-
-                this.setAttribute('asp-route-PageSize', pageSize);
-                this.setAttribute('asp-route-PageIndex', pageIndex);
-                this.setAttribute('asp-route-q', queryValue);
-                this.setAttribute('asp-route-SortowanieOption', sortowanieOptionSelectListValue);
-                let linkUrl = `/${this.getAttribute('asp-controller')}/${this.getAttribute('asp-action')}?PageSize=${this.getAttribute('asp-route-PageSize')}&PageIndex=${this.getAttribute('asp-route-PageIndex')}&q=${encodeURIComponent(queryValue)}&SortowanieOption=${this.getAttribute('asp-route-SortowanieOption')}`;
-                window.location.href = linkUrl;
-            });
-
-            container.appendChild(link);
-        }
-
-        function generateLinks(container) {  
-            linksContainer.replaceChildren();
-            for (let i = start; i < end; i++) {
-                if (i <= totalPage - 1) {
-                    generateLink(container, i);
-                }
-            } 
-        }
-         
-
-        function refreshGenerateLinks () {
-            generateLinks(linksContainer);
-        }
-        refreshGenerateLinks();
-         
-
-
-        function obliczPaginacje() {
-            totalPage = Math.ceil(@Model.Categories.Count / pageSize);
-            srodek = Math.floor(pageSize / 2);
-            end = pageSize + 1;
-            if (pageIndex > srodek) {
-                start = pageIndex - (srodek - 1);
-                end = pageIndex + pageSize - srodek;
-            }
-        }
-
-
-
-        
-        let buttonPrev = document.getElementById('buttonPrev');
-        // tutaj pilnujemy aby pageIndex wartość dodatnią, wtedy można przejść do poprzedniej podstrony
-        if (pageIndex >= 0) {
-            buttonPrev.addEventListener('click', function (event) {
-                event.preventDefault();
-                queryValue = searchInput.value;
-
-                // pobranie zmiennejPageIndex z sessionStorage
-                pageIndex = parseInt(sessionStorage.getItem('pageIndex')) || pageIndex;
-
-                pageIndex = pageIndex - 1;
-
-                // osadzenie zmiennej pageIndex w sessionStorage
-                sessionStorage.setItem('pageIndex', pageIndex);
-
-                this.setAttribute('asp-action', 'Index');
-                this.setAttribute('asp-controller', 'Categories');
-                this.setAttribute('asp-route-PageSize', pageSize);
-                this.setAttribute('asp-route-PageIndex', pageIndex);
-                this.setAttribute('asp-route-q', queryValue);
-                this.setAttribute('asp-route-SortowanieOption', sortowanieOptionSelectListValue);
-                let linkUrl = `/${this.getAttribute('asp-controller')}/${this.getAttribute('asp-action')}?PageSize=${this.getAttribute('asp-route-PageSize')}&PageIndex=${this.getAttribute('asp-route-PageIndex')}&q=${encodeURIComponent(queryValue)}&SortowanieOption=${this.getAttribute('asp-route-SortowanieOption')}`;
-                window.location.href = linkUrl;
-            });
-        }
-
-
-
-        let buttonNext = document.getElementById('buttonNext');
-        if (pageIndex < totalPage) {
-            buttonNext.addEventListener('click', function (event) {
-                event.preventDefault();
-                queryValue = searchInput.value;
-
-                // pobranie zmiennejPageIndex z sessionStorage
-                pageIndex = parseInt(sessionStorage.getItem('pageIndex')) || pageIndex;
-
-                pageIndex = pageIndex + 1;
-
-                // osadzenie zmiennej pageIndex w sessionStorage
-                sessionStorage.setItem('pageIndex', pageIndex);
-
-                this.setAttribute('asp-action', 'Index');
-                this.setAttribute('asp-controller', 'Categories');
-                this.setAttribute('asp-route-PageSize', pageSize);
-                this.setAttribute('asp-route-PageIndex', pageIndex);
-                this.setAttribute('asp-route-q', queryValue);
-                this.setAttribute('asp-route-SortowanieOption', sortowanieOptionSelectListValue);
-                let linkUrl = `/${this.getAttribute('asp-controller')}/${this.getAttribute('asp-action')}?PageSize=${this.getAttribute('asp-route-PageSize')}&PageIndex=${this.getAttribute('asp-route-PageIndex')}&q=${encodeURIComponent(queryValue)}&SortowanieOption=${this.getAttribute('asp-route-SortowanieOption')}`;
-
-                //let linkUrl = `${this.getAttribute('href')}?PageSize=${this.getAttribute('asp-route-PageSize')}&PageIndex=${this.getAttribute('asp-route-PageIndex')}&q=${encodeURIComponent(queryValue)}&SortowanieOption=${this.getAttribute('asp-route-SortowanieOption')}`;
-                window.location.href = linkUrl;
-            });
-        }
-
-          
+        new Paginator(
+            'Categories',
+            @Model.PageIndex,
+            document.getElementById('sortowanieOptionSelectList'),
+            document.getElementById('pageSizeSelectList'),
+            document.getElementById('searchButton'),
+            document.getElementById('selectButton')
+        );
 
     </script>
-
-
 }

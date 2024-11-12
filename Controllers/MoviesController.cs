@@ -58,6 +58,8 @@ namespace WebApplication71.Controllers
         }
 
 
+
+
         private async Task<IActionResult> SearchAndFiltringResutl(GetMoviesDto model)
         {
             if (model == null)
@@ -75,6 +77,9 @@ namespace WebApplication71.Controllers
 
             model.ShowPaginator = true;
             model.DisplayNumersListAndPaginatorLinks = true;
+            model.DisplayButtonLeftTrzyKropki = false;
+            model.DisplayButtonRightTrzyKropki = false;
+            model.SortowanieOptionItems = new SelectList(new List<string>() { "Tytuł A-Z", "Tytuł Z-A", "Kategoria A-Z", "Kategoria Z-A" });
 
 
 
@@ -82,37 +87,18 @@ namespace WebApplication71.Controllers
             if (!string.IsNullOrEmpty(model.q))
             {
                 movies = movies.Where(
-                    w =>
+                    w => 
                         w.Title.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
-                        w.Description.Contains(model.q, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+                        w.Description.Contains(model.q, StringComparison.OrdinalIgnoreCase)
+                        ).ToList();
 
                 if (movies.Count < 5)
                 {
                     model.DisplayNumersListAndPaginatorLinks = false;
                 }
-
-                /*
-                                // ustawienie dla ostatniej strony paginacji możliwą ilość wyświetlenia elementów na stronie
-                                switch (model.PageSize)
-                                {
-                                    case 5:
-                                        model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5" });
-                                        break;
-
-                                    case 10:
-                                        model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10" });
-                                        break;
-
-                                    case 15:
-                                        model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10", "15" });
-                                        break;
-
-                                    case 20:
-                                        model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10", "15", "20" });
-                                        break;
-                                }*/
             }
+
+
 
 
             // Sortowanie
@@ -125,15 +111,24 @@ namespace WebApplication71.Controllers
                 case "Tytuł Z-A":
                     movies = movies.OrderByDescending(o => o.Title).ToList();
                     break;
+
+                case "Kategoria A-Z":
+                    movies = movies.OrderBy(o => o.Category).ToList();
+                    break;
+
+                case "Kategoria Z-A":
+                    movies = movies.OrderByDescending(o => o.Category).ToList();
+                    break;
             }
 
 
+
             model.Movies = movies;
-            model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)movies.Count / model.PageSize));
             model.Paginator = Paginator<GetMovieDto>.CreateAsync(movies, model.PageIndex, model.PageSize);
 
 
 
+            // paginator wyświetlany jest tylko wtedy gdy ilość elementów tabeli wynosi minimum 5
             if (model.Paginator.Count > 4)
                 model.ShowPaginator = true;
 
@@ -143,57 +138,7 @@ namespace WebApplication71.Controllers
 
 
 
-            model.End = model.PageSize + 1;
-            int srodek = (int)Math.Round((double)(model.PageSize / 2));
-            if (model.PageIndex > srodek)
-            {
-                model.Start = model.PageIndex - (srodek);
-                model.End = model.PageIndex + model.PageSize - srodek;
-            }
-
-
-
-
-
-            if (string.IsNullOrEmpty(model.q))
-            {
-                // działania dla ostatniej strony
-                model.LastPage = model.PageIndex == model.Paginator.TotalPage;
-                if (model.LastPage)
-                {
-                    if (model.Paginator.Count < 5)
-                    {
-                        model.WyswietlPrzycisk = false;
-                    }
-
-                    /*
-                                        // ustawienie dla ostatniej strony paginacji możliwą ilość wyświetlenia elementów na stronie
-                                        switch (model.PageSize)
-                                        {
-                                            case 5:
-                                                model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5" });
-                                                break;
-
-                                            case 10:
-                                                model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10" });
-                                                break;
-
-                                            case 15:
-                                                model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10", "15" });
-                                                break;
-
-                                            case 20:
-                                                model.SelectListNumberItems = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(new List<string>() { "5", "10", "15", "20" });
-                                                break;
-                                        }
-                    */
-
-                }
-            }
-
-
-
-            // ustawienie dla ostatniej strony paginacji możliwą ilość wyświetlenia elementów na stronie
+            // ustawienie dla wszystkich stron paginacji możliwą ilość wyświetlenia elementów na stronie
             switch (model.PageSize)
             {
                 case 5:
@@ -201,15 +146,15 @@ namespace WebApplication71.Controllers
                     break;
 
                 case 10:
-                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" });
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", }, "10");
                     break;
 
                 case 15:
-                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15" });
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15" }, "15");
                     break;
 
                 case 20:
-                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20" });
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20" }, "20");
                     break;
             }
 
@@ -222,11 +167,12 @@ namespace WebApplication71.Controllers
             if (5 * model.PageIndex <= iloscWszystkichElementow)
                 model.SelectListNumberItems = new SelectList(new List<string>() { "5" });
             if (10 * model.PageIndex <= iloscWszystkichElementow)
-                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" });
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" }, "10");
             if (15 * model.PageIndex <= iloscWszystkichElementow)
-                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15" });
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15" }, "15");
             if (20 * model.PageIndex <= iloscWszystkichElementow)
-                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20" });
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20" }, "20");
+
 
             // alternatywny sposób do powyższego
             /*if (iloscObecnychElementow > iloscWszystkichElementow)
@@ -234,9 +180,81 @@ namespace WebApplication71.Controllers
 
 
 
+            if (model.PageIndex == 1 && model.Paginator.TotalPage <= 2 && model.Paginator.Count <= 10)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" }, "10");
+
+
+
+            if (movies.Count < 5)
+                model.ShowPaginator = false;
+
+            if (movies.Count < 10)
+                model.DisplayNumersListAndPaginatorLinks = false;
+
+
+
+
+            // obliczenia dla ostatniej strony
+            model.LastPage = model.PageIndex == model.Paginator.TotalPage;
+            if (model.LastPage)
+            {
+                switch (model.PageSize)
+                {
+                    case 5:
+                        model.SelectListNumberItems = new SelectList(new List<string>() { "5" });
+                        break;
+
+                    case 10:
+                        model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", });
+                        break;
+
+                    case 15:
+                        model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15" }, "15");
+                        break;
+
+                    case 20:
+                        model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20" }, "20");
+                        break;
+                }
+            }
+
+
+
+
+
+            // dlugość paginacji zależna od ilości elementów znajdujących się na liście, im więcej elementów tym więcej elementów w paginacji
+
+            int ilosc = 9;
+            if (movies.Count < 10)
+                ilosc = 5;
+            if (movies.Count > 10 && movies.Count < 50)
+                ilosc = 7;
+            if (movies.Count > 50)
+                ilosc = 9;
+
+            model.End = ilosc;
+            int srodek = (int)Math.Round((double)(ilosc / 2)) + 1;
+            if (model.PageIndex > srodek)
+            {
+                model.Start = model.PageIndex - (srodek - 1);
+                model.End = model.PageIndex + ilosc - srodek;
+            }
+
+
+
+            // button z trzema kropaki na końcu wyświetlany jest tylko wtedy gdy ilość stron paginacji jest większa od 9
+            if (model.Paginator.TotalPage >= 6 && model.PageIndex >= 6)
+                model.DisplayButtonLeftTrzyKropki = true;
+
+            if (model.Paginator.TotalPage > ilosc)
+                model.DisplayButtonRightTrzyKropki = true;
+
+
 
             return View(model);
         }
+
+
 
 
 

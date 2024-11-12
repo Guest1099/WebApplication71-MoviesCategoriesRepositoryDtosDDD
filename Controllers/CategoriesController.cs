@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Categories;
@@ -29,49 +31,7 @@ namespace WebApplication71.Controllers
             NI.Navigation = Navigation.CategoriesIndex;
             try
             {
-                var result = await _categoriesRepository.GetAll();
-
-                if (result == null || !result.Success)
-                    return View("NotFound");
-
-                var categories = result.Object;
-
-                if (categories == null)
-                    return View("NotFound");
-
-
-                // Wyszukiwanie
-                if (!string.IsNullOrEmpty(model.q))
-                {
-                    categories = categories.Where(w => w.Name.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
-                    model.PageIndex = 1; // kiedy w wyszukiwarce znajduje się jakieś słowo wtedy, po kliknięciu na przycisk szukaj, sortuj lub wybierz PageIndex powraca do pierwszej pozycji
-                }
-
-                // Sortowanie
-                switch (model.SortowanieOption)
-                {
-                    case "Nazwa A-Z":
-                        categories = categories.OrderBy(o => o.Name).ToList();
-                        break;
-
-                    case "Nazwa Z-A":
-                        categories = categories.OrderByDescending(o => o.Name).ToList();
-                        break;
-                }
-
-
-
-                model.End = model.PageSize + 1;
-                int srodek = (int)Math.Round((double)(model.PageSize / 2));
-                if (model.PageIndex > srodek)
-                {
-                    model.Start = model.PageIndex - (srodek - 1);
-                    model.End = model.PageIndex + model.PageSize - srodek;
-                }
-
-                model.Categories = categories;
-                model.Paginator = Paginator<GetCategoryDto>.CreateAsync(categories, model.PageIndex, model.PageSize);
-                return View(model);
+                return await SearchAndFiltringResutl(model);
             }
             catch (Exception ex)
             {
@@ -87,47 +47,7 @@ namespace WebApplication71.Controllers
             NI.Navigation = Navigation.CategoriesIndex;
             try
             {
-                var result = await _categoriesRepository.GetAll();
-
-                if (result == null || !result.Success)
-                    return View("NotFound");
-
-                var categories = result.Object;
-                if (categories == null)
-                    return View("NotFound");
-
-
-                // Wyszukiwanie
-                if (!string.IsNullOrEmpty(model.q))
-                {
-                    categories = categories.Where(w => w.Name.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
-                    model.PageIndex = 1; // kiedy w wyszukiwarce znajduje się jakieś słowo wtedy, po kliknięciu na przycisk szukaj, sortuj lub wybierz PageIndex powraca do pierwszej pozycji
-                }
-
-                // Sortowanie
-                switch (model.SortowanieOption)
-                {
-                    case "Nazwa A-Z":
-                        categories = categories.OrderBy(o => o.Name).ToList();
-                        break;
-
-                    case "Nazwa Z-A":
-                        categories = categories.OrderByDescending(o => o.Name).ToList();
-                        break;
-                }
-
-                model.End = model.PageSize + 1;
-                int srodek = (int)Math.Round((double)(model.PageSize / 2));
-                if (model.PageIndex > srodek)
-                {
-                    model.Start = model.PageIndex - (srodek - 1);
-                    model.End = model.PageIndex + model.PageSize - srodek;
-                }
-
-                model.Categories = categories;
-                model.PageIndex = Math.Min(model.PageIndex, (int)Math.Ceiling((double)categories.Count / model.PageSize));
-                model.Paginator = Paginator<GetCategoryDto>.CreateAsync(categories, model.PageIndex, model.PageSize);
-                return View(model);
+                return await SearchAndFiltringResutl(model);
             }
             catch (Exception ex)
             {
@@ -135,10 +55,190 @@ namespace WebApplication71.Controllers
             }
         }
 
-        private async Task InitializeSearchAndFilterData()
-        {
 
+        private async Task<IActionResult> SearchAndFiltringResutl(GetCategoriesDto model)
+        {
+            if (model == null)
+                return View("NotFound");
+
+            var result = await _categoriesRepository.GetAll();
+
+            if (result == null || !result.Success)
+                return View("NotFound");
+
+            var categories = result.Object;
+            if (categories == null)
+                return View("NotFound");
+
+
+            model.ShowPaginator = true;
+            model.DisplayNumersListAndPaginatorLinks = true;
+            model.DisplayButtonLeftTrzyKropki = false;
+            model.DisplayButtonRightTrzyKropki = false;
+            model.SortowanieOptionItems = new SelectList(new List<string>() { "Nazwa A-Z", "Nazwa Z-A" });
+
+
+
+            // Wyszukiwanie
+            if (!string.IsNullOrEmpty(model.q))
+            {
+                categories = categories.Where(w => w.Name.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
+
+                if (categories.Count < 5)
+                {
+                    model.DisplayNumersListAndPaginatorLinks = false;
+                }
+            }
+
+
+
+
+            // Sortowanie
+            switch (model.SortowanieOption)
+            {
+                case "Nazwa A-Z":
+                    categories = categories.OrderBy(o => o.Name).ToList();
+                    break;
+
+                case "Nazwa Z-A":
+                    categories = categories.OrderByDescending(o => o.Name).ToList();
+                    break;
+            }
+
+
+
+            model.Categories = categories;
+            model.Paginator = Paginator<GetCategoryDto>.CreateAsync(categories, model.PageIndex, model.PageSize);
+
+
+
+            // paginator wyświetlany jest tylko wtedy gdy ilość elementów tabeli wynosi minimum 5
+            if (model.Paginator.Count > 4)
+                model.ShowPaginator = true;
+
+            if (model.PageIndex == model.Paginator.TotalPage)
+                model.ShowPaginator = true;
+
+
+
+
+            // ustawienie dla wszystkich stron paginacji możliwą ilość wyświetlenia elementów na stronie
+            switch (model.PageSize)
+            {
+                case 5:
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5" });
+                    break;
+
+                case 10:
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", }, "10");
+                    break;
+
+                case 15:
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15" }, "15");
+                    break;
+
+                case 20:
+                    model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20" }, "20");
+                    break;
+            }
+
+
+
+
+            int iloscWszystkichElementow = categories.Count;
+
+            // * jeśli chcesz uogólnić wyświetlanie filtrowanych wyników usuń poniższe warunki, a filtrowania nadal będzie działało poprawnie
+            if (5 * model.PageIndex <= iloscWszystkichElementow)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5" });
+            if (10 * model.PageIndex <= iloscWszystkichElementow)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" }, "10");
+            if (15 * model.PageIndex <= iloscWszystkichElementow)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15" }, "15");
+            if (20 * model.PageIndex <= iloscWszystkichElementow)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20" }, "20");
+
+
+            // alternatywny sposób do powyższego
+            /*if (iloscObecnychElementow > iloscWszystkichElementow)
+                model.Roles = new List<GetRoleDto>();*/
+
+
+
+            if (model.PageIndex == 1 && model.Paginator.TotalPage <= 2 && model.Paginator.Count <= 10)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" }, "10");
+
+
+
+            if (categories.Count < 5)
+                model.ShowPaginator = false;
+
+            if (categories.Count < 10)
+                model.DisplayNumersListAndPaginatorLinks = false;
+
+
+
+
+            // obliczenia dla ostatniej strony
+            model.LastPage = model.PageIndex == model.Paginator.TotalPage;
+            if (model.LastPage)
+            {
+                switch (model.PageSize)
+                {
+                    case 5:
+                        model.SelectListNumberItems = new SelectList(new List<string>() { "5" });
+                        break;
+
+                    case 10:
+                        model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", });
+                        break;
+
+                    case 15:
+                        model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15" }, "15");
+                        break;
+
+                    case 20:
+                        model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20" }, "20");
+                        break;
+                }
+            }
+
+
+
+
+
+            // dlugość paginacji zależna od ilości elementów znajdujących się na liście, im więcej elementów tym więcej elementów w paginacji
+
+            int ilosc = 9;
+            if (categories.Count < 10)
+                ilosc = 5;
+            if (categories.Count > 10 && categories.Count < 50)
+                ilosc = 7;
+            if (categories.Count > 50)
+                ilosc = 9;
+
+            model.End = ilosc;
+            int srodek = (int)Math.Round((double)(ilosc / 2)) + 1;
+            if (model.PageIndex > srodek)
+            {
+                model.Start = model.PageIndex - (srodek - 1);
+                model.End = model.PageIndex + ilosc - srodek;
+            }
+
+
+
+            // button z trzema kropaki na końcu wyświetlany jest tylko wtedy gdy ilość stron paginacji jest większa od 9
+            if (model.Paginator.TotalPage >= 6 && model.PageIndex >= 6)
+                model.DisplayButtonLeftTrzyKropki = true;
+
+            if (model.Paginator.TotalPage > ilosc)
+                model.DisplayButtonRightTrzyKropki = true;
+
+
+
+            return View(model);
         }
+
+
 
 
 

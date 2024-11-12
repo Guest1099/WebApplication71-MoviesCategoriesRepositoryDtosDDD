@@ -7,7 +7,7 @@ namespace WebApplication71.DTOs
     public class BaseSearchModel<T>
     {
         // Opcje wyszukiwania, np. wyszukiwanie w emailach, albo w nazwiskach
-        public string SearchOption { get; set; } = "Nazwa A-Z";
+        public string SearchOption { get; set; }
 
         // Wyszukiwarka
         public string q { get; set; }
@@ -26,9 +26,9 @@ namespace WebApplication71.DTOs
 
         //public int IlePokazac { get; set; } = 0;
         public bool LastPage { get; set; } = false;
-        public bool ShowPaginator { get; set; } = false;
         public bool DisplayButtonLeftTrzyKropki { get; set; } = false;
         public bool DisplayButtonRightTrzyKropki { get; set; } = false;
+        public bool ShowPaginator { get; set; } = true;
         public bool DisplayNumersListAndPaginatorLinks { get; set; } = true;
         public int IloscObecnychElementow5 { get; set; } = 0;
         public int IloscObecnychElementow10 { get; set; } = 0;

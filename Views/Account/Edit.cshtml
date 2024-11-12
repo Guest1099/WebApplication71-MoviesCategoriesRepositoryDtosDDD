@@ -230,7 +230,7 @@
                 // Zapisywanie plików w sessionStorage
                 sessionStorage.setItem('uploadPhoto', JSON.stringify(filesData));
 
-                // Konwertowanie plików na Base64
+                // Konwertowanie plików na Base64 i zapisanie w sessionStorage
                 var uploadedFilesBase64 = [];
                 filesArray.forEach(file => {
                     var reader = new FileReader();
@@ -248,34 +248,23 @@
 
         // Funkcja pobiera dane z sesji do zmiennej po załadowaniu okna
         window.onload = function () {
-            var uploadedFilesData = sessionStorage.getItem('uploadPhoto');
             var uploadedFilesBase64 = sessionStorage.getItem('uploadedFilesBase64');
 
+            // Sprawdzamy, czy są zapisane pliki Base64 w sessionStorage
             if (uploadedFilesBase64) {
                 var base64Files = JSON.parse(uploadedFilesBase64);
+
                 // Wyświetlenie pierwszego obrazu w imagePreview
                 if (base64Files.length > 0) {
-                    imagePreview.src = base64Files[0];
-                    imagePreview.style.display = 'block';
-                    displayPhoto.style.display = 'none'; // Ukryj displayPhoto
+                    imagePreview.src = base64Files[0]; // Załadowanie obrazu z Base64
+                    imagePreview.style.display = 'block'; // Pokazanie obrazu
+                    displayPhoto.style.display = 'none'; // Ukrycie ikonki "dodaj zdjęcie"
                 }
             }
 
-            if (uploadedFilesData) {
-                var uploadedFiles = JSON.parse(uploadedFilesData);
-                var newFilesList = new DataTransfer();
-
-                uploadedFiles.forEach(file => {
-                    var newFile = new File([], file.name, { type: file.type, size: file.size });
-                    newFilesList.items.add(newFile);
-                });
-
-                filesInput.files = newFilesList.files;
-
-                imageContainer.style.width = '150px';
-                imageContainer.style.height = '150px';
-                displayPhoto.style.display = 'none';
-            }
+            // Inne ustawienia dla imageContainer
+            imageContainer.style.width = '150px';
+            imageContainer.style.height = '150px';
         };
 
         // Funkcja odpowiedzialna za wyświetlenie zdjęcia w img
@@ -290,7 +279,7 @@
 
             if (file) {
                 reader.readAsDataURL(file);
-                displayPhoto.style.display = 'none'; // Ukryj displayPhoto
+                displayPhoto.style.display = 'none'; // Ukrycie ikonki "dodaj zdjęcie"
             }
         }
 
