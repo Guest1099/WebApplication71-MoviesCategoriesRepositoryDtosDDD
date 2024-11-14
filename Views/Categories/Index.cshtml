@@ -17,7 +17,7 @@
 <div class="overFormContainer">
 
     <form method="post" asp-action="Index" asp-controller="Categories" class="formContainer">
-        <input type="hidden" asp-for="PageIndex" value="@Model.PageIndex" />
+        <input type="hidden" asp-for="PageIndex" />
 
 
         <div class="topContainer">
@@ -34,20 +34,19 @@
 
 
                         @* link przekazuje dane do metody post *@
-                        @* <input
-                        type="submit"
-                        value="Szukaj"
-                        class="searchButton"
-                        /> *@
+                        <input type="submit"
+                               value="Szukaj"
+                               asp-route-PageIndex="1"
+                               class="searchButton" />
 
 
                         @* link przekazuje dane do metody get *@
-                        <a asp-action="Index"
+                        @* <a asp-action="Index"
                            asp-controller="Categories"
                            class="searchButton"
                            id="searchButton">
                             Szukaj
-                        </a>
+                        </a> *@
 
                     </div>
 

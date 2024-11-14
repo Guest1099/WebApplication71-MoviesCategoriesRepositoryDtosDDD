@@ -79,7 +79,7 @@ namespace WebApplication71.Controllers
             model.DisplayNumersListAndPaginatorLinks = true;
             model.DisplayButtonLeftTrzyKropki = false;
             model.DisplayButtonRightTrzyKropki = false;
-            model.SortowanieOptionItems = new SelectList(new List<string>() { "Tytuł A-Z", "Tytuł Z-A", "Kategoria A-Z", "Kategoria Z-A" });
+            model.SortowanieOptionItems = new SelectList(new List<string>() { "Tytuł A-Z", "Tytuł Z-A", "Kategoria A-Z", "Kategoria Z-A" }, "Tytuł A-Z");
 
 
 

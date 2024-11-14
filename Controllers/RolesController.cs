@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Application.Services.Abs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
@@ -46,6 +47,7 @@ namespace WebApplication71.Controllers
             NI.Navigation = Navigation.RolesIndex;
             try
             {
+                //model.PageIndex = 1;
                 return await SearchAndFiltringResutl(model);
             }
             catch (Exception ex)
@@ -72,10 +74,9 @@ namespace WebApplication71.Controllers
 
             model.ShowPaginator = true;
             model.DisplayNumersListAndPaginatorLinks = true;
-            model.DisplayNumersListAndPaginatorLinks = true;
             model.DisplayButtonLeftTrzyKropki = false;
             model.DisplayButtonRightTrzyKropki = false;
-            model.SortowanieOptionItems = new SelectList(new List<string>() { "Nazwa A-Z", "Nazwa Z-A" });
+            model.SortowanieOptionItems = new SelectList(new List<string>() { "Nazwa A-Z", "Nazwa Z-A" }, "Nazwa A-Z");
 
 
             // Wyszukiwanie
@@ -110,15 +111,7 @@ namespace WebApplication71.Controllers
             model.Paginator = Paginator<GetRoleDto>.CreateAsync(roles, model.PageIndex, model.PageSize);
 
 
-
-            // paginator wyświetlany jest tylko wtedy gdy ilość elementów tabeli wynosi minimum 5
-            if (model.Paginator.Count > 4)
-                model.ShowPaginator = true;
-
-            if (model.PageIndex == model.Paginator.TotalPage)
-                model.ShowPaginator = true;
-
-             
+                          
 
 
             // ustawienie dla wszystkich stron paginacji możliwą ilość wyświetlenia elementów na stronie
@@ -163,24 +156,12 @@ namespace WebApplication71.Controllers
 
 
 
-            if (model.PageIndex == 1 && model.Paginator.TotalPage <= 2 && model.Paginator.Count <= 10)
-                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" }, "10");
-
-
-
-            if (roles.Count < 5)
-                model.ShowPaginator = false;
-
-            if (roles.Count < 10)
-                model.DisplayNumersListAndPaginatorLinks = false;
-
-
-
 
             // obliczenia dla ostatniej strony
             model.LastPage = model.PageIndex == model.Paginator.TotalPage;
             if (model.LastPage)
             {
+                model.DisplayNumersListAndPaginatorLinks = true;
                 switch (model.PageSize)
                 {
                     case 5:
@@ -201,6 +182,25 @@ namespace WebApplication71.Controllers
                 }
             }
 
+
+
+            if (model.PageIndex == 1 && model.Paginator.TotalPage <= 2 && model.Paginator.Count <= 10)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" }, "10");
+
+
+
+            if (!string.IsNullOrEmpty (model.q) && model.PageIndex == 1 && model.Paginator.Count <= 15)
+                model.ShowPaginator = false;
+
+
+            // paginator wyświetlany jest tylko wtedy gdy ilość elementów tabeli wynosi minimum 5
+            if (model.Paginator.Count < 5 && model.Paginator.PageIndex != model.Paginator.TotalPage)
+                model.ShowPaginator = false;
+
+
+            // linki paginacji nie są wyświetlane jeśli ilość elementów na stronie oraz w bazie jest mniejsza od 10
+            /*if (roles.Count < 10 && model.PageIndex == 1 && model.Paginator.TotalPage == 1)
+                model.DisplayNumersListAndPaginatorLinks = false;*/
 
 
 

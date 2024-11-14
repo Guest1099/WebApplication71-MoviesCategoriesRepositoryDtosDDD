@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication71.DTOs.Roles;
 using WebApplication71.DTOs.Users;
 using WebApplication71.Models;
 using WebApplication71.Models.Enums;
@@ -72,20 +74,18 @@ namespace WebApplication71.Controllers
             var users = result.Object;
             if (users == null)
                 return View("NotFound");
-                
+
 
             model.ShowPaginator = true;
             model.DisplayNumersListAndPaginatorLinks = true;
             model.DisplayButtonLeftTrzyKropki = false;
             model.DisplayButtonRightTrzyKropki = false;
             model.SelectListSearchOptionItems = new SelectList(new List<string>() { "Email", "Nazwisko", "Wszędzie" }, "Wszędzie");
-            model.SortowanieOptionItems = new SelectList(new List<string>() { "Email A-Z", "Email Z-A", "Nazwisko A-Z", "Nazwisko Z-A" }, "Email A-Z");
+            model.SortowanieOptionItems = new SelectList(new List<string>() { "Nazwa A-Z", "Nazwa Z-A" }, "Nazwa A-Z");
 
 
 
-
-
-            // Opcje sortowania
+            // Wyszukiwanie// Opcje sortowania
             switch (model.SearchOption)
             {
                 case "Email":
@@ -145,6 +145,8 @@ namespace WebApplication71.Controllers
 
 
 
+
+
             // ustawienie dla wszystkich stron paginacji możliwą ilość wyświetlenia elementów na stronie
             switch (model.PageSize)
             {
@@ -186,9 +188,6 @@ namespace WebApplication71.Controllers
                 model.Roles = new List<GetRoleDto>();*/
 
 
-            
-
-                
 
 
             // obliczenia dla ostatniej strony
@@ -218,10 +217,13 @@ namespace WebApplication71.Controllers
 
 
 
-
             if (model.PageIndex == 1 && model.Paginator.TotalPage <= 2 && model.Paginator.Count <= 10)
                 model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" }, "10");
 
+
+
+            if (!string.IsNullOrEmpty(model.q) && model.PageIndex == 1 && model.Paginator.Count <= 5)
+                model.ShowPaginator = false;
 
 
             // paginator wyświetlany jest tylko wtedy gdy ilość elementów tabeli wynosi minimum 5
@@ -229,10 +231,10 @@ namespace WebApplication71.Controllers
                 model.ShowPaginator = false;
 
 
-/*
-            if (users.Count < 10 && model.PageIndex == 1 && model.Paginator.TotalPage == 1)
-                model.DisplayNumersListAndPaginatorLinks = false;
-*/
+            // linki paginacji nie są wyświetlane jeśli ilość elementów na stronie oraz w bazie jest mniejsza od 10
+            /*if (roles.Count < 10 && model.PageIndex == 1 && model.Paginator.TotalPage == 1)
+                model.DisplayNumersListAndPaginatorLinks = false;*/
+
 
 
 
