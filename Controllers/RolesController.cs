@@ -204,7 +204,7 @@ namespace WebApplication71.Controllers
 
 
 
-
+             
             // dlugość paginacji zależna od ilości elementów znajdujących się na liście, im więcej elementów tym więcej elementów w paginacji
 
             int ilosc = 9;
