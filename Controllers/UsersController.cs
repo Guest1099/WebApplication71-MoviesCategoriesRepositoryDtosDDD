@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApplication71.DTOs.Roles;
 using WebApplication71.DTOs.Users;
 using WebApplication71.Models;
 using WebApplication71.Models.Enums;
