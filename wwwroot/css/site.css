@@ -391,7 +391,7 @@ tbody tr:nth-child(even) {
 
 
 .searchInput {
-    flex: 1;
+    width: 200px;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px 5px 5px 5px;
@@ -419,8 +419,7 @@ tbody tr:nth-child(even) {
 .selectOption {
     padding: 10px;
     border: 1px solid #ddd;
-    border-radius: 5px 5px 5px 5px;
-    margin: 0px 10px;
+    border-radius: 5px 5px 5px 5px; 
     width: 100px;
     min-width: 100px;
     width: max-content;

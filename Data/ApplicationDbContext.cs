@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -225,6 +226,34 @@ namespace WebApplication71.Data
             //builder.Entity<IdentityUserRole<string>>().HasData(identityUserRoleAdmin);
 
 
+            // dodanie większej ilości użytkowników
+            for (var i=0; i<80; i++)
+            {
+                string userEmail = $"user{i}@user{i}.pl";
+                var u = new ApplicationUser(
+                    email: userEmail,
+                    imie: _dataAutogenerator.Imie(),
+                    nazwisko: _dataAutogenerator.Nazwisko(),
+                    ulica: _dataAutogenerator.Imie(),
+                    miejscowosc: _dataAutogenerator.Nazwisko(),
+                    wojewodztwo: "Mazowieckie",
+                    kodPocztowy: "12-222",
+                    pesel: pesel,
+                    dataUrodzenia: dataUrodzenia,
+                    plec: Plec.Mężczyzna,
+                    telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
+                    photo: new byte[0],
+                    roleName: "User",
+                    password: "SDG%$@5423sdgagSDert"
+                    );
+                builder.Entity <ApplicationUser> ().HasData (u);
+                IdentityUserRole<string> iur = new IdentityUserRole<string>()
+                {
+                    UserId = u.Id,
+                    RoleId = userRole.Id
+                };
+                builder.Entity <IdentityUserRole<string>> ().HasData (iur);
+            }
 
 
 

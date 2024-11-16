@@ -1,34 +1,34 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Application.Services.Abs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApplication71.DTOs.Categories;
+using WebApplication71.DTOs.Roles;
 using WebApplication71.Models;
 using WebApplication71.Models.Enums;
-using WebApplication71.Repos.Abs;
 using WebApplication71.Services;
+using WebApplication71.Services.Abs;
 
 namespace WebApplication71.Controllers
 {
-    [Authorize]
-    public class CategoriesController : Controller
+    [Authorize(Roles = "Administrator")]
+    public class RolesController : Controller
     {
-        private readonly ICategoriesRepository _categoriesRepository;
+        private readonly IRolesService _rolesService;
 
-        public CategoriesController(ICategoriesRepository categoriesRepository)
+        public RolesController(IRolesService rolesService)
         {
-            _categoriesRepository = categoriesRepository;
+            _rolesService = rolesService;
         }
 
 
         [HttpGet]
-        public async Task<IActionResult> Index(GetCategoriesDto model)
+        public async Task<IActionResult> Index(GetRolesDto model)
         {
-            NI.Navigation = Navigation.CategoriesIndex;
+            NI.Navigation = Navigation.RolesIndex;
             try
             {
                 return await SearchAndFiltringResutl(model);
@@ -42,9 +42,9 @@ namespace WebApplication71.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(string s, GetCategoriesDto model)
+        public async Task<IActionResult> Index(string s, GetRolesDto model)
         {
-            NI.Navigation = Navigation.CategoriesIndex;
+            NI.Navigation = Navigation.RolesIndex;
             try
             {
                 return await SearchAndFiltringResutl(model);
@@ -56,18 +56,18 @@ namespace WebApplication71.Controllers
         }
 
 
-        private async Task<IActionResult> SearchAndFiltringResutl(GetCategoriesDto model)
+        private async Task<IActionResult> SearchAndFiltringResutl(GetRolesDto model)
         {
             if (model == null)
                 return View("NotFound");
 
-            var result = await _categoriesRepository.GetAll();
+            var result = await _rolesService.GetAll();
 
             if (result == null || !result.Success)
                 return View("NotFound");
 
-            var categories = result.Object;
-            if (categories == null)
+            var roles = result.Object;
+            if (roles == null)
                 return View("NotFound");
 
 
@@ -78,13 +78,12 @@ namespace WebApplication71.Controllers
             model.SortowanieOptionItems = new SelectList(new List<string>() { "Nazwa A-Z", "Nazwa Z-A" }, "Nazwa A-Z");
 
 
-
             // Wyszukiwanie
             if (!string.IsNullOrEmpty(model.q))
             {
-                categories = categories.Where(w => w.Name.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
+                roles = roles.Where(w => w.Name.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
 
-                if (categories.Count < 5)
+                if (roles.Count < 5)
                 {
                     model.DisplayNumersListAndPaginatorLinks = false;
                 }
@@ -97,21 +96,21 @@ namespace WebApplication71.Controllers
             switch (model.SortowanieOption)
             {
                 case "Nazwa A-Z":
-                    categories = categories.OrderBy(o => o.Name).ToList();
+                    roles = roles.OrderBy(o => o.Name).ToList();
                     break;
 
                 case "Nazwa Z-A":
-                    categories = categories.OrderByDescending(o => o.Name).ToList();
+                    roles = roles.OrderByDescending(o => o.Name).ToList();
                     break;
             }
 
 
 
-            model.Categories = categories;
-            model.Paginator = Paginator<GetCategoryDto>.CreateAsync(categories, model.PageIndex, model.PageSize);
+            model.Roles = roles;
+            model.Paginator = Paginator<GetRoleDto>.CreateAsync(roles, model.PageIndex, model.PageSize);
 
 
-
+                          
 
 
             // ustawienie dla wszystkich stron paginacji możliwą ilość wyświetlenia elementów na stronie
@@ -137,7 +136,7 @@ namespace WebApplication71.Controllers
 
 
 
-            int iloscWszystkichElementow = categories.Count;
+            int iloscWszystkichElementow = roles.Count;
 
             // * jeśli chcesz uogólnić wyświetlanie filtrowanych wyników usuń poniższe warunki, a filtrowania nadal będzie działało poprawnie
             if (5 * model.PageIndex <= iloscWszystkichElementow)
@@ -189,7 +188,7 @@ namespace WebApplication71.Controllers
 
 
 
-            if (!string.IsNullOrEmpty(model.q) && model.PageIndex == 1 && model.Paginator.TotalPage == 1 && model.Paginator.Count <= 5)
+            if (!string.IsNullOrEmpty (model.q) && model.PageIndex == 1 && model.Paginator.TotalPage == 1 && model.Paginator.Count <= 5)
                 model.ShowPaginator = false;
 
 
@@ -204,15 +203,15 @@ namespace WebApplication71.Controllers
 
 
 
-
+            
             // dlugość paginacji zależna od ilości elementów znajdujących się na liście, im więcej elementów tym więcej elementów w paginacji
 
             int ilosc = 9;
-            if (categories.Count < 10)
+            if (roles.Count < 10)
                 ilosc = 5;
-            if (categories.Count > 10 && categories.Count < 50)
+            if (roles.Count > 10 && roles.Count < 50)
                 ilosc = 7;
-            if (categories.Count > 50)
+            if (roles.Count > 50)
                 ilosc = 9;
 
             model.End = ilosc;
@@ -240,26 +239,25 @@ namespace WebApplication71.Controllers
 
 
 
-
         [HttpGet]
         public IActionResult Create()
         {
-            NI.Navigation = Navigation.CategoriesCreate;
+            NI.Navigation = Navigation.RolesCreate;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateCategoryDto model)
+        public async Task<IActionResult> Create(CreateRoleDto model)
         {
-            NI.Navigation = Navigation.CategoriesCreate;
+            NI.Navigation = Navigation.RolesCreate;
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _categoriesRepository.Create(model);
+                    var result = await _rolesService.Create(model);
                     if (result != null && result.Success)
-                        return RedirectToAction("Index", "Categories");
+                        return RedirectToAction("Index", "Roles");
 
 
                     // zwraca komunikat błędu związanego z tworzeniem rekordu
@@ -280,26 +278,26 @@ namespace WebApplication71.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> Edit(string categoryId)
+        public async Task<IActionResult> Edit(string roleId)
         {
-            NI.Navigation = Navigation.CategoriesEdit;
+            NI.Navigation = Navigation.RolesEdit;
             try
             {
-                if (string.IsNullOrEmpty(categoryId))
+                if (string.IsNullOrEmpty(roleId))
                     return View("NotFound");
 
-                var result = await _categoriesRepository.Get(categoryId);
+                var result = await _rolesService.Get(roleId);
 
                 if (result == null || !result.Success)
                     return View("NotFound");
 
 
-                var category = result.Object;
-                if (category == null)
+                var role = result.Object;
+                if (role == null)
                     return View("NotFound");
 
 
-                return View(category);
+                return View(role);
             }
             catch (Exception ex)
             {
@@ -309,20 +307,20 @@ namespace WebApplication71.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(GetCategoryDto model)
+        public async Task<IActionResult> Edit(GetRoleDto model)
         {
-            NI.Navigation = Navigation.CategoriesEdit;
+            NI.Navigation = Navigation.RolesEdit;
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _categoriesRepository.Update(new EditCategoryDto()
+                    var result = await _rolesService.Update(new EditRoleDto()
                     {
-                        CategoryId = model.CategoryId,
+                        Id = model.Id,
                         Name = model.Name
                     });
                     if (result != null && result.Success)
-                        return RedirectToAction("Index", "Categories");
+                        return RedirectToAction("Index", "Roles");
 
 
                     // zwraca komunikat błędu związanego z aktualizacją rekordu
@@ -343,7 +341,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public IActionResult Delete(string id)
         {
-            NI.Navigation = Navigation.CategoriesDelete;
+            NI.Navigation = Navigation.RolesDelete;
             try
             {
                 if (string.IsNullOrEmpty(id))
@@ -367,18 +365,17 @@ namespace WebApplication71.Controllers
                 if (string.IsNullOrEmpty(id))
                     return View("NotFound");
 
-                var result = await _categoriesRepository.Delete(id);
+                var result = await _rolesService.Delete(id);
                 if (result == null || !result.Success)
                     return View("NotFound");
 
-                return RedirectToAction("Index", "Categories");
+                return RedirectToAction("Index", "Roles");
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-
 
     }
 }

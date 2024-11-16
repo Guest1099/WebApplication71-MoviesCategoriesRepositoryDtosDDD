@@ -1,6 +1,5 @@
 ﻿
 
-
 class Paginator {
     constructor(controller, modelPageIndex, searchOptionSelectList, sortowanieOptionSelectList, pageSizeSelectList) {
         this.initialize(controller, modelPageIndex, searchOptionSelectList, sortowanieOptionSelectList, pageSizeSelectList);
@@ -42,7 +41,8 @@ class Paginator {
             q = searchInput.value;
             pageIndex = parseInt(modelPageIndex);
 
-            if (controller == 'Users') { // initializacja tylko i wyłącznie dla kontrollera Users
+            // tutaj jest obsługa kodu Users napisana pod kontroller Users tylko dlatego, że tam jest dodatkowy select list, którego trzeba obsłużyć, poniższy kod w warunku else jest przeznaczony dla pozostałych kontrollerów
+            if (controller == 'Users') {
                 if (q.length > 0) {
                     linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SearchOption=${searchOption}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
                 }
@@ -50,7 +50,7 @@ class Paginator {
                     linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SearchOption=${searchOption}&SortowanieOption=${sortowanieOption}`;
                 }
             }
-            else { // initializacja dla pozostałych kontrollerów
+            else {
                 if (q.length > 0) {
                     linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
                 }
@@ -62,9 +62,6 @@ class Paginator {
         });
 
 
-        function insertLink() {
-
-        }
 
 
         // PageSize
@@ -75,7 +72,8 @@ class Paginator {
             q = searchInput.value;
             pageIndex = parseInt(modelPageIndex);
 
-            if (controller == 'Users') { // initializacja tylko i wyłącznie dla kontrollera Users
+            // tutaj jest obsługa kodu Users napisana pod kontroller Users tylko dlatego, że tam jest dodatkowy select list, którego trzeba obsłużyć, poniższy kod w warunku else jest przeznaczony dla pozostałych kontrollerów
+            if (controller == 'Users') {
                 if (q.length > 0) {
                     linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SearchOption=${searchOption}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
                 }
@@ -83,7 +81,7 @@ class Paginator {
                     linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SearchOption=${searchOption}&SortowanieOption=${sortowanieOption}`;
                 }
             }
-            else { // initializacja dla pozostałych kontrollerów
+            else {
                 if (q.length > 0) {
                     linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
                 }
@@ -103,7 +101,8 @@ class Paginator {
             q = searchInput.value.toString();
             q = q.trim();
 
-            if (controller == 'Users') { // initializacja tylko i wyłącznie dla kontrollera Users
+            // tutaj jest obsługa kodu Users napisana pod kontroller Users tylko dlatego, że tam jest dodatkowy select list, którego trzeba obsłużyć, poniższy kod w warunku else jest przeznaczony dla pozostałych kontrollerów
+            if (controller == 'Users') {
                 if (q.length > 0) {
                     linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SearchOption=${searchOption}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
                 }
@@ -111,7 +110,7 @@ class Paginator {
                     linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SearchOption=${searchOption}&SortowanieOption=${sortowanieOption}`;
                 }
             }
-            else { // initializacja dla pozostałych kontrollerów
+            else {
                 if (q.length > 0) {
                     linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
                 }
@@ -130,7 +129,8 @@ class Paginator {
             q = searchInput.value;
             pageIndex = parseInt(modelPageIndex);
 
-            if (controller == 'Users') { // initializacja tylko i wyłącznie dla kontrollera Users
+            // tutaj jest obsługa kodu Users napisana pod kontroller Users tylko dlatego, że tam jest dodatkowy select list, którego trzeba obsłużyć, poniższy kod w warunku else jest przeznaczony dla pozostałych kontrollerów
+            if (controller == 'Users') {
                 if (q.length > 0) {
                     linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SearchOption=${searchOption}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
                 }
@@ -138,7 +138,7 @@ class Paginator {
                     linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SearchOption=${searchOption}&SortowanieOption=${sortowanieOption}`;
                 }
             }
-            else { // initializacja dla pozostałych kontrollerów
+            else {
                 if (q.length > 0) {
                     linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
                 }
@@ -147,8 +147,8 @@ class Paginator {
                 }
             }
             window.location.href = linkUrl;
-        });*/
+        });
+*/
     }
 }
-
 

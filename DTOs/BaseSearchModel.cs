@@ -34,6 +34,7 @@ namespace WebApplication71.DTOs
         public int IloscObecnychElementow10 { get; set; } = 0;
         public int IloscObecnychElementow15 { get; set; } = 0;
         public int IloscObecnychElementow20 { get; set; } = 0;
+        public int Klikniecie { get; set; } = 0;
 
 
 

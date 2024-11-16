@@ -8,22 +8,14 @@
     {
         index = 0;
     }
-}
 
-@Model.PageIndex
-<br />
-@Model.Paginator.PageIndex
-<br />
-@Model.SortowanieOption
+} 
 
 
 
 <div class="overFormContainer">
 
     <form method="post" asp-action="Index" asp-controller="Roles" class="formContainer">
-        <!-- when press button we move to first page of pagination -->
-        @* <input type="hidden" asp-for="PageIndex" value="1" /> *@
-        <input type="hidden" asp-for="PageIndex" value="1" />
 
 
         <div class="topContainer">
@@ -35,14 +27,13 @@
 
                 <div class="df-sb mt-20 mb-20">
                     <!-- Wyszukiwarka -->
-                    <div class="df">
+                    <div class="df mr-20">
                         <input asp-for="q" class="searchInput" id="searchInput" />
 
 
                         @* link przekazuje dane do metody post *@
                         <input type="submit"
                                value="Szukaj"
-                               asp-route-PageIndex="3"
                                class="searchButton" />
 
 
@@ -57,15 +48,20 @@
                     </div>
 
                     <!-- Sortowanie -->
-                    <div class="df">
+                    <div class="df-sb centery" style="width: 220px;">
+                        <span class="ml-10 mr-5">Sortuj wg</span>
                         <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption" id="sortowanieOptionSelectList"></select>
-                        <input type="submit" value="Sortuj" class="searchButton" />
+                        @* <input type="submit" value="Sortuj" class="searchButton" /> *@
                     </div>
                 </div>
 
             </div>
 
         </div>
+
+
+
+
 
 
         <div class="tableContainer">
@@ -160,28 +156,17 @@
                     bool hasNext = Model.Paginator.HasNexPage;
 
 
-                    <div class="df mt-30 pb-30">
-                        <div class="w-40 centery">
+                    <div class="df-sb mt-30 mb-50">
 
+                        <div class="w-40">
                             <div class="df centery">
                                 <p>Pokaż</p>
                                 <select asp-for="PageSize" asp-items='@Model.SelectListNumberItems' class="selectOption" id="pageSizeSelectList"></select>
-                                @* <input type="submit" value="Wybierz" asp-route-PageIndex="4" class="selectOptionButton" id="selectButton" /> *@
-
-                                <a asp-action="Index"
-                                   asp-controller="Roles"
-                                   asp-route-PageSize="@Model.PageSize"
-                                   asp-route-PageIndex="@Model.Paginator.PageIndex"
-                                   asp-route-q="@Model.q"
-                                   asp-route-SortowanieOption="@Model.SortowanieOption"
-                                   class="paginatorButton">
-                                    Wybierz
-                                </a>
+                                @* tutaj nie powinno być buttona typu input submit *@
+                                @* <input type="submit" value="Wybierz" class="selectOptionButton" id="selectButton" /> *@
                             </div>
-
                         </div>
-
-
+                         
 
                         <div class="w-60 centery">
                             <div class="w-100 centery">

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.VisualStudio.Web.CodeGeneration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +48,6 @@ namespace WebApplication71.Controllers
             NI.Navigation = Navigation.RolesIndex;
             try
             {
-                //model.PageIndex = 1;
                 return await SearchAndFiltringResutl(model);
             }
             catch (Exception ex)
@@ -189,7 +189,7 @@ namespace WebApplication71.Controllers
 
 
 
-            if (!string.IsNullOrEmpty (model.q) && model.PageIndex == 1 && model.Paginator.Count <= 15)
+            if (!string.IsNullOrEmpty (model.q) && model.PageIndex == 1 && model.Paginator.TotalPage == 1 && model.Paginator.Count <= 5)
                 model.ShowPaginator = false;
 
 
@@ -204,7 +204,7 @@ namespace WebApplication71.Controllers
 
 
 
-             
+            
             // dlugość paginacji zależna od ilości elementów znajdujących się na liście, im więcej elementów tym więcej elementów w paginacji
 
             int ilosc = 9;
@@ -236,6 +236,7 @@ namespace WebApplication71.Controllers
 
             return View(model);
         }
+
 
 
 

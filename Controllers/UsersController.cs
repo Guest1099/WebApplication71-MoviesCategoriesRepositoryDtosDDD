@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using sib_api_v3_sdk.Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -81,32 +82,33 @@ namespace WebApplication71.Controllers
             model.DisplayButtonLeftTrzyKropki = false;
             model.DisplayButtonRightTrzyKropki = false;
             model.SelectListSearchOptionItems = new SelectList(new List<string>() { "Email", "Nazwisko", "Wszędzie" }, "Wszędzie");
-            model.SortowanieOptionItems = new SelectList(new List<string>() { "Nazwa A-Z", "Nazwa Z-A" }, "Nazwa A-Z");
+            model.SortowanieOptionItems = new SelectList(new List<string>() { "Email A-Z", "Email Z-A", "Nazwisko A-Z", "Nazwisko Z-A" }, "Nazwa A-Z");
 
-
-
-            // Wyszukiwanie// Opcje sortowania
-            switch (model.SearchOption)
-            {
-                case "Email":
-                    users = users.OrderBy(o => o.Email).ToList();
-                    break;
-
-                case "Nazwisko":
-                    users = users.OrderByDescending(o => o.Nazwisko).ToList();
-                    break;
-
-                case "Wszędzie":
-
-                    break;
-            }
 
 
 
             // Wyszukiwanie
             if (!string.IsNullOrEmpty(model.q))
             {
-                users = users.Where(w => w.Nazwisko.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
+                switch (model.SearchOption)
+                {
+                    case "Email":
+                        users = users.Where(w => w.Email.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
+                        break;
+
+                    case "Nazwisko":
+                        users = users.Where(w => w.Nazwisko.Contains(model.q, StringComparison.OrdinalIgnoreCase)).ToList();
+                        break;
+
+                    case "Wszędzie":
+                        users = users.Where(
+                            w =>
+                            w.Imie.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
+                            w.Nazwisko.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
+                            w.Email.Contains(model.q, StringComparison.OrdinalIgnoreCase)
+                            ).ToList();
+                        break;
+                }
 
                 if (users.Count < 5)
                 {
@@ -222,7 +224,7 @@ namespace WebApplication71.Controllers
 
 
 
-            if (!string.IsNullOrEmpty(model.q) && model.PageIndex == 1 && model.Paginator.Count <= 5)
+            if (!string.IsNullOrEmpty(model.q) && model.PageIndex == 1 && model.Paginator.TotalPage == 1 && model.Paginator.Count <= 5)
                 model.ShowPaginator = false;
 
 

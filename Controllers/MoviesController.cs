@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Movies;
@@ -128,14 +129,6 @@ namespace WebApplication71.Controllers
 
 
 
-            // paginator wyświetlany jest tylko wtedy gdy ilość elementów tabeli wynosi minimum 5
-            if (model.Paginator.Count > 4)
-                model.ShowPaginator = true;
-
-            if (model.PageIndex == model.Paginator.TotalPage)
-                model.ShowPaginator = true;
-
-
 
 
             // ustawienie dla wszystkich stron paginacji możliwą ilość wyświetlenia elementów na stronie
@@ -180,24 +173,12 @@ namespace WebApplication71.Controllers
 
 
 
-            if (model.PageIndex == 1 && model.Paginator.TotalPage <= 2 && model.Paginator.Count <= 10)
-                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" }, "10");
-
-
-
-            if (movies.Count < 5)
-                model.ShowPaginator = false;
-
-            if (movies.Count < 10)
-                model.DisplayNumersListAndPaginatorLinks = false;
-
-
-
 
             // obliczenia dla ostatniej strony
             model.LastPage = model.PageIndex == model.Paginator.TotalPage;
             if (model.LastPage)
             {
+                model.DisplayNumersListAndPaginatorLinks = true;
                 switch (model.PageSize)
                 {
                     case 5:
@@ -218,6 +199,25 @@ namespace WebApplication71.Controllers
                 }
             }
 
+
+
+            if (model.PageIndex == 1 && model.Paginator.TotalPage <= 2 && model.Paginator.Count <= 10)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" }, "10");
+
+
+
+            if (!string.IsNullOrEmpty(model.q) && model.PageIndex == 1 && model.Paginator.TotalPage == 1 && model.Paginator.Count <= 5)
+                model.ShowPaginator = false;
+
+
+            // paginator wyświetlany jest tylko wtedy gdy ilość elementów tabeli wynosi minimum 5
+            if (model.Paginator.Count < 5 && model.Paginator.PageIndex != model.Paginator.TotalPage)
+                model.ShowPaginator = false;
+
+
+            // linki paginacji nie są wyświetlane jeśli ilość elementów na stronie oraz w bazie jest mniejsza od 10
+            /*if (roles.Count < 10 && model.PageIndex == 1 && model.Paginator.TotalPage == 1)
+                model.DisplayNumersListAndPaginatorLinks = false;*/
 
 
 
