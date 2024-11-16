@@ -14,7 +14,7 @@ namespace WebApplication71.Controllers
     /// <summary>
     /// Akcje dla zalogowanego użytkownika
     /// </summary>
-    [Authorize]
+    [Authorize(Roles = "Administrator, User")]
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;

@@ -14,7 +14,7 @@ using WebApplication71.Services;
 
 namespace WebApplication71.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Administrator, User")]
     public class CategoriesController : Controller
     {
         private readonly ICategoriesRepository _categoriesRepository;
@@ -137,7 +137,8 @@ namespace WebApplication71.Controllers
 
 
 
-            int iloscWszystkichElementow = categories.Count;
+            int nextPage = 4; // + kolejne 4, czyli wartość jaką należy dodać aby uzyskać wynik kolejnej PageSize
+            int iloscWszystkichElementow = categories.Count + nextPage;
 
             // * jeśli chcesz uogólnić wyświetlanie filtrowanych wyników usuń poniższe warunki, a filtrowania nadal będzie działało poprawnie
             if (5 * model.PageIndex <= iloscWszystkichElementow)
@@ -184,8 +185,8 @@ namespace WebApplication71.Controllers
 
 
 
-            if (model.PageIndex == 1 && model.Paginator.TotalPage <= 2 && model.Paginator.Count <= 10)
-                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" }, "10");
+            if (model.PageIndex == 1 && model.Paginator.TotalPage <= 2 && model.Paginator.Count <= 5)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", }, "10");
 
 
 
@@ -194,7 +195,7 @@ namespace WebApplication71.Controllers
 
 
             // paginator wyświetlany jest tylko wtedy gdy ilość elementów tabeli wynosi minimum 5
-            if (model.Paginator.Count < 5 && model.Paginator.PageIndex != model.Paginator.TotalPage)
+            if (categories.Count <= 5 && model.PageIndex == model.Paginator.TotalPage)
                 model.ShowPaginator = false;
 
 

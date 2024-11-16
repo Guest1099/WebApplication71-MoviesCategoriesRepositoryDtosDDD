@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace WebApplication71.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Administrator, User")]
     public class LogowaniaController : Controller
     {
         private readonly ILogowaniaRepository _logowaniaRepository;
@@ -34,10 +34,10 @@ namespace WebApplication71.Controllers
             NI.Navigation = Navigation.RolesIndex;
             try
             {
-                /*if (model.DataZalogowaniaOd.ToShortDateString() == "01.01.0001")
+                /*if (model.DataZalogowaniaOd.ToShortDateString() == "01.01.0001 00:00:00")
                     model.DataZalogowaniaOd = DateTime.Now.AddMonths(-30);
 
-                if (model.DataZalogowaniaDo.ToShortDateString() == "01.01.0001")
+                if (model.DataZalogowaniaDo.ToShortDateString() == "01.01.0001 00:00:00")
                     model.DataZalogowaniaDo = DateTime.Now;*/
 
                 return await SearchAndFiltringResutl(model);
@@ -90,12 +90,9 @@ namespace WebApplication71.Controllers
             model.SortowanieOptionItems = new SelectList(new List<string>() { "Email A-Z", "Email Z-A", "Data zalogowania rosnąco", "Data zalogowania malejąco", "Użytkownik obecnie zalogowany" }, "Data zalogowania malejąco");
 
 
-
-            if (model.DataZalogowaniaOd.ToShortDateString() == "01.01.0001")
-                model.DataZalogowaniaOd = DateTime.Now.AddMonths(-30);
-
-            if (model.DataZalogowaniaDo.ToShortDateString() == "01.01.0001")
-                model.DataZalogowaniaDo = DateTime.Now;
+            
+            model.DataZalogowaniaOd = DateTime.Now.AddMonths(-30);
+            model.DataZalogowaniaDo = DateTime.Now;
 
 
 
@@ -172,13 +169,14 @@ namespace WebApplication71.Controllers
 
 
 
-            int iloscWszystkichElementow = logowania.Count;
+            int nextPage = 4; // + kolejne 4, czyli wartość jaką należy dodać aby uzyskać wynik kolejnej PageSize
+            int iloscWszystkichElementow = logowania.Count + nextPage;
 
             // * jeśli chcesz uogólnić wyświetlanie filtrowanych wyników usuń poniższe warunki, a filtrowania nadal będzie działało poprawnie
             if (5 * model.PageIndex <= iloscWszystkichElementow)
                 model.SelectListNumberItems = new SelectList(new List<string>() { "5" });
             if (10 * model.PageIndex <= iloscWszystkichElementow)
-                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" }, "10");
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", }, "10");
             if (15 * model.PageIndex <= iloscWszystkichElementow)
                 model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15" }, "15");
             if (20 * model.PageIndex <= iloscWszystkichElementow)
@@ -204,7 +202,7 @@ namespace WebApplication71.Controllers
                         break;
 
                     case 10:
-                        model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", });
+                        model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", }, "10");
                         break;
 
                     case 15:
@@ -219,8 +217,8 @@ namespace WebApplication71.Controllers
 
 
 
-            if (model.PageIndex == 1 && model.Paginator.TotalPage <= 2 && model.Paginator.Count <= 10)
-                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" }, "10");
+            if (model.PageIndex == 1 && model.Paginator.TotalPage <= 2 && model.Paginator.Count <= 5)
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", }, "10");
 
 
 
@@ -229,7 +227,7 @@ namespace WebApplication71.Controllers
 
 
             // paginator wyświetlany jest tylko wtedy gdy ilość elementów tabeli wynosi minimum 5
-            if (model.Paginator.Count < 5 && model.Paginator.PageIndex != model.Paginator.TotalPage)
+            if (logowania.Count <= 5 && model.PageIndex == model.Paginator.TotalPage)
                 model.ShowPaginator = false;
 
 

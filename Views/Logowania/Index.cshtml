@@ -26,8 +26,6 @@
 }
 
 
-
-
 <div class="overFormContainer">
 
     <form method="post" asp-action="Index" asp-controller="Logowania" class="formContainer">
@@ -156,8 +154,7 @@
                                     {
                                         @* oblicza tymczasowy czas pracy *@
 
-                                        var cp = DateTime.Now - logowanie.DataLogowania;
-                                        TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
+                                        TimeSpan czasPracy = DateTime.Now - logowanie.DataLogowania;
                                         <span>
                                             @czasPracy
                                         </span>

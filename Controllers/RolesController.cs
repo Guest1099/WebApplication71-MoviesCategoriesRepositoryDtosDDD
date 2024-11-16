@@ -137,7 +137,8 @@ namespace WebApplication71.Controllers
 
 
 
-            int iloscWszystkichElementow = roles.Count;
+            int nextPage = 4; // + kolejne 4, czyli wartość jaką należy dodać aby uzyskać wynik kolejnej PageSize
+            int iloscWszystkichElementow = roles.Count + nextPage;
 
             // * jeśli chcesz uogólnić wyświetlanie filtrowanych wyników usuń poniższe warunki, a filtrowania nadal będzie działało poprawnie
             if (5 * model.PageIndex <= iloscWszystkichElementow)

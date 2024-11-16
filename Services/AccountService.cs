@@ -770,48 +770,48 @@ namespace WebApplication71.Services
 
 
 
-        /*
-                public async Task<ResultViewModel<LoginDto>> Login(LoginDto model)
+
+        public async Task<ResultViewModel<LoginDto>> Login(LoginDto model)
+        {
+            var returnResult = new ResultViewModel<LoginDto>() { Success = false, Message = "", Object = new LoginDto() };
+
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(f => f.Email == model.Email);
+                if (user != null)
                 {
-                    var returnResult = new ResultViewModel<LoginDto>() { Success = false, Message = "", Object = new LoginDto() };
-
-                    try
+                    var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: true, lockoutOnFailure: false);
+                    if (result.Succeeded)
                     {
-                        var user = await _context.Users.FirstOrDefaultAsync (f=> f.Email == model.Email);
-                        if (user != null)
-                        { 
-                            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: true, lockoutOnFailure: false);
-                            if (result.Succeeded)
-                            {
-                                // mówi o tym, kiedyu żytkownik się zalogował 
-                                Logowanie logowanie = new Logowanie(
-                                    userId: user.Id
-                                    );
-                                _context.Logowania.Add(logowanie);
-                                await _context.SaveChangesAsync();
+                        // mówi o tym, kiedyu żytkownik się zalogował 
+                        Logowanie logowanie = new Logowanie(
+                            userId: user.Id
+                            );
+                        _context.Logowania.Add(logowanie);
+                        await _context.SaveChangesAsync();
 
 
-                                returnResult.Success = true;
-                                returnResult.Object = model;
-                            }
-                            else
-                            { 
-                                returnResult.Message = "Błędny login lub hasło"; // tu jest błędne hasło
-                            }
-                        }
-                        else
-                        {
-                            returnResult.Message = "Błędny login lub hasło"; // tu jest błędny login
-                        }
+                        returnResult.Success = true;
+                        returnResult.Object = model;
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        returnResult.Message = $"Exception: {ex.Message}";
+                        returnResult.Message = "Błędny login lub hasło"; // tu jest błędne hasło
                     }
-
-                    return returnResult;
                 }
-        */
+                else
+                {
+                    returnResult.Message = "Błędny login lub hasło"; // tu jest błędny login
+                }
+            }
+            catch (Exception ex)
+            {
+                returnResult.Message = $"Exception: {ex.Message}";
+            }
+
+            return returnResult;
+        }
+
 
 
 
@@ -819,7 +819,7 @@ namespace WebApplication71.Services
         /// <summary>
         /// Logowanie z 3 próbami zalogowania, po czym konto jest blokowane na 6 godzin
         /// </summary>
-        public async Task<ResultViewModel<LoginDto>> Login(LoginDto model)
+        public async Task<ResultViewModel<LoginDto>> Login2(LoginDto model)
         {
             var returnResult = new ResultViewModel<LoginDto>() { Success = false, Message = "", Object = new LoginDto() };
 
@@ -1307,7 +1307,7 @@ namespace WebApplication71.Services
 
 
         /// <summary>
-        ///  Operacja jeszcze nie używana
+        /// Jednorazowo przypisuje datę wylogowania dla jednego rekordu dla jednego użytkownika
         /// </summary>
         private async Task ZaktualizujRekordLogowaniaDopisujacDoNiegoGodzineWylogowania(string email)
         {
@@ -1320,7 +1320,7 @@ namespace WebApplication71.Services
             if (ostatnieLogowanieUzytkownika != null)
             {
                 // zapisanie w bazie daty wylogowania użytkownika
-                ostatnieLogowanieUzytkownika.DodajDateWylogowania(DateTime.Now);
+                ostatnieLogowanieUzytkownika.DodajDateWylogowania(DateTime.Now.ToString ());
                 _context.Entry(ostatnieLogowanieUzytkownika).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
             }
@@ -1448,26 +1448,29 @@ namespace WebApplication71.Services
             {
                 // Pobranie wszystkich logowań dla użytkowników z bazy danych, użyj asynchronicznego zapytania
                 var logowaniaUzytkownikow = await _context.Logowania
-                    .Include(l => l.User) // Zakładając, że Logowanie ma referencję do User
-                    .Where(w => w.DataWylogowania == DateTime.Parse("01.01.0001 00:00:00"))
-                    .OrderByDescending(l => l.DataLogowania) // Upewnij się, że masz odpowiednią kolejność logowań
+                    .Include(l => l.User)
+                    .Where(w => w.DataWylogowania == "01.01.0001 00:00:00")
+                    //.Where(w => w.DataWylogowania == "01.01.0001 00:00:00" && DateTime.Parse(w.DataLogowania) < DateTime.Now.AddDays(-2))
+                    //.Where(w => DateTime.Parse(w.DataLogowania) < DateTime.Parse(w.DataWylogowania))
+                    .OrderByDescending(l => l.DataLogowania)
                     .ToListAsync();
+
 
                 foreach (var logowanieUzytkownika in logowaniaUzytkownikow)
                 {
-                    /*if (logowanieUzytkownika.DataLogowania < DateTime.Now.AddDays(-2))
+                    /*if (DateTime.Now.Day % 2 == 0) // operacja ta jest wykonywana co drugi dzień aby nie obciążać serwera
                     {*/
-                        // Oblicz czas pracy
-                        var cp = DateTime.Now - logowanieUzytkownika.DataLogowania;
-                        logowanieUzytkownika.DataWylogowania = DateTime.Now;
-                        TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
-                        logowanieUzytkownika.CzasPracy = czasPracy;
+                        /*if (DateTime.Parse(logowanieUzytkownika.DataLogowania) < DateTime.Now.AddDays(-2))
+                        {*/
+                            TimeSpan cp = DateTime.Parse(logowanieUzytkownika.DataWylogowania) - DateTime.Parse(logowanieUzytkownika.DataLogowania);
+                            TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
+                            logowanieUzytkownika.CzasPracy = czasPracy.Duration().ToString();
 
-                        // Oznaczenie obiektu do aktualizacji
-                        _context.Entry(logowanieUzytkownika).State = EntityState.Modified;
-                   /* }*/
+                            // Oznaczenie obiektu do aktualizacji
+                            _context.Entry(logowanieUzytkownika).State = EntityState.Modified;
+                        /*}*/
+                    /*}*/
                 }
-
 
                 // Zapisz wszystkie zmiany na raz, aby zoptymalizować wydajność
                 await _context.SaveChangesAsync();

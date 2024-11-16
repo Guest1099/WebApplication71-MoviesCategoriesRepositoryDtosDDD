@@ -53,13 +53,13 @@ namespace WebApplication71.Repos
                         s => new GetLogowanieDto()
                         {
                             LogowanieId = s.LogowanieId,
-                            DataLogowania = s.DataLogowania,
-                            DataWylogowania = s.DataWylogowania,
-                            CzasPracy = s.CzasPracy,
+                            DataLogowania = DateTime.Parse(s.DataLogowania),
+                            DataWylogowania = DateTime.Parse(s.DataWylogowania),
+                            CzasPracy = GetCzasPracy (s.CzasPracy),
                             ImieInazwisko = $"{s.User.Imie} {s.User.Nazwisko}",
                             Email = s.User.Email
                         })
-                            .ToList();
+                        .ToList();
                 }
                 else
                 {
@@ -73,8 +73,6 @@ namespace WebApplication71.Repos
 
             return resultViewModel;
         }
-
-
 
 
         public async Task<ResultViewModel<GetLogowanieDto>> Get(string logowanieId)
@@ -94,9 +92,9 @@ namespace WebApplication71.Repos
                         resultViewModel.Object = new GetLogowanieDto()
                         {
                             LogowanieId = logowanie.LogowanieId,
-                            DataLogowania = logowanie.DataLogowania,
-                            DataWylogowania = logowanie.DataWylogowania,
-                            CzasPracy = logowanie.CzasPracy,
+                            DataLogowania = DateTime.Parse (logowanie.DataLogowania),
+                            DataWylogowania = DateTime.Parse(logowanie.DataWylogowania),
+                            CzasPracy = TimeSpan.Parse(logowanie.CzasPracy),
                             ImieInazwisko = $"{logowanie.User.Imie} {logowanie.User.Nazwisko}",
                             Email = logowanie.User.Email
                         };
@@ -133,8 +131,8 @@ namespace WebApplication71.Repos
                     if (model.DataLogowania < model.DataWylogowania)
                     {
                         Logowanie logowanie = new Logowanie(
-                            dataLogowania: model.DataLogowania,
-                            dataWylogowania: model.DataWylogowania,
+                            dataLogowania: model.DataLogowania.ToString(),
+                            dataWylogowania: model.DataWylogowania.ToString(),
                             userId: model.UserId
                             );
 
@@ -177,8 +175,8 @@ namespace WebApplication71.Repos
                     if (logowanie != null)
                     {
                         logowanie.Update(
-                            dataLogowania: model.DataLogowania,
-                            dataWylogowania: model.DataWylogowania,
+                            dataLogowania: model.DataLogowania.ToString(),
+                            dataWylogowania: model.DataWylogowania.ToString(),
                             userId: logowanie.UserId
                             );
 
@@ -242,6 +240,27 @@ namespace WebApplication71.Repos
             }
             return resultViewModel;
         }
+
+
+
+
+
+        private TimeSpan GetCzasPracy(string timeSpanString)
+        {
+            TimeSpan timeSpan = new TimeSpan();
+            if (!string.IsNullOrEmpty(timeSpanString))
+            {
+                if (timeSpanString.Length > 0)
+                {
+                    if (timeSpanString[0] != '-') // na początku TimesSpan może wystąpić ujemna liczba
+                    {
+                        timeSpan = TimeSpan.Parse(timeSpanString);
+                    }
+                }
+            }
+            return timeSpan;
+        }
+
 
     }
 }

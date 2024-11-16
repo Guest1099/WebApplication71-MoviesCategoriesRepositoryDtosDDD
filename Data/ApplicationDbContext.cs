@@ -47,12 +47,6 @@ namespace WebApplication71.Data
             builder.Entity<ApplicationRole>().HasData(adminRole, userRole);
 
 
-            for (var i = 0; i < 1250; i++)
-            {
-                var role = new ApplicationRole(i.ToString());
-                builder.Entity<ApplicationRole>().HasData(role);
-            }
-
 
             // USERS   
 
@@ -227,7 +221,7 @@ namespace WebApplication71.Data
 
 
             // dodanie większej ilości użytkowników
-            for (var i=0; i<80; i++)
+            for (var i=0; i<10; i++)
             {
                 string userEmail = $"user{i}@user{i}.pl";
                 var u = new ApplicationUser(
@@ -272,7 +266,7 @@ namespace WebApplication71.Data
                 kategorieId.Add(category.CategoryId);
             }
 */
-            for (var i = 0; i < 150; i++)
+            for (var i = 0; i < 10; i++)
             {
                 Category category = new Category("CateoryName_" + i.ToString());
                 builder.Entity<Category>().HasData(category);
