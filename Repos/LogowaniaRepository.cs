@@ -130,17 +130,24 @@ namespace WebApplication71.Repos
             {
                 try
                 {
-                    Logowanie logowanie = new Logowanie(
-                        dataLogowania: model.DataLogowania,
-                        dataWylogowania: model.DataWylogowania,
-                        userId: model.UserId
-                        );
+                    if (model.DataLogowania < model.DataWylogowania)
+                    {
+                        Logowanie logowanie = new Logowanie(
+                            dataLogowania: model.DataLogowania,
+                            dataWylogowania: model.DataWylogowania,
+                            userId: model.UserId
+                            );
 
-                    _context.Logowania.Add(logowanie);
-                    await _context.SaveChangesAsync();
+                        _context.Logowania.Add(logowanie);
+                        await _context.SaveChangesAsync();
 
-                    resultViewModel.Success = true;
-                    resultViewModel.Object = model;
+                        resultViewModel.Success = true;
+                        resultViewModel.Object = model;
+                    }
+                    else
+                    {
+                        resultViewModel.Message = $"Data logowania musi być mniejsza od daty wylogowania";
+                    }
                 }
                 catch (Exception ex)
                 {

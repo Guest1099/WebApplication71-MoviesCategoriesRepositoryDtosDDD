@@ -24,11 +24,11 @@ namespace WebApplication71.DTOs.Logowania
 
 
 
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm:ss}", ApplyFormatInEditMode = true)]
         public DateTime DataLogowania { get; set; } = DateTime.Now;
 
 
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm:ss}", ApplyFormatInEditMode = true)]
         public DateTime DataWylogowania { get; set; } = DateTime.Now.AddHours(2);
 
         public string UserId { get; set; }

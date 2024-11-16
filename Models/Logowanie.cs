@@ -29,11 +29,20 @@ namespace WebApplication71.Models
 
         public Logowanie(DateTime dataLogowania, DateTime dataWylogowania, string userId)
         {
-            LogowanieId = Guid.NewGuid().ToString();
+            /*LogowanieId = Guid.NewGuid().ToString();
             DataLogowania = new DateTime(dataLogowania.Year, dataLogowania.Month, dataLogowania.Day, dataLogowania.Hour, dataLogowania.Minute, dataLogowania.Second);
             DataWylogowania = new DateTime(dataWylogowania.Year, dataWylogowania.Month, dataWylogowania.Day, dataWylogowania.Hour, dataWylogowania.Minute, dataWylogowania.Second);
             var cp = dataWylogowania - dataLogowania;
             CzasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
+            UserId = userId;*/
+
+            LogowanieId = Guid.NewGuid().ToString();
+            DataLogowania = dataLogowania;
+            DataWylogowania = dataWylogowania; 
+            var cp = dataWylogowania - dataLogowania;
+            //var czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
+            var czasPracy = new TimeSpan(11,1,1,1,1);
+            CzasPracy = czasPracy;
             UserId = userId;
         }
 

@@ -8,7 +8,7 @@ namespace WebApplication71.DTOs.Logowania
     public class GetLogowaniaDto : BaseSearchModel<GetLogowanieDto>
     {
         [Required]
-        [DataType(DataType.Date)]
+        //[DataType(DataType.Date)]
         public DateTime DataZalogowaniaOd { get; set; } /*= new DateTime(
             DateTime.Now.Year,
             DateTime.Now.Month - 1,
@@ -18,7 +18,7 @@ namespace WebApplication71.DTOs.Logowania
             0);*/
 
         [Required]
-        [DataType(DataType.Date)]
+        //[DataType(DataType.Date)]
         public DateTime DataZalogowaniaDo { get; set; }/* = new DateTime(
             DateTime.Now.Year,
             DateTime.Now.Month,

@@ -1398,30 +1398,65 @@ namespace WebApplication71.Services
 */
 
 
+        /*
+                private async Task SprawdzCzyZostalaDopisanaDataWylogowania()
+                {
+
+                    // Pobranie wszystkich logowań dla użytkowników z bazy danych, użyj asynchronicznego zapytania
+                    var logowaniaUzytkownikow = await _context.Logowania
+                        .Include(l => l.User) // Zakładając, że Logowanie ma referencję do User
+                        .OrderByDescending(l => l.DataLogowania) // Upewnij się, że masz odpowiednią kolejność logowań
+                        .ToListAsync();
+
+                    // Przejdź przez wszystkich użytkowników
+                    foreach (var user in await _context.Users.ToListAsync())
+                    {
+                        // Filtruj logowania dla danego użytkownika
+                        var logowaniaUzytkownika = logowaniaUzytkownikow
+                            .Where(l => l.UserId == user.Id)
+                            .ToList();
+
+
+                        foreach (var logowanieUzytkownika in logowaniaUzytkownika.Skip(0)) // Skip(1) pomija pierwszy element
+                        {
+                            // Sprawdzenie, czy nie zostało dopisane DataWylogowania
+                            if (logowanieUzytkownika.DataWylogowania == DateTime.Parse("01.01.0001 00:00:00"))
+                            {
+                                // Oblicz czas pracy
+                                var cp = DateTime.Now - logowanieUzytkownika.DataLogowania;
+                                logowanieUzytkownika.DataWylogowania = DateTime.Now;
+                                TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
+                                logowanieUzytkownika.CzasPracy = czasPracy;
+
+                                // Oznaczenie obiektu do aktualizacji
+                                _context.Entry(logowanieUzytkownika).State = EntityState.Modified;
+                            }
+                        }
+
+                    }
+
+                    // Zapisz wszystkie zmiany na raz, aby zoptymalizować wydajność
+                    await _context.SaveChangesAsync();
+                }
+
+        */
+
 
         private async Task SprawdzCzyZostalaDopisanaDataWylogowania()
         {
-
-            // Pobranie wszystkich logowań dla użytkowników z bazy danych, użyj asynchronicznego zapytania
-            var logowaniaUzytkownikow = await _context.Logowania
-                .Include(l => l.User) // Zakładając, że Logowanie ma referencję do User
-                .OrderByDescending(l => l.DataLogowania) // Upewnij się, że masz odpowiednią kolejność logowań
-                .ToListAsync();
-
-            // Przejdź przez wszystkich użytkowników
-            foreach (var user in await _context.Users.ToListAsync())
+            try
             {
-                // Filtruj logowania dla danego użytkownika
-                var logowaniaUzytkownika = logowaniaUzytkownikow
-                    .Where(l => l.UserId == user.Id)
-                    .ToList();
+                // Pobranie wszystkich logowań dla użytkowników z bazy danych, użyj asynchronicznego zapytania
+                var logowaniaUzytkownikow = await _context.Logowania
+                    .Include(l => l.User) // Zakładając, że Logowanie ma referencję do User
+                    .Where(w => w.DataWylogowania == DateTime.Parse("01.01.0001 00:00:00"))
+                    .OrderByDescending(l => l.DataLogowania) // Upewnij się, że masz odpowiednią kolejność logowań
+                    .ToListAsync();
 
-
-                foreach (var logowanieUzytkownika in logowaniaUzytkownika.Skip(0)) // Skip(1) pomija pierwszy element
+                foreach (var logowanieUzytkownika in logowaniaUzytkownikow)
                 {
-                    // Sprawdzenie, czy nie zostało dopisane DataWylogowania
-                    if (logowanieUzytkownika.DataWylogowania == DateTime.Parse("01.01.0001 00:00:00"))
-                    {
+                    /*if (logowanieUzytkownika.DataLogowania < DateTime.Now.AddDays(-2))
+                    {*/
                         // Oblicz czas pracy
                         var cp = DateTime.Now - logowanieUzytkownika.DataLogowania;
                         logowanieUzytkownika.DataWylogowania = DateTime.Now;
@@ -1430,15 +1465,18 @@ namespace WebApplication71.Services
 
                         // Oznaczenie obiektu do aktualizacji
                         _context.Entry(logowanieUzytkownika).State = EntityState.Modified;
-                    }
+                   /* }*/
                 }
 
+
+                // Zapisz wszystkie zmiany na raz, aby zoptymalizować wydajność
+                await _context.SaveChangesAsync();
             }
+            catch (Exception ex)
+            {
 
-            // Zapisz wszystkie zmiany na raz, aby zoptymalizować wydajność
-            await _context.SaveChangesAsync();
+            }
         }
-
 
 
 
