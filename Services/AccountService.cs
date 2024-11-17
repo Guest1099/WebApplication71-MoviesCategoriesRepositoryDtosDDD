@@ -17,6 +17,7 @@ using WebApplication71.DTOs;
 using WebApplication71.DTOs.Account;
 using WebApplication71.DTOs.Users;
 using WebApplication71.Models;
+using WebApplication71.Models.Enums;
 using WebApplication71.Services.Abs;
 
 namespace WebApplication71.Services
@@ -771,7 +772,7 @@ namespace WebApplication71.Services
 
 
 
-        public async Task<ResultViewModel<LoginDto>> Login(LoginDto model)
+        /*public async Task<ResultViewModel<LoginDto>> Login(LoginDto model)
         {
             var returnResult = new ResultViewModel<LoginDto>() { Success = false, Message = "", Object = new LoginDto() };
 
@@ -810,7 +811,7 @@ namespace WebApplication71.Services
             }
 
             return returnResult;
-        }
+        }*/
 
 
 
@@ -819,7 +820,7 @@ namespace WebApplication71.Services
         /// <summary>
         /// Logowanie z 3 próbami zalogowania, po czym konto jest blokowane na 6 godzin
         /// </summary>
-        public async Task<ResultViewModel<LoginDto>> Login2(LoginDto model)
+        public async Task<ResultViewModel<LoginDto>> Login(LoginDto model)
         {
             var returnResult = new ResultViewModel<LoginDto>() { Success = false, Message = "", Object = new LoginDto() };
 
@@ -1074,7 +1075,7 @@ namespace WebApplication71.Services
 
             return returnResult;
         }
-
+/*
         private async Task<ResultViewModel<LoginDto>> LoginInternal(ApplicationUser user, LoginDto model)
         {
             var returnResult = new ResultViewModel<LoginDto>() { Success = false, Message = "", Object = new LoginDto() };
@@ -1102,7 +1103,7 @@ namespace WebApplication71.Services
             }
             else
             {
-                /*
+                *//*
                                 // sprawdź ile razy użytkownik już się logował, ma 3 próby, po 3 niudanej próbie logowania konto jest blokonwane na 6 godzin                                
                                 int iloePozostaloLogowanUzytkownikowi = 2 - user.IloscLogowan;
                                 if (iloePozostaloLogowanUzytkownikowi == 0)
@@ -1113,7 +1114,7 @@ namespace WebApplication71.Services
                                 {
                                     returnResult.Message = $"Błędny login lub hasło. Pozostały Ci {iloePozostaloLogowanUzytkownikowi} próby logowania";
                                 }
-                */
+                *//*
 
                 // aktualizacja ilości logowań
                 user.IloscLogowan = user.IloscLogowan + 1;
@@ -1129,7 +1130,7 @@ namespace WebApplication71.Services
             return returnResult;
         }
 
-
+*/
 
 
 
@@ -1452,7 +1453,7 @@ namespace WebApplication71.Services
                     .Where(w => w.DataWylogowania == "01.01.0001 00:00:00")
                     //.Where(w => w.DataWylogowania == "01.01.0001 00:00:00" && DateTime.Parse(w.DataLogowania) < DateTime.Now.AddDays(-2))
                     //.Where(w => DateTime.Parse(w.DataLogowania) < DateTime.Parse(w.DataWylogowania))
-                    .OrderByDescending(l => l.DataLogowania)
+                    //.OrderByDescending(l => l.DataLogowania)
                     .ToListAsync();
 
 
@@ -1460,16 +1461,18 @@ namespace WebApplication71.Services
                 {
                     /*if (DateTime.Now.Day % 2 == 0) // operacja ta jest wykonywana co drugi dzień aby nie obciążać serwera
                     {*/
-                        /*if (DateTime.Parse(logowanieUzytkownika.DataLogowania) < DateTime.Now.AddDays(-2))
-                        {*/
-                            TimeSpan cp = DateTime.Parse(logowanieUzytkownika.DataWylogowania) - DateTime.Parse(logowanieUzytkownika.DataLogowania);
-                            TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
-                            logowanieUzytkownika.CzasPracy = czasPracy.Duration().ToString();
+                    /*if (DateTime.Parse(logowanieUzytkownika.DataLogowania) < DateTime.Now.AddDays(-1))
+                    {*/
+                        logowanieUzytkownika.DataWylogowania = DateTime.Now.ToString();
+                        TimeSpan cp = DateTime.Parse(logowanieUzytkownika.DataWylogowania) - DateTime.Parse(logowanieUzytkownika.DataLogowania);
+                        TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
+                        logowanieUzytkownika.CzasPracy = czasPracy.Duration().ToString();
 
-                            // Oznaczenie obiektu do aktualizacji
-                            _context.Entry(logowanieUzytkownika).State = EntityState.Modified;
+                        // Oznaczenie obiektu do aktualizacji
+                        _context.Entry(logowanieUzytkownika).State = EntityState.Modified;
                         /*}*/
                     /*}*/
+
                 }
 
                 // Zapisz wszystkie zmiany na raz, aby zoptymalizować wydajność

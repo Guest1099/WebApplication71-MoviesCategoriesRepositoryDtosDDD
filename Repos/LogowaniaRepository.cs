@@ -8,6 +8,7 @@ using WebApplication71.Data;
 using WebApplication71.DTOs;
 using WebApplication71.DTOs.Logowania;
 using WebApplication71.Models;
+using WebApplication71.Models.Enums;
 using WebApplication71.Repos.Abs;
 
 namespace WebApplication71.Repos
@@ -56,8 +57,9 @@ namespace WebApplication71.Repos
                             DataLogowania = DateTime.Parse(s.DataLogowania),
                             DataWylogowania = DateTime.Parse(s.DataWylogowania),
                             CzasPracy = GetCzasPracy (s.CzasPracy),
+                            Status = s.Status,
                             ImieInazwisko = $"{s.User.Imie} {s.User.Nazwisko}",
-                            Email = s.User.Email
+                            Email = s.User.Email,
                         })
                         .ToList();
                 }
@@ -95,6 +97,7 @@ namespace WebApplication71.Repos
                             DataLogowania = DateTime.Parse (logowanie.DataLogowania),
                             DataWylogowania = DateTime.Parse(logowanie.DataWylogowania),
                             CzasPracy = TimeSpan.Parse(logowanie.CzasPracy),
+                            Status = logowanie.Status,
                             ImieInazwisko = $"{logowanie.User.Imie} {logowanie.User.Nazwisko}",
                             Email = logowanie.User.Email
                         };
@@ -133,6 +136,7 @@ namespace WebApplication71.Repos
                         Logowanie logowanie = new Logowanie(
                             dataLogowania: model.DataLogowania.ToString(),
                             dataWylogowania: model.DataWylogowania.ToString(),
+                            statusZalogowania: StatusZalogowania.Niezalogowany,
                             userId: model.UserId
                             );
 

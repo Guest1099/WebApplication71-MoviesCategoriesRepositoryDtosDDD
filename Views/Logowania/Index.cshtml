@@ -110,6 +110,7 @@
 
                             @if(userIsAdmin)
                             {
+                                <th>Status zalogowania</th>
                                 <th>Email</th>
                                 <th></th>
                             }
@@ -154,7 +155,8 @@
                                     {
                                         @* oblicza tymczasowy czas pracy *@
 
-                                        TimeSpan czasPracy = DateTime.Now - logowanie.DataLogowania;
+                                        TimeSpan cp = DateTime.Now - logowanie.DataLogowania;
+                                        TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
                                         <span>
                                             @czasPracy
                                         </span>
@@ -175,6 +177,13 @@
                                     <td>
                                         @logowanie.Email
                                     </td>
+
+
+
+                                    <td>
+                                        @logowanie.Status
+                                    </td>
+
 
 
                                     <td class="w-50px">

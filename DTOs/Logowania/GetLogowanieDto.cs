@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using WebApplication71.Models.Enums;
 
 namespace WebApplication71.DTOs.Logowania
 {
@@ -17,6 +18,8 @@ namespace WebApplication71.DTOs.Logowania
         public DateTime DataWylogowania { get; set; } = DateTime.Now;
 
         public TimeSpan CzasPracy { get; set; }
+
+        public StatusZalogowania Status { get; set; }
         public string ImieInazwisko { get; set; }
 
         public string Email { get; set; }

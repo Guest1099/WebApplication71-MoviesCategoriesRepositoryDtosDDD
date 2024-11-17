@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using WebApplication71.Models.Enums;
 
 namespace WebApplication71.Models
 {
@@ -10,6 +11,7 @@ namespace WebApplication71.Models
         public string DataLogowania { get; private set; }
         public string DataWylogowania { get; set; }
         public string CzasPracy { get; set; }
+        public StatusZalogowania Status { get; set; }
 
 
 
@@ -92,11 +94,12 @@ namespace WebApplication71.Models
             DataLogowania = DateTime.Now.ToString();
             DataWylogowania = "01.01.0001 00:00:00";
             CzasPracy = "";
+            Status = StatusZalogowania.Niezalogowany;
             UserId = userId;
         }
 
 
-        public Logowanie(string dataLogowania, string dataWylogowania, string userId)
+        public Logowanie(string dataLogowania, string dataWylogowania, StatusZalogowania statusZalogowania, string userId)
         {
             LogowanieId = Guid.NewGuid().ToString();
             DataLogowania = dataLogowania;
@@ -106,6 +109,7 @@ namespace WebApplication71.Models
             TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
             CzasPracy = czasPracy.Duration().ToString();
 
+            Status = statusZalogowania;
             UserId = userId;
         }
 
@@ -133,6 +137,8 @@ namespace WebApplication71.Models
             TimeSpan cp = DateTime.Parse(DataLogowania) - DateTime.Parse(dataWylogowania);
             TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
             CzasPracy = czasPracy.Duration().ToString();
+
+            Status = StatusZalogowania.Niezalogowany;
         }
 
 

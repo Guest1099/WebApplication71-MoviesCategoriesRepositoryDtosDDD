@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.ComponentModel.DataAnnotations;
+using WebApplication71.Models.Enums;
 
 namespace WebApplication71.DTOs.Logowania
 {
@@ -14,6 +15,7 @@ namespace WebApplication71.DTOs.Logowania
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime DataWylogowania { get; set; } = DateTime.Now.AddHours(2);
 
+        public StatusZalogowania Status { get; set; }
         public string UserId { get; set; }
 
 
