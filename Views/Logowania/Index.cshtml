@@ -26,19 +26,11 @@
 }
 
 
-@Model.DataZalogowaniaOd
-<br />
-@Model.DataZalogowaniaDo
-
-
 
 <div class="overFormContainer">
 
     <form method="post" asp-action="Index" asp-controller="Logowania" class="formContainer">
-        @* <input type="hidden" asp-for="DataZalogowaniaOd" />
-        <input type="hidden" asp-for="DataZalogowaniaDo" /> *@
-        @* <input type="hidden" asp-for="DataZalogowaniaOd" value="@Model.DataZalogowaniaOd" />
-        <input type="hidden" asp-for="DataZalogowaniaDo" value="@Model.DataZalogowaniaDo" /> *@
+
 
 
         <div class="topContainer">
@@ -59,7 +51,7 @@
                             <!-- Data od -->
                             <div class="df">
                                 <span>Od</span>
-                                <input asp-for="DataZalogowaniaOd" class="searchInput" id="dataZalogowaniaOd" onclick="onClickData();" />
+                                <input asp-for="DataZalogowaniaOd" class="searchInput" id="dataZalogowaniaOd" />
                             </div>
                             <!-- Data do -->
                             <div class="df">
@@ -290,25 +282,25 @@
 
                                             string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
 
-                                            <!-- przeniesienie do pierwszej strony -->
+                                                                        <!-- przeniesienie do pierwszej strony -->
                                             if (Model.DisplayButtonLeftTrzyKropki)
                                             {
-                                                <a asp-action="Index"
-                                                   asp-controller="Logowania"
-                                                   asp-route-PageSize="@Model.PageSize"
-                                                   asp-route-PageIndex="1"
-                                                   asp-route-q="@Model.q"
-                                                   asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                   class="paginator-item"
-                                                   style="backgroun-color: transparent"
-                                                   id="buttonLeftTrzyKropki">
-                                                    ...
-                                                </a>
+                                                                            <a asp-action="Index"
+                                                                               asp-controller="Logowania"
+                                                                               asp-route-PageSize="@Model.PageSize"
+                                                                               asp-route-PageIndex="1"
+                                                                               asp-route-q="@Model.q"
+                                                                               asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                                               class="paginator-item"
+                                                                               style="backgroun-color: transparent"
+                                                                               id="buttonLeftTrzyKropki">
+                                                                                ...
+                                                                            </a>
                                             }
 
 
 
-                                            <!-- środkowe przyciski paginacji -->
+                                                                        <!-- środkowe przyciski paginacji -->
                                             for (var i = Model.Start; i <= Model.End; i++)
                                             {
                                                 if (i == Model.PageIndex)
@@ -321,35 +313,35 @@
                                                 }
                                                 if (i <= Model.Paginator.TotalPage)
                                                 {
-                                                    <a asp-action="Index"
-                                                       asp-controller="Logowania"
-                                                       asp-route-PageSize="@Model.PageSize"
-                                                       asp-route-PageIndex="@i"
-                                                       asp-route-q="@Model.q"
-                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                       class="paginator-item"
-                                                       style="@style"
-                                                       id="button">
-                                                        @i
-                                                    </a>
+                                                                                <a asp-action="Index"
+                                                                                   asp-controller="Logowania"
+                                                                                   asp-route-PageSize="@Model.PageSize"
+                                                                                   asp-route-PageIndex="@i"
+                                                                                   asp-route-q="@Model.q"
+                                                                                   asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                                                   class="paginator-item"
+                                                                                   style="@style"
+                                                                                   id="button">
+                                                                                    @i
+                                                                                </a>
                                                 }
                                             }
 
 
-                                            <!-- przeniesienie do ostatniej strony -->
+                                                                        <!-- przeniesienie do ostatniej strony -->
                                             if (Model.DisplayButtonRightTrzyKropki)
                                             {
-                                                <a asp-action="Index"
-                                                   asp-controller="Logowania"
-                                                   asp-route-PageSize="@Model.PageSize"
-                                                   asp-route-PageIndex="@Model.Paginator.TotalPage"
-                                                   asp-route-q="@Model.q"
-                                                   asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                   class="paginator-item"
-                                                   style="backgroun-color: transparent"
-                                                   id="buttonRightTrzyKropki">
-                                                    ...
-                                                </a>
+                                                                            <a asp-action="Index"
+                                                                               asp-controller="Logowania"
+                                                                               asp-route-PageSize="@Model.PageSize"
+                                                                               asp-route-PageIndex="@Model.Paginator.TotalPage"
+                                                                               asp-route-q="@Model.q"
+                                                                               asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                                               class="paginator-item"
+                                                                               style="backgroun-color: transparent"
+                                                                               id="buttonRightTrzyKropki">
+                                                                                ...
+                                                                            </a>
                                             }
                                         }
                                     </div>
@@ -452,22 +444,11 @@
             pageIndex = parseInt(@Model.PageIndex);
 
 
-
-        var currentDate = new Date();
-        var day = currentDate.getDate().toString().padStart(2, '0');
-        var month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-        var year = currentDate.getFullYear();
-        var hours = currentDate.getHours().toString().padStart(2, '0');
-        var minutes = currentDate.getMinutes().toString().padStart(2, '0');
-        var formattedDate = `${day}.${month}.${year} ${hours}:${minutes}`;
-
-            alert ('ss');
-
             if (q.length > 0) {
-                linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}&DataZalogowaniaOd=${dataZalogowaniaOd}&DataZalogowaniaDo=${dataZalogowaniaDo}`;
+                linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}&DataZalogowaniaOd=${dataZalogowaniaOd.value}&DataZalogowaniaDo=${dataZalogowaniaDo.value}`;
             }
             else {
-                linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SortowanieOption=${sortowanieOption}&DataZalogowaniaOd=${dataZalogowaniaOd}&DataZalogowaniaDo=${dataZalogowaniaDo}`;
+                linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SortowanieOption=${sortowanieOption}&DataZalogowaniaOd=${dataZalogowaniaOd.value}&DataZalogowaniaDo=${dataZalogowaniaDo.value}`;
             }
             window.location.href = linkUrl;
         });
@@ -482,27 +463,18 @@
             pageSize = parseInt(this.value);
             q = searchInput.value;
             pageIndex = parseInt(@Model.PageIndex);
-            dataZalogowaniaOdValue = dataZalogowaniaOd.value;
-            dataZalogowaniaDoValue = dataZalogowaniaDo.value;
+
 
             if (q.length > 0) {
-                linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}&DataZalogowaniaOd=${dataZalogowaniaOd}&DataZalogowaniaDo=${dataZalogowaniaDo}`;
+                linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}&DataZalogowaniaOd=${dataZalogowaniaOd.value}&DataZalogowaniaDo=${dataZalogowaniaDo.value}`;
             }
             else {
-                linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SortowanieOption=${sortowanieOption}&DataZalogowaniaOd=${dataZalogowaniaOd}&DataZalogowaniaDo=${dataZalogowaniaDo}`;
+                linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SortowanieOption=${sortowanieOption}&DataZalogowaniaOd=${dataZalogowaniaOd.value}&DataZalogowaniaDo=${dataZalogowaniaDo.value}`;
             }
             window.location.href = linkUrl;
         });
 
-        
 
-        // new Paginator(
-        //     'Logowania',
-        //     @Model.PageIndex,
-        //     null,
-        //     document.getElementById('sortowanieOptionSelectList'),
-        //     document.getElementById('pageSizeSelectList')
-        // );
 
     </script>
 }

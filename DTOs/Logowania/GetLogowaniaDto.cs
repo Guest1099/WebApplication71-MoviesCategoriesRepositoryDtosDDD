@@ -9,7 +9,7 @@ namespace WebApplication71.DTOs.Logowania
     {
         [Required]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
-        public DateTime DataZalogowaniaOd { get; set; }// = DateTime.Now.AddDays(-30);
+        public DateTime DataZalogowaniaOd { get; set; } = DateTime.Now.AddDays(-30);
 
         [Required]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]

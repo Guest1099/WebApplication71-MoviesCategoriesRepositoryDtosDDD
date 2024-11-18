@@ -40,8 +40,8 @@ namespace WebApplication71.Controllers
                 if (model.DataZalogowaniaDo.ToShortDateString() == "01.01.0001 00:00:00")
                     model.DataZalogowaniaDo = DateTime.Now;*/
 
-                /*model.DataZalogowaniaOd = DateTime.Now.AddMonths(-30);
-                model.DataZalogowaniaDo = DateTime.Now;*/
+                //model.DataZalogowaniaOd = DateTime.Now.AddMonths(-30);
+                //model.DataZalogowaniaDo = DateTime.Now;
 
 
 
@@ -106,7 +106,8 @@ namespace WebApplication71.Controllers
             {
                 logowania = logowania.Where(
                     w =>
-                        w.Email.Contains(model.q, StringComparison.OrdinalIgnoreCase)
+                        w.Email.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
+                        w.ImieInazwisko.Contains(model.q, StringComparison.OrdinalIgnoreCase)
                     ).ToList();
 
                 if (logowania.Count < 5)

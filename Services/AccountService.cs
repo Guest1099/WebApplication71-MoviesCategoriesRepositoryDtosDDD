@@ -871,7 +871,8 @@ namespace WebApplication71.Services
                                     await _userManager.UpdateAsync(user);
 
 
-                                    //await SprawdzCzyZostalaDopisanaDataWylogowania (user);
+                                    // aktualizuje poprzedni rekord logowania
+                                    await ZaktualizujRekordLogowaniaDopisujacDoNiegoGodzineWylogowaniaForLogin(user.Email);
 
 
                                     returnResult.Success = true;
@@ -939,8 +940,8 @@ namespace WebApplication71.Services
                                     await _userManager.UpdateAsync(user);
 
 
-
-                                    //await SprawdzCzyZostalaDopisanaDataWylogowania(user);
+                                    // aktualizuje poprzedni rekord logowania
+                                    await ZaktualizujRekordLogowaniaDopisujacDoNiegoGodzineWylogowaniaForLogin(user.Email);
 
 
                                     returnResult.Success = true;
@@ -1034,7 +1035,8 @@ namespace WebApplication71.Services
                                 await _userManager.UpdateAsync(user);
 
 
-                                //await SprawdzCzyZostalaDopisanaDataWylogowania(user);
+                                // aktualizuje poprzedni rekord logowania
+                                await ZaktualizujRekordLogowaniaDopisujacDoNiegoGodzineWylogowaniaForLogin(user.Email);
 
 
                                 returnResult.Success = true;
@@ -1283,28 +1285,70 @@ namespace WebApplication71.Services
 
         private async Task AktualizacjaRekorduLogowania(string email)
         {
-            await ZaktualizujRekordLogowaniaDopisujacDoNiegoGodzineWylogowania(email);
-
-
-            var zalogowanyUser = await _context.Users.FirstOrDefaultAsync(f => f.Email == email);
-            if (zalogowanyUser != null)
+            try
             {
-                switch (zalogowanyUser.RoleName)
+                await ZaktualizujRekordLogowaniaDopisujacDoNiegoGodzineWylogowania(email);
+
+
+                var zalogowanyUser = await _context.Users.FirstOrDefaultAsync(f => f.Email == email);
+                if (zalogowanyUser != null)
                 {
-                    case "Administrator":
+                    switch (zalogowanyUser.RoleName)
+                    {
+                        case "Administrator":
 
-                        // operacja odbywa się wyłącznie przez administratora dla wszystkich użytkowników
-                        await SprawdzCzyZostalaDopisanaDataWylogowania();
+                            // operacja odbywa się wyłącznie przez administratora dla wszystkich użytkowników
+                            await SprawdzCzyZostalaDopisanaDataWylogowania();
 
-                        break;
+                            break;
 
-                    case "User":
-                        // operacja odbywa się przez zalogowanego użytkownika dla zalogowanego użytkownika
-                        //await SprawdzCzyZostalaDopisanaDataWylogowania(email);
-                        break;
+                        case "User":
+                            // operacja odbywa się przez zalogowanego użytkownika dla zalogowanego użytkownika
+                            //await SprawdzCzyZostalaDopisanaDataWylogowania(email);
+                            break;
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+
+            }
         }
+
+
+
+        /// <summary>
+        /// Jednorazowo przypisuje datę wylogowania dla jednego rekordu dla jednego użytkownika
+        /// Metoda wykorzystywana w metodzie Logowania i jest wywoływana tylko wtedy gdy użytkownik ma więcej niż jedno logowanie
+        /// z niezapisaną datą wylogowania
+        /// </summary>
+        private async Task ZaktualizujRekordLogowaniaDopisujacDoNiegoGodzineWylogowaniaForLogin(string email)
+        {
+            try
+            {
+                // wyszukuje najnowszy rekord logowania oraz dopisuje do niego datę wylogowania
+                var ostatnieLogowanieUzytkownika = await _context.Logowania
+                    .Include(i => i.User)
+                    .Where(f => f.User.Email == email)
+                    .OrderByDescending(o => o.DataLogowania)
+                    .ToListAsync();
+
+                if (ostatnieLogowanieUzytkownika.Count > 1)
+                {
+                    var secondLogin = ostatnieLogowanieUzytkownika[1];
+
+                    // zapisanie w bazie daty wylogowania użytkownika
+                    secondLogin.DodajDateWylogowania(DateTime.Now.ToString());
+                    _context.Entry(secondLogin).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
 
 
         /// <summary>
@@ -1312,18 +1356,25 @@ namespace WebApplication71.Services
         /// </summary>
         private async Task ZaktualizujRekordLogowaniaDopisujacDoNiegoGodzineWylogowania(string email)
         {
-            // wyszukuje najnowszy rekord logowania oraz dopisuje do niego datę wylogowania
-            var ostatnieLogowanieUzytkownika = await _context.Logowania
-                .Include(i => i.User)
-                .OrderByDescending(o => o.DataLogowania)
-                .FirstOrDefaultAsync(f => f.User.Email == email);
-
-            if (ostatnieLogowanieUzytkownika != null)
+            try
             {
-                // zapisanie w bazie daty wylogowania użytkownika
-                ostatnieLogowanieUzytkownika.DodajDateWylogowania(DateTime.Now.ToString ());
-                _context.Entry(ostatnieLogowanieUzytkownika).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
+                // wyszukuje najnowszy rekord logowania oraz dopisuje do niego datę wylogowania
+                var ostatnieLogowanieUzytkownika = await _context.Logowania
+                    .Include(i => i.User)
+                    .OrderByDescending(o => o.DataLogowania)
+                    .FirstOrDefaultAsync(f => f.User.Email == email);
+
+                if (ostatnieLogowanieUzytkownika != null)
+                {
+                    // zapisanie w bazie daty wylogowania użytkownika
+                    ostatnieLogowanieUzytkownika.DodajDateWylogowania(DateTime.Now.ToString());
+                    _context.Entry(ostatnieLogowanieUzytkownika).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+
             }
         }
 

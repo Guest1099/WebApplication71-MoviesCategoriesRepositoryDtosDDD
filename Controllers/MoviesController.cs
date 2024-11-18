@@ -80,7 +80,7 @@ namespace WebApplication71.Controllers
             model.DisplayNumersListAndPaginatorLinks = true;
             model.DisplayButtonLeftTrzyKropki = false;
             model.DisplayButtonRightTrzyKropki = false;
-            model.SortowanieOptionItems = new SelectList(new List<string>() { "Tytuł A-Z", "Tytuł Z-A", "Kategoria A-Z", "Kategoria Z-A" }, "Tytuł A-Z");
+            model.SortowanieOptionItems = new SelectList(new List<string>() { "Tytuł A-Z", "Tytuł Z-A", "Kategoria A-Z", "Kategoria Z-A", "Cena rosnąco", "Cena malejąco" }, "Tytuł A-Z");
 
 
 
@@ -119,6 +119,14 @@ namespace WebApplication71.Controllers
 
                 case "Kategoria Z-A":
                     movies = movies.OrderByDescending(o => o.Category).ToList();
+                    break;
+
+                case "Cena rosnąco":
+                    movies = movies.OrderBy(o => o.Price).ToList();
+                    break;
+
+                case "Cena malejąco":
+                    movies = movies.OrderByDescending(o => o.Price).ToList();
                     break;
             }
 
