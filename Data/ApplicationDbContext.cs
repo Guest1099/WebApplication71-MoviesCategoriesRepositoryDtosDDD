@@ -21,6 +21,7 @@ namespace WebApplication71.Data
         }
 
         public DbSet<Movie> Movies { get; set; }
+        public DbSet<Movie> PhotosMovie { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Logowanie> Logowania { get; set; }
 
