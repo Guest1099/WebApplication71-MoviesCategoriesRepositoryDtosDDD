@@ -19,6 +19,68 @@ namespace WebApplication71.Models
         public ApplicationUser? User { get; private set; }
 
 
+
+
+        public Logowanie(string userId)
+        {
+            LogowanieId = Guid.NewGuid().ToString();
+            DataLogowania = DateTime.Now.ToString();
+            DataWylogowania = "01.01.0001 00:00:00";
+            CzasPracy = "";
+            Status = StatusZalogowania.Zalogowany;
+            UserId = userId;
+        }
+
+
+        public Logowanie(string dataLogowania, string dataWylogowania, StatusZalogowania statusZalogowania, string userId)
+        {
+            LogowanieId = Guid.NewGuid().ToString();
+            DataLogowania = dataLogowania;
+            DataWylogowania = dataWylogowania;
+
+            TimeSpan cp = DateTime.Parse(DataLogowania) - DateTime.Parse(dataWylogowania);
+            TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
+            CzasPracy = czasPracy.Duration().ToString();
+
+            Status = statusZalogowania;
+            UserId = userId;
+        }
+
+
+
+        public void Update(string dataLogowania, string dataWylogowania, string userId)
+        {
+            DataLogowania = dataLogowania;
+            DataWylogowania = dataWylogowania;
+
+            TimeSpan cp = DateTime.Parse(DataLogowania) - DateTime.Parse(dataWylogowania);
+            TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
+            CzasPracy = czasPracy.Duration().ToString();
+
+            UserId = userId;
+        }
+
+
+        public void DodajDateWylogowania(string dataWylogowania)
+        {
+            DataWylogowania = dataWylogowania;
+
+            // obliczenie czasu pracy
+
+            TimeSpan cp = DateTime.Parse(DataLogowania) - DateTime.Parse(dataWylogowania);
+            TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
+            CzasPracy = czasPracy.Duration().ToString();
+
+            Status = StatusZalogowania.Niezalogowany;
+        }
+
+
+
+
+
+
+
+
         /*
                 public Logowanie(string userId)
                 {
@@ -85,62 +147,6 @@ namespace WebApplication71.Models
                     CzasPracy = czasPracy;
                 }
         */
-
-
-
-        public Logowanie(string userId)
-        {
-            LogowanieId = Guid.NewGuid().ToString();
-            DataLogowania = DateTime.Now.ToString();
-            DataWylogowania = "01.01.0001 00:00:00";
-            CzasPracy = "";
-            Status = StatusZalogowania.Niezalogowany;
-            UserId = userId;
-        }
-
-
-        public Logowanie(string dataLogowania, string dataWylogowania, StatusZalogowania statusZalogowania, string userId)
-        {
-            LogowanieId = Guid.NewGuid().ToString();
-            DataLogowania = dataLogowania;
-            DataWylogowania = dataWylogowania;
-
-            TimeSpan cp = DateTime.Parse(DataLogowania) - DateTime.Parse(dataWylogowania);
-            TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
-            CzasPracy = czasPracy.Duration().ToString();
-
-            Status = statusZalogowania;
-            UserId = userId;
-        }
-
-
-
-        public void Update(string dataLogowania, string dataWylogowania, string userId)
-        {
-            DataLogowania = dataLogowania;
-            DataWylogowania = dataWylogowania;
-
-            TimeSpan cp = DateTime.Parse(DataLogowania) - DateTime.Parse(dataWylogowania);
-            TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
-            CzasPracy = czasPracy.Duration().ToString();
-
-            UserId = userId;
-        }
-
-
-        public void DodajDateWylogowania(string dataWylogowania)
-        {
-            DataWylogowania = dataWylogowania;
-
-            // obliczenie czasu pracy
-
-            TimeSpan cp = DateTime.Parse(DataLogowania) - DateTime.Parse(dataWylogowania);
-            TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
-            CzasPracy = czasPracy.Duration().ToString();
-
-            Status = StatusZalogowania.Niezalogowany;
-        }
-
 
 
     }

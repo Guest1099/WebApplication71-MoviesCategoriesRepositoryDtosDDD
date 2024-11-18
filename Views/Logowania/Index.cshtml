@@ -26,9 +26,19 @@
 }
 
 
+@Model.DataZalogowaniaOd
+<br />
+@Model.DataZalogowaniaDo
+
+
+
 <div class="overFormContainer">
 
     <form method="post" asp-action="Index" asp-controller="Logowania" class="formContainer">
+        @* <input type="hidden" asp-for="DataZalogowaniaOd" />
+        <input type="hidden" asp-for="DataZalogowaniaDo" /> *@
+        @* <input type="hidden" asp-for="DataZalogowaniaOd" value="@Model.DataZalogowaniaOd" />
+        <input type="hidden" asp-for="DataZalogowaniaDo" value="@Model.DataZalogowaniaDo" /> *@
 
 
         <div class="topContainer">
@@ -49,12 +59,12 @@
                             <!-- Data od -->
                             <div class="df">
                                 <span>Od</span>
-                                <input asp-for="DataZalogowaniaOd" class="searchInput" />
+                                <input asp-for="DataZalogowaniaOd" class="searchInput" id="dataZalogowaniaOd" onclick="onClickData();" />
                             </div>
                             <!-- Data do -->
                             <div class="df">
                                 <span>Do</span>
-                                <input asp-for="DataZalogowaniaDo" class="searchInput" />
+                                <input asp-for="DataZalogowaniaDo" class="searchInput" id="dataZalogowaniaDo" />
                             </div>
                         </div>
                     </div>
@@ -407,13 +417,92 @@
 @section Scripts {
     <script type="text/javascript">
 
-        new Paginator(
-            'Logowania',
-            @Model.PageIndex,
-            null,
-            document.getElementById('sortowanieOptionSelectList'),
-            document.getElementById('pageSizeSelectList')
-        );
+
+
+        // Inicjalizacja pól
+        let q = '';
+        let pageSize = 10;
+        let pageIndex = 0;
+        let searchOption = '';
+        let sortowanieOption = '';
+        let linkUrl = '';
+        let controller = 'Logowania';
+
+
+
+        // pole wyszukiwania
+        let searchInput = document.getElementById('searchInput');
+        let sortowanieOptionSelectList = document.getElementById('sortowanieOptionSelectList');
+        let pageSizeSelectList = document.getElementById('pageSizeSelectList');
+        let dataZalogowaniaOd = document.getElementById('dataZalogowaniaOd');
+        let dataZalogowaniado = document.getElementById('dataZalogowaniaDo');
+        
+        dataZalogowaniaOdValue = dataZalogowaniaOd.value;
+        dataZalogowaniaDoValue = dataZalogowaniaDo.value;
+        
+         
+
+        // SortowanieOption
+        // pobieranie zaznaczonego elementu z listy SortowanieOptions i przekazywanie go do zmiennej, która jest przekazywana do atrybutu przycisku
+        sortowanieOption = sortowanieOptionSelectList.value;
+        sortowanieOptionSelectList.addEventListener('change', function () {
+            sortowanieOption = this.value; 
+
+            q = searchInput.value;
+            pageIndex = parseInt(@Model.PageIndex);
+
+
+
+        var currentDate = new Date();
+        var day = currentDate.getDate().toString().padStart(2, '0');
+        var month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+        var year = currentDate.getFullYear();
+        var hours = currentDate.getHours().toString().padStart(2, '0');
+        var minutes = currentDate.getMinutes().toString().padStart(2, '0');
+        var formattedDate = `${day}.${month}.${year} ${hours}:${minutes}`;
+
+            alert ('ss');
+
+            if (q.length > 0) {
+                linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}&DataZalogowaniaOd=${dataZalogowaniaOd}&DataZalogowaniaDo=${dataZalogowaniaDo}`;
+            }
+            else {
+                linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SortowanieOption=${sortowanieOption}&DataZalogowaniaOd=${dataZalogowaniaOd}&DataZalogowaniaDo=${dataZalogowaniaDo}`;
+            }
+            window.location.href = linkUrl;
+        });
+
+        
+
+
+        // PageSize
+        // pobieranie zaznaczonego elementu z listy SortowanieOptions i przekazywanie go do zmiennej, która jest przekazywana do atrybutu przycisku
+        pageSize = parseInt(pageSizeSelectList.value); // może mieć 5, 10, 15 lub 20
+        pageSizeSelectList.addEventListener('change', function () {
+            pageSize = parseInt(this.value);
+            q = searchInput.value;
+            pageIndex = parseInt(@Model.PageIndex);
+            dataZalogowaniaOdValue = dataZalogowaniaOd.value;
+            dataZalogowaniaDoValue = dataZalogowaniaDo.value;
+
+            if (q.length > 0) {
+                linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}&DataZalogowaniaOd=${dataZalogowaniaOd}&DataZalogowaniaDo=${dataZalogowaniaDo}`;
+            }
+            else {
+                linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SortowanieOption=${sortowanieOption}&DataZalogowaniaOd=${dataZalogowaniaOd}&DataZalogowaniaDo=${dataZalogowaniaDo}`;
+            }
+            window.location.href = linkUrl;
+        });
+
+        
+
+        // new Paginator(
+        //     'Logowania',
+        //     @Model.PageIndex,
+        //     null,
+        //     document.getElementById('sortowanieOptionSelectList'),
+        //     document.getElementById('pageSizeSelectList')
+        // );
 
     </script>
 }

@@ -40,6 +40,11 @@ namespace WebApplication71.Controllers
                 if (model.DataZalogowaniaDo.ToShortDateString() == "01.01.0001 00:00:00")
                     model.DataZalogowaniaDo = DateTime.Now;*/
 
+                /*model.DataZalogowaniaOd = DateTime.Now.AddMonths(-30);
+                model.DataZalogowaniaDo = DateTime.Now;*/
+
+
+
                 return await SearchAndFiltringResutl(model);
             }
             catch (Exception ex)
@@ -89,10 +94,10 @@ namespace WebApplication71.Controllers
             model.DisplayButtonRightTrzyKropki = false;
             model.SortowanieOptionItems = new SelectList(new List<string>() { "Email A-Z", "Email Z-A", "Data zalogowania rosnąco", "Data zalogowania malejąco", "Użytkownik obecnie zalogowany" }, "Data zalogowania malejąco");
 
-
-            
+/*
             model.DataZalogowaniaOd = DateTime.Now.AddMonths(-30);
             model.DataZalogowaniaDo = DateTime.Now;
+            */
 
 
 
@@ -110,6 +115,14 @@ namespace WebApplication71.Controllers
                 }
             }
 
+
+            // filtrowanie według daty logowania od i do
+
+            logowania = logowania.Where(
+                w =>
+                    w.DataLogowania >= model.DataZalogowaniaOd &&
+                    w.DataLogowania <= model.DataZalogowaniaDo
+                    ).ToList();
 
 
 
