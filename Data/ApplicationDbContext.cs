@@ -20,8 +20,9 @@ namespace WebApplication71.Data
         {
         }
 
+        public DbSet<PhotoUser> PhotosUser { get; set; }
         public DbSet<Movie> Movies { get; set; }
-        public DbSet<Movie> PhotosMovie { get; set; }
+        public DbSet<PhotoMovie> PhotosMovie { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Logowanie> Logowania { get; set; }
 
@@ -30,14 +31,27 @@ namespace WebApplication71.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<ApplicationUser>()
-                .HasMany(h => h.Movies).WithOne(w => w.User).HasForeignKey(h => h.UserId).OnDelete(DeleteBehavior.ClientSetNull);
+                .HasMany(h => h.PhotosUser).WithOne(w => w.User).HasForeignKey(h => h.UserId);
 
             builder.Entity<ApplicationUser>()
-                .HasMany(h => h.Logowania).WithOne(w => w.User).HasForeignKey(h => h.UserId).OnDelete(DeleteBehavior.ClientSetNull);
+                .HasMany(h => h.Movies).WithOne(w => w.User).HasForeignKey(h => h.UserId);
+
+            builder.Entity<ApplicationUser>()
+                .HasMany(h => h.Logowania).WithOne(w => w.User).HasForeignKey(h => h.UserId);
+
 
 
             builder.Entity<Category>()
-                .HasMany(h => h.Movies).WithOne(w => w.Category).HasForeignKey(h => h.CategoryId).OnDelete(DeleteBehavior.ClientSetNull);
+                .HasMany(h => h.Movies).WithOne(w => w.Category).HasForeignKey(h => h.CategoryId);
+
+
+
+            builder.Entity<Movie>()
+                .HasMany(h => h.PhotosMovie).WithOne(w => w.Movie).HasForeignKey(h => h.MovieId);
+
+
+
+
 
 
 
@@ -66,7 +80,6 @@ namespace WebApplication71.Data
                 dataUrodzenia: dataUrodzenia,
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                photo: new byte[0],
                 roleName: "Administrator",
                 password: "SDG%$@5423sdgagSDert"
                 );
@@ -87,7 +100,6 @@ namespace WebApplication71.Data
                 dataUrodzenia: dataUrodzenia,
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                photo: new byte[0],
                 roleName: "Administrator",
                 password: "SDG%$@5423sdgagSDert"
                 );
@@ -110,7 +122,6 @@ namespace WebApplication71.Data
                 dataUrodzenia: dataUrodzenia,
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                photo: new byte[0],
                 roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
@@ -133,7 +144,6 @@ namespace WebApplication71.Data
                 dataUrodzenia: dataUrodzenia,
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                photo: new byte[0],
                 roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
@@ -157,7 +167,6 @@ namespace WebApplication71.Data
                 dataUrodzenia: dataUrodzenia,
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                photo: new byte[0],
                 roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
@@ -180,7 +189,6 @@ namespace WebApplication71.Data
                 dataUrodzenia: dataUrodzenia,
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                photo: new byte[0],
                 roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
@@ -203,7 +211,6 @@ namespace WebApplication71.Data
                 dataUrodzenia: dataUrodzenia,
                 plec: Plec.Mężczyzna,
                 telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                photo: new byte[0],
                 roleName: "User",
                 password: "SDG%$@5423sdgagSDert"
                 );
@@ -237,7 +244,6 @@ namespace WebApplication71.Data
                     dataUrodzenia: dataUrodzenia,
                     plec: Plec.Mężczyzna,
                     telefon: $"{rand.Next(100, 999)} {rand.Next(100, 999)} {rand.Next(100, 999)}",
-                    photo: new byte[0],
                     roleName: "User",
                     password: "SDG%$@5423sdgagSDert"
                     );
@@ -306,15 +312,18 @@ namespace WebApplication71.Data
             {
                 var randomUser = users[rand.Next(0, users.Count - 1)];
                 Movie movie = new Movie(
+                    movieId: Guid.NewGuid ().ToString (),
                     title: _dataAutogenerator.Title(),
                     description: _dataAutogenerator.Description(1),
-                    photo: GetImageBytesAsync(photoSource[rand.Next(0, photoSource.Count)]),
                     price: rand.Next(100, 200),
                     userId: administratorUser.Id,
                     categoryId: kategorieId[rand.Next(0, kategorieId.Count)]
                     );
                 builder.Entity<Movie>().HasData(movie);
             }
+
+            // przypisanie zdjęć do filmu
+
 
 
             /*

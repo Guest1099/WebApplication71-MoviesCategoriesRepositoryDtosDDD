@@ -200,7 +200,6 @@ namespace WebApplication71.Services
                             dataUrodzenia: model.DataUrodzenia,
                             plec: model.Plec,
                             telefon: model.Telefon,
-                            photo: await ChangeFileToBytes(model.PhotoData),
                             roleName: model.RoleName
                             );
 
@@ -215,15 +214,17 @@ namespace WebApplication71.Services
                             await _userManager.UpdateAsync(user);
 
 
-                            /*
-                                                        // dodanie zdjęcia
-                                                        await CreateNewPhoto(model.Files, user.Id);
-                            */
-
                             // dodanie nowozarejestrowanego użytkownika do ról 
 
                             await _userManager.AddToRoleAsync(user, model.RoleName);
                             await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, model.RoleName));
+
+
+
+                            // dodanie zdjęcia
+                            await CreateNewPhoto(model.Files, user.Id);
+
+
 
 
                             returnResult.Success = true;
@@ -268,9 +269,6 @@ namespace WebApplication71.Services
                     var user = await _context.Users.FirstOrDefaultAsync(f => f.Id == model.Id);
                     if (user != null)
                     {
-                        object photoData = model.PhotoData == null ? user.Photo : await ChangeFileToBytes(model.PhotoData);
-                        byte[] photo = photoData as byte[];
-
                         user.Update(
                             imie: model.Imie,
                             nazwisko: model.Nazwisko,
@@ -282,7 +280,6 @@ namespace WebApplication71.Services
                             dataUrodzenia: model.DataUrodzenia,
                             plec: model.Plec,
                             telefon: model.Telefon,
-                            photo: photo,
                             roleName: model.RoleName
                             );
 
@@ -490,7 +487,6 @@ namespace WebApplication71.Services
                 dataUrodzenia: user.DataUrodzenia,
                 plec: user.Plec,
                 telefon: user.Telefon,
-                photo: user.Photo,
                 roleName: user.RoleName,
                 password: newPassword,
                 dataDodania: user.DataDodania
@@ -583,29 +579,38 @@ namespace WebApplication71.Services
         /// <summary>
         /// Zamienia zdjęcie na bytes
         /// </summary>
-        private async Task<byte[]> ChangeFileToBytes(IFormFile file)
+        private async Task CreateNewPhoto (List<IFormFile> files, string userId)
         {
-            if (file == null || file.Length == 0)
-            {
-                return null;
-            }
-
             try
             {
-                byte[] photoData;
-                using (var stream = new MemoryStream())
+                if (files != null && files.Count > 0)
                 {
-                    await file.CopyToAsync(stream);
-                    photoData = stream.ToArray();
-                }
+                    foreach (var file in files)
+                    {
+                        if (file.Length > 0)
+                        {
+                            byte [] photoData;
+                            using (var stream = new MemoryStream())
+                            {
+                                file.CopyTo(stream);
+                                photoData = stream.ToArray();
 
-                return photoData;
+                                PhotoUser photoUser = new PhotoUser ()
+                                {
+                                    PhotoUserId = Guid.NewGuid ().ToString (),
+                                    PhotoData = photoData,
+                                    UserId = userId
+                                };
+                                _context.PhotosUser.Add(photoUser);
+                                await _context.SaveChangesAsync();
+                            }
+                        }
+                    }
+                }
             }
-            catch
-            {
-                return null;
-            }
+            catch { }
         }
+         
 
 
     }

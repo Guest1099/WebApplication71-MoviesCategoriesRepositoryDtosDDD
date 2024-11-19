@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using WebApplication71.Models;
 
 namespace WebApplication71.DTOs.Movies
 {
@@ -34,5 +36,8 @@ namespace WebApplication71.DTOs.Movies
         public IFormFile PhotoData { get; set; }
         public string Category { get; set; }
         public SelectList CategoriesList { get; set; }
+
+        
+        public List <PhotoUser> PhotosUser { get; set; }
     }
 }

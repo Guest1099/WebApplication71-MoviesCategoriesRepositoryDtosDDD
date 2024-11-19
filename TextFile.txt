@@ -1,512 +1,63 @@
-﻿@model GetLogowaniaDto
-
-@{
-    int index = 0;
-    index = Model.PageSize * (Model.PageIndex - 1);
-
-    if (index <= 0)
-    {
-        index = 0;
-    }
-
-
-    ApplicationUser zalogowanyUser = new ApplicationUser();
-    bool userIsAdmin = false;
-    if (User != null && User.Identity != null)
-    {
-        zalogowanyUser = await Context.Users.FirstOrDefaultAsync(f => f.Email == User.Identity.Name);
-        if (zalogowanyUser != null)
-        {
-            if (await UserManager.IsInRoleAsync(zalogowanyUser, "Administrator"))
-            {
-                userIsAdmin = true;
-            }
-        }
-    }
-}
-
-
-<div class="overFormContainer">
-
-    <form method="post" asp-action="Index" asp-controller="Logowania" class="formContainer">
-        <input type="hidden" asp-for="DataZalogowaniaOd" />
-        <input type="hidden" asp-for="DataZalogowaniaDo" />
-
-
-        <div class="topContainer">
-            <div class="df-sb">
-                <div class="w-200px centery">
-                    @if(userIsAdmin)
-                    {
-                        <a asp-action="Create" asp-controller="Logowania" class="buttonCreate">+ Dodaj nową pozycję</a>
-                    }
-                </div>
-
-                <div class="df-sb centery mt-20 mb-20">
-
-                    <!-- Przedział czasu logowań -->
-                    <div class="db">
-                        <span>Przedział czasu</span>
-                        <div class="df">
-                            <!-- Data od -->
-                            <div class="df">
-                                <span>Od</span>
-                                <input asp-for="DataZalogowaniaOd" class="searchInput" />
-                            </div>
-                            <!-- Data do -->
-                            <div class="df">
-                                <span>Do</span>
-                                <input asp-for="DataZalogowaniaDo" class="searchInput" />
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <!-- Wyszukiwarka -->
-                    <div class="df mr-20">
-                        <input asp-for="q" class="searchInput" id="searchInput" />
-                        <input type="submit" value="Szukaj" class="searchButton" />
-                    </div>
-
-                    <!-- Sortowanie -->
-                    <div class="df-sb centery" style="width: 220px;">
-                        <span class="ml-10 mr-5">Sortuj wg</span>
-                        <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption" id="sortowanieOptionSelectList"></select>
-                        @* <input type="submit" value="Sortuj" class="searchButton" /> *@
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-
-
-        <div class="tableContainer">
-
-            @if (Model.Logowania != null && Model.Logowania.Any())
-            {
-                if (!string.IsNullOrEmpty(Model.q))
-                {
-                    <h3>Wyniki wyszukiwania dla: @Model.q</h3>
-                    <div class="df">
-                        <span>Ilość znalezionych wyników</span>
-                        <h3>@Model.Logowania.Count</h3>
-                    </div>
-                }
-
-
-
-
-
-
-
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Lp</th>
-                            <th>Imię i nazwisko</th>
-                            <th>Data zalogowania</th>
-                            <th>Data wylogowania</th>
-                            <th>Czas pracy</th>
-
-                            @if(userIsAdmin)
-                            {
-                                <th>Status zalogowania</th>
-                                <th>Email</th>
-                                <th></th>
-                            }
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var logowanie in Model.Paginator)
-                        {
-                            index++;
-
-                            <tr>
-                                <td class="w-40px">@index</td> 
-
-                                <td>
-                                    @logowanie.ImieInazwisko
-                                </td>
-
-                                <td>
-                                    @logowanie.DataLogowania
-                                </td>
-
-
-                                <td>
-                                    @if (logowanie.DataWylogowania.ToString() == "01.01.0001 00:00:00")
-                                    {
-                                        <span>
-                                            użytkownik obecnie zalogowany
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span>
-                                            @logowanie.DataWylogowania
-                                        </span>
-                                    }
-
-                                </td>
-
-                                <td>
-
-                                    @if (logowanie.DataWylogowania.ToString() == "01.01.0001 00:00:00")
-                                    {
-                                        @* oblicza tymczasowy czas pracy *@
-
-                                        TimeSpan cp = DateTime.Now - logowanie.DataLogowania;
-                                        TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
-                                        <span>
-                                            @czasPracy
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span>
-                                            @logowanie.CzasPracy
-                                        </span>
-                                    }
-                                </td>
-
-
-
-                                
-                                @if(userIsAdmin)
-                                {
-                                    <td>
-                                        @logowanie.Email
-                                    </td>
-
-
-
-                                    <td>
-                                        @logowanie.Status
-                                    </td>
-
-
-
-                                    <td class="w-50px">
-                                        <div class="db">
-
-                                            <!-- jeżeli użytkownik jest dostępny edycja edycja rekordu jest niedostępna -->
-                                            @if (logowanie.DataWylogowania.ToString() != "01.01.0001 00:00:00")
-                                            {
-                                                <a asp-action="Edit"
-                                                   asp-controller="Logowania"
-                                                   asp-route-logowanieId="@logowanie.LogowanieId"
-                                                   class="deleteButton">
-                                                    Edytuj
-                                                </a>
-                                            }
-
-
-                                            <a asp-action="Delete"
-                                               asp-controller="Logowania"
-                                               asp-route-id="@logowanie.LogowanieId"
-                                               class="deleteButton">
-                                                Usuń
-                                            </a>
-                                        </div>
-                                    </td>
-                                }
-                                
-
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-
-
-
-
-
-
-
-
-
-
-
-                <!-- Paginator -->
-                if (Model.ShowPaginator == Model.DisplayNumersListAndPaginatorLinks)
-                {
-                    bool hasPrevious = Model.Paginator.HasPreviousPage;
-                    bool hasNext = Model.Paginator.HasNexPage;
-
-
-                    <div class="df-sb mt-30 mb-50">
-
-                        <div class="w-40">
-                            <div class="df centery">
-                                <p>Pokaż</p>
-                                <select asp-for="PageSize" asp-items='@Model.SelectListNumberItems' class="selectOption" id="pageSizeSelectList"></select>
-                                @* tutaj nie powinno być buttona typu input submit *@
-                                @* <input type="submit" value="Wybierz" class="selectOptionButton" id="selectButton" /> *@
-                            </div>
-                        </div>
-
-
-                        <div class="w-60 centery">
-                            <div class="w-100 centery">
-                                <div class="df fs-11 centery">
-
-
-
-                                    <!-- przycisk prev -->
-                                    @if (hasPrevious)
-                                    {
-                                        <a asp-action="Index"
-                                           asp-controller="Logowania"
-                                           asp-route-PageSize="@Model.PageSize"
-                                           asp-route-PageIndex="@(Model.Paginator.PageIndex - 1)"
-                                           asp-route-q="@Model.q"
-                                           asp-route-SortowanieOption="@Model.SortowanieOption"
-                                           class="paginatorButton">
-                                            Prev
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <a asp-action="Index"
-                                           asp-controller="Logowania"
-                                           class="paginatorButton disable-link">
-                                            Prev
-                                        </a>
-                                    }
-
-
-                                    <div class="df ml-10 mr-10">
-                                        @{
-
-                                            string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
-
-                                            <!-- przeniesienie do pierwszej strony -->
-                                            if (Model.DisplayButtonLeftTrzyKropki)
-                                            {
-                                                <a asp-action="Index"
-                                                   asp-controller="Logowania"
-                                                   asp-route-PageSize="@Model.PageSize"
-                                                   asp-route-PageIndex="1"
-                                                   asp-route-q="@Model.q"
-                                                   asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                   class="paginator-item"
-                                                   style="backgroun-color: transparent"
-                                                   id="buttonLeftTrzyKropki">
-                                                    ...
-                                                </a>
-                                            }
-
-
-
-                                            <!-- środkowe przyciski paginacji -->
-                                            for (var i = Model.Start; i <= Model.End; i++)
-                                            {
-                                                if (i == Model.PageIndex)
-                                                {
-                                                    style = "padding: 7px 10px; background-color: lightgray; color: black; font-weight: bold";
-                                                }
-                                                else
-                                                {
-                                                    style = "padding: 7px 10px; background-color: white;";
-                                                }
-                                                if (i <= Model.Paginator.TotalPage)
-                                                {
-                                                    <a asp-action="Index"
-                                                       asp-controller="Logowania"
-                                                       asp-route-PageSize="@Model.PageSize"
-                                                       asp-route-PageIndex="@i"
-                                                       asp-route-q="@Model.q"
-                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                       class="paginator-item"
-                                                       style="@style"
-                                                       id="button">
-                                                        @i
-                                                    </a>
-                                                }
-                                            }
-
-
-                                            <!-- przeniesienie do ostatniej strony -->
-                                            if (Model.DisplayButtonRightTrzyKropki)
-                                            {
-                                                <a asp-action="Index"
-                                                   asp-controller="Logowania"
-                                                   asp-route-PageSize="@Model.PageSize"
-                                                   asp-route-PageIndex="@Model.Paginator.TotalPage"
-                                                   asp-route-q="@Model.q"
-                                                   asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                   class="paginator-item"
-                                                   style="backgroun-color: transparent"
-                                                   id="buttonRightTrzyKropki">
-                                                    ...
-                                                </a>
-                                            }
-                                        }
-                                    </div>
-
-
-
-
-                                    <!-- przycisk next -->
-                                    @if (hasNext)
-                                    {
-                                        <a asp-action="Index"
-                                           asp-controller="Logowania"
-                                           asp-route-PageSize="@Model.PageSize"
-                                           asp-route-PageIndex="@(Model.Paginator.PageIndex + 1)"
-                                           asp-route-q="@Model.q"
-                                           asp-route-SortowanieOption="@Model.SortowanieOption"
-                                           class="paginatorButton">
-                                            Next
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <a asp-action="Index"
-                                           asp-controller="Logowania"
-                                           class="paginatorButton disable-link">
-                                            Next
-                                        </a>
-                                    }
-
-
-
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                }
-
-
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(Model.q))
-                {
-                    <p>Nie znaleziono ról pasujących do Twojego zapytania: <strong>@Model.q</strong>.</p>
-                }
-                else
-                {
-                    <p>Brak elementów w bazie danych.</p>
-                }
-            }
-
-        </div>
-
-    </form>
-
-</div>
-
-
-
-
-
-
+﻿
 @section Scripts {
-    <script type="text/javascript">
 
+    @*Skrypt pozwalający zapamiętać wybrane zdjęcia po przeładowaniu strony*@ 
+    
+    <script>
+        var filesInput = document.getElementById('files');
+        var imagePhoto = document.getElementById('imagePhoto');
 
+        // Funkcja do zapisywania przesłanych plików w sessionStorage
+        function saveFiles() {
+            var files = filesInput.files; // pobranie danych z inputa
 
+            if (files.length > 0) {
+                // Tworzenie URL dla pierwszego pliku
+                var file = files[0];
+                var fileURL = URL.createObjectURL(file);
 
-        // Inicjalizacja pól
-        let q = '';
-        let pageSize = 10;
-        let pageIndex = 0;
-        let searchOption = '';
-        let sortowanieOption = '';
-        let linkUrl = '';
+                // Zapisanie URL w sessionStorage
+                sessionStorage.setItem('imageURL', fileURL);
 
-
-        // pole wyszukiwania
-        let searchInput = document.getElementById('searchInput');
-
-
-        // SortowanieOption
-        // pobieranie zaznaczonego elementu z listy SortowanieOptions i przekazywanie go do zmiennej, która jest przekazywana do atrybutu przycisku
-        if (searchOptionSelectList) {
-            searchOption = searchOptionSelectList.value;
-            searchOptionSelectList.addEventListener('change', function () {
-                searchOption = this.value;
-            });
+                // Ustawienie podglądu zdjęcia
+                imagePhoto.src = fileURL;
+                imagePhoto.style.width = '150px';
+                imagePhoto.style.height = '120px';
+            }
         }
 
-
-
-
-        // SortowanieOption
-        // pobieranie zaznaczonego elementu z listy SortowanieOptions i przekazywanie go do zmiennej, która jest przekazywana do atrybutu przycisku
-        sortowanieOption = sortowanieOptionSelectList.value;
-        sortowanieOptionSelectList.addEventListener('change', function () {
-            sortowanieOption = this.value;
-
-            q = searchInput.value;
-            pageIndex = parseInt(modelPageIndex);
-
-            // tutaj jest obsługa kodu Users napisana pod kontroller Users tylko dlatego, że tam jest dodatkowy select list, którego trzeba obsłużyć, poniższy kod w warunku else jest przeznaczony dla pozostałych kontrollerów
-            if (controller == 'Users') {
-                if (q.length > 0) {
-                    linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SearchOption=${searchOption}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
-                }
-                else {
-                    linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SearchOption=${searchOption}&SortowanieOption=${sortowanieOption}`;
-                }
+        window.onload = function () {
+            // Sprawdzenie, czy w sessionStorage znajduje się zapisany URL
+            var savedImageURL = sessionStorage.getItem('imageURL');
+            if (savedImageURL) {
+                // Ustawienie zdjęcia na podstawie URL z sessionStorage
+                imagePhoto.src = savedImageURL;
+                imagePhoto.style.width = '150px';
+                imagePhoto.style.height = '120px';
             }
-            else {
-                if (q.length > 0) {
-                    linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
-                }
-                else {
-                    linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SortowanieOption=${sortowanieOption}`;
-                }
-            }
-            window.location.href = linkUrl;
-        });
-
-
-
-
-        // PageSize
-        // pobieranie zaznaczonego elementu z listy SortowanieOptions i przekazywanie go do zmiennej, która jest przekazywana do atrybutu przycisku
-        pageSize = parseInt(pageSizeSelectList.value); // może mieć 5, 10, 15 lub 20
-        pageSizeSelectList.addEventListener('change', function () {
-            pageSize = parseInt(this.value);
-            q = searchInput.value;
-            pageIndex = parseInt(modelPageIndex);
-
-            // tutaj jest obsługa kodu Users napisana pod kontroller Users tylko dlatego, że tam jest dodatkowy select list, którego trzeba obsłużyć, poniższy kod w warunku else jest przeznaczony dla pozostałych kontrollerów
-            if (controller == 'Users') {
-                if (q.length > 0) {
-                    linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SearchOption=${searchOption}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
-                }
-                else {
-                    linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SearchOption=${searchOption}&SortowanieOption=${sortowanieOption}`;
-                }
-            }
-            else {
-                if (q.length > 0) {
-                    linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
-                }
-                else {
-                    linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SortowanieOption=${sortowanieOption}`;
-                }
-            }
-            window.location.href = linkUrl;
-        });
-
-
-
-
-        // new Paginator(
-        //     'Logowania',
-        //     @Model.PageIndex,
-        //     null,
-        //     document.getElementById('sortowanieOptionSelectList'),
-        //     document.getElementById('pageSizeSelectList')
-        // );
-
+        };
     </script>
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

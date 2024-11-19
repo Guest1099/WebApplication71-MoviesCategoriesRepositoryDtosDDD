@@ -218,13 +218,12 @@
 
 
 
+
 @section Scripts {
 
     @*Skrypt pozwalający zapamiętać wybrane zdjęcia po przeładowaniu strony*@
     <script>
-        var filesInput = document.getElementById('fileInput');
-        var imagePreview = document.getElementById('imagePreview');
-
+        var filesInput = document.getElementById('files');
         // Funkcja do zapisywania przesłanych plików w sessionStorage
         function saveFiles() {
             var files = filesInput.files;
@@ -239,42 +238,17 @@
                     };
                 });
 
-                // Zapisywanie plików w sessionStorage
-                sessionStorage.setItem('uploadPhoto', JSON.stringify(filesData));
-
-                // Konwertowanie plików na Base64
-                filesArray.forEach(file => {
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-                        // Zapisz Base64 w sessionStorage
-                        var uploadedFilesBase64 = sessionStorage.getItem('uploadedFilesBase64') ? JSON.parse(sessionStorage.getItem('uploadedFilesBase64')) : [];
-                        uploadedFilesBase64.push(e.target.result);
-                        sessionStorage.setItem('uploadedFilesBase64', JSON.stringify(uploadedFilesBase64));
-                    }
-                    reader.readAsDataURL(file);
-                });
+                sessionStorage.setItem('uploadedFiles', JSON.stringify(filesData));
             }
         }
 
         // Funkcja pobiera dane z sesji do zmiennej po załadowaniu okna
         window.onload = function () {
-            var uploadedFilesData = sessionStorage.getItem('uploadPhoto');
-            var uploadedFilesBase64 = sessionStorage.getItem('uploadedFilesBase64');
-
-            let imageContainer = document.getElementById('imageContainer');
-
-            if (uploadedFilesBase64) {
-                var base64Files = JSON.parse(uploadedFilesBase64);
-
-                // Wyświetlenie pierwszego obrazu w imagePreview
-                if (base64Files.length > 0) {
-                    imagePreview.src = base64Files[0]; // Zakładamy, że chcemy wyświetlić tylko pierwszy obraz
-                    imagePreview.style.display = 'block'; // Upewnij się, że obraz jest widoczny
-                }
-            }
-
+            var uploadedFilesData = sessionStorage.getItem('uploadedFiles');
             if (uploadedFilesData) {
                 var uploadedFiles = JSON.parse(uploadedFilesData); // zamienia tekst na obiekt
+
+
                 // Utworzenie nowej listy plików
                 var newFilesList = new DataTransfer();
 
@@ -286,36 +260,8 @@
 
                 // Przypisanie nowej listy plików do pola input
                 filesInput.files = newFilesList.files;
-
-                imageContainer.style.width = '150px';
-                imageContainer.style.height = '150px';
+                sessionStorage.clear();
             }
-
         };
-
-
-
-
-        // funkcja odpowiedzialna za wyświetlenie zdjęcia w img
-        function previewImage(event) {
-
-            imageContainer.style.width = '150px';
-            imageContainer.style.height = '150px';
-
-            const file = event.target.files[0]; // pobierz pierwszy plik
-            const reader = new FileReader();
-
-            reader.onload = function (e) {
-
-                const img = document.getElementById('imagePreview');
-                img.src = e.target.result; // ustaw źródło obrazu
-                img.style.display = 'block'; // wyświetl obraz
-            }
-
-            if (file) {
-                reader.readAsDataURL(file); // konwertuj plik na URL
-            }
-        }
-
     </script>
 }

@@ -11,7 +11,7 @@
 </head>
 <body>
 
-     
+
     @if (SignInManager.IsSignedIn(User))
     {
         <div class="db">
@@ -24,13 +24,52 @@
                     <div>
                         <span style="font-size: 20px; font-weight: bold;">Panel administracyjny</span>
                     </div>
-                    <div>
-                        Zalogowany użytkownik
-                        <span style="font-weight: bold;">@User.Identity.Name</span>
-                        <span class="ml-10">Ustawienia</span>
+
+                    <div class="df centery">
+                        <div>
+                            Zalogowany użytkownik
+                            <span style="font-weight: bold;">@User.Identity.Name</span>
+                            <span class="ml-10">Ustawienia</span>
+                        </div>
+
+
+                        <!-- dropdown button -->
+                        <div class="dropdown-container">
+                            <div class="dropdown">
+                                <button class="dropbtn">></button>
+                                <div class="dropdown-content">
+                                    <a asp-action="ChangeEmail" asp-controller="Account">Zmień email</a>
+                                    <a asp-action="ChangePassword" asp-controller="Account">Zmień hasło</a>
+
+                                    @*Opcja "Delete" nie jest dostępna dla administratora wtedy gdy ich liczba jest >= 1*@
+                                    @{
+                                        try
+                                        {
+                                            if (SignInManager.IsSignedIn(User))
+                                            {
+                                                // aby istniała możliwość usunięcia konta musi być co najmniej jeden administrator, aby móc potem utworzyć kolejne konto administratora
+                                                if ((await UserManager.GetUsersInRoleAsync("Administrator")).Count > 1 && User.Identity.Name != "admin@admin.pl")
+                                                {
+                                                    <a asp-action="Delete" asp-controller="Account">Usuń konto</a>
+                                                }
+                                            }
+                                        }
+                                        catch { }
+                                    }
+
+                                    <a asp-action="Edit" asp-controller="Account" onclick="clearSessions();">Zaktualizuj dane</a>
+                                    <a asp-action="Messages" asp-controller="Account">Wiadomości</a>
+                                    <a asp-action="Logout" asp-controller="Account">Wyloguj</a>
+                                </div>
+                            </div>
+                        </div>
+
+
                     </div>
+
                 </div>
             </div>
+
 
 
 
@@ -52,7 +91,7 @@
             </div>
         </div>
 
-        
+
     }
     else
     {
@@ -62,41 +101,6 @@
 
 
 
-    @*
-    @if (SignInManager.IsSignedIn(User))
-    {
-    <div class="container df">
-    <partial name="_leftNavigation" />
-
-    <div class="w-100">
-    <div class="db">
-
-    <div class="df-sb centery" style="height: 65px; background-color: rgb(255,255,255); border-bottom: 1px solid rgb(240,240,240);">
-    <partial name="_navigationInfo" />
-    <div></div>
-    <div>
-    Zalogowany użytkownik
-    <span style="font-weight: bold;">@User.Identity.Name</span>
-    </div>
-    </div>
-
-
-    <div class="p-20">
-    @RenderBody()
-    </div>
-    </div>
-    </div>
-    </div>
-    }
-    else
-    {
-    @RenderBody()
-    } *@
-
-
-
-
-    
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/paginator.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

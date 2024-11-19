@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication71.Models
@@ -27,13 +28,20 @@ namespace WebApplication71.Models
 
 
 
+        public List <PhotoMovie> PhotosMovie { get; set; }
 
-        public Movie(string title, string description, byte[] photo, double price, string userId, string categoryId)
+
+
+
+
+
+
+
+        public Movie(string movieId, string title, string description, double price, string userId, string categoryId)
         {
-            MovieId = Guid.NewGuid().ToString();
+            MovieId = movieId;
             Title = title;
             Description = description;
-            Photo = photo;
             Price = price;
             UserId = userId;
             CategoryId = categoryId;
@@ -42,11 +50,10 @@ namespace WebApplication71.Models
         }
 
 
-        public void Update(string title, string description, byte[] photo, double price, string categoryId)
+        public void Update(string title, string description, double price, string categoryId)
         {
             Title = title;
             Description = description;
-            Photo = photo;
             Price = price;
             CategoryId = categoryId;
         }

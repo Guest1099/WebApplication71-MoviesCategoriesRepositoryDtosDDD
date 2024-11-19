@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using WebApplication71.Models.Enums;
 using WebApplication71.Services;
@@ -75,7 +76,7 @@ namespace WebApplication71.DTOs.Users
 
 
 
-        public IFormFile PhotoData { get; set; }
+        public List<IFormFile> Files { get; set; }
         public SelectList RolesList { get; set; }
     }
 }

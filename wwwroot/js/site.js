@@ -1,5 +1,6 @@
 ﻿ 
 
+// rozwijane menu
 function initializeDropdownMenu() {
     var dropdowns = document.querySelectorAll('.dropdown');
     dropdowns.forEach(function (dropdown) {
@@ -31,6 +32,8 @@ function initializeDropdownMenu() {
 document.addEventListener('DOMContentLoaded', function () {
     initializeDropdownMenu();
 });
+
+
 
 
 //************************************************************************** */

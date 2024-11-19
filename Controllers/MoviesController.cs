@@ -284,6 +284,7 @@ namespace WebApplication71.Controllers
 
                 return View(new CreateMovieDto()
                 {
+                    Title = new Random ().Next(1,10).ToString(),
                     CategoriesList = new SelectList(categories, "CategoryId", "Name") // select lista
                 });
             }
@@ -304,11 +305,9 @@ namespace WebApplication71.Controllers
                 {
                     // przekazanie emaila zalogowanego użytkownika do modelu
                     model.Email = User.Identity.Name;
-
                     var result = await _moviesRepository.Create(model);
-                    if (result != null && result.Success)
-                        return RedirectToAction("Index", "Movies");
-
+                    //if (result != null && result.Success)
+                    //return RedirectToAction("Index", "Movies");
 
                     // zwraca komunikat błędu związanego z tworzeniem rekordu
                     ViewData["ErrorMessage"] = result.Message;

@@ -195,7 +195,7 @@ namespace WebApplication71.Controllers
 
 
             // paginator wyświetlany jest tylko wtedy gdy ilość elementów tabeli wynosi minimum 5
-            if (model.Paginator.Count < 5 && model.Paginator.PageIndex != model.Paginator.TotalPage)
+            if (roles.Count <= 5 && model.PageIndex == model.Paginator.TotalPage)
                 model.ShowPaginator = false;
 
 
@@ -205,7 +205,7 @@ namespace WebApplication71.Controllers
 
 
 
-            
+
             // dlugość paginacji zależna od ilości elementów znajdujących się na liście, im więcej elementów tym więcej elementów w paginacji
 
             int ilosc = 9;

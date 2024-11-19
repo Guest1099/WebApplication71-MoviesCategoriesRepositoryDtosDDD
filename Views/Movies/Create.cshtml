@@ -3,9 +3,15 @@
 <div class="dodawanieHeader">
     <span class="titleHeader">Dodawanie nowej pozycji</span>
 </div>
-<hr />
+
+
+
+
+
 
 <form method="post" asp-action="Create" asp-controller="Movies" enctype="multipart/form-data">
+
+
 
     <table>
         <tr>
@@ -30,19 +36,39 @@
                 </div>
             </td>
         </tr>
+
+
+
+
+        @* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *@
         <tr>
             <td class="leftColumn">
-                <label asp-for="Photo"></label>
+                <span>Photo</span>
             </td>
             <td class="rightColumn">
-                <div class="db">
+                @* <div class="db">
                     <div id="imageContainer" class="image">
                         <img id="imagePreview" alt="Uploaded Photo" style="display: none;" />
                     </div>
-                    <input asp-for="PhotoData" id="fileInput" accept="image/*" onchange="previewImage(event); saveFiles();" style="border: none; background-color: rgb(250,250,250);" />
+                    <input asp-for="Files" multiple onchange="saveFiles()" id="files" style="border: none; background-color: rgb(250,250,250);" />
+                </div> *@
+
+
+                <div class="row">
+                    <div class="fieldName">
+                        <span>Dodaj zdjęcie lub zdjęcia</span>
+                    </div>
+                    <div class="fieldEdit">
+                        <input id="files" asp-for="Files" multiple onchange="saveFiles()" />
+                    </div>
                 </div>
+
             </td>
         </tr>
+
+
+
+
         <tr>
             <td class="leftColumn">
                 <label asp-for="Price"></label>
@@ -71,7 +97,7 @@
     <div class="w-100 df-sb mt-30 mb-40"> 
         <a asp-action="Index" asp-controller="Movies" class="buttonWstecz w-100px">Wstecz</a>
         <div class="df">
-            <input type="submit" value="Zapisz" class="buttonEdit w-100px" onclick="clearSession();" />
+            <input type="submit" value="Zapisz" class="buttonEdit w-100px" />
             <a asp-action="Index" asp-controller="Movies" class="buttonAnuluj w-100px ml-2">Anuluj</a>
         </div>
     </div>
@@ -86,13 +112,21 @@
 
 
 
+<img id='imagePhoto' />
+
+
+
 
 @section Scripts {
 
     @*Skrypt pozwalający zapamiętać wybrane zdjęcia po przeładowaniu strony*@
+
+
+
     <script>
-        var filesInput = document.getElementById('fileInput');
-        var imagePreview = document.getElementById('imagePreview');
+        var filesInput = document.getElementById('files');
+        var imagePhoto = document.getElementById('imagePhoto');
+
 
         // Funkcja do zapisywania przesłanych plików w sessionStorage
         function saveFiles() {
@@ -102,48 +136,41 @@
                 var filesArray = Array.from(files);
                 var filesData = filesArray.map(file => {
                     return {
+                        file: file,
                         name: file.name,
                         type: file.type,
                         size: file.size
                     };
                 });
 
-                // Zapisywanie plików w sessionStorage
-                sessionStorage.setItem('uploadPhoto', JSON.stringify(filesData));
+                sessionStorage.setItem('uploadedFiles', JSON.stringify(filesData));
 
-                // Konwertowanie plików na Base64
-                filesArray.forEach(file => {
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-                        // Zapisz Base64 w sessionStorage
-                        var uploadedFilesBase64 = sessionStorage.getItem('uploadedFilesBase64') ? JSON.parse(sessionStorage.getItem('uploadedFilesBase64')) : [];
-                        uploadedFilesBase64.push(e.target.result);
-                        sessionStorage.setItem('uploadedFilesBase64', JSON.stringify(uploadedFilesBase64));
-                    }
-                    reader.readAsDataURL(file);
-                });
+                
+                // wyświetlenie zdjęcia
+                imagePhoto.src = URL.createObjectURL(filesData[0].file);
+                imagePhoto.style.width = '150px';
+                imagePhoto.style.height = '120px';
+
+
+                // dopisz tutaj kod pobierający dane z sesji i wyświetl je w imagePhoto
+
+
+
+
+
+
+
+
             }
         }
 
         // Funkcja pobiera dane z sesji do zmiennej po załadowaniu okna
         window.onload = function () {
-            var uploadedFilesData = sessionStorage.getItem('uploadPhoto');
-            var uploadedFilesBase64 = sessionStorage.getItem('uploadedFilesBase64');
-
-            let imageContainer = document.getElementById('imageContainer');
-
-            if (uploadedFilesBase64) {
-                var base64Files = JSON.parse(uploadedFilesBase64);
-
-                // Wyświetlenie pierwszego obrazu w imagePreview
-                if (base64Files.length > 0) {
-                    imagePreview.src = base64Files[0]; // Zakładamy, że chcemy wyświetlić tylko pierwszy obraz
-                    imagePreview.style.display = 'block'; // Upewnij się, że obraz jest widoczny
-                }
-            }
-
+            var uploadedFilesData = sessionStorage.getItem('uploadedFiles');
             if (uploadedFilesData) {
                 var uploadedFiles = JSON.parse(uploadedFilesData); // zamienia tekst na obiekt
+
+
                 // Utworzenie nowej listy plików
                 var newFilesList = new DataTransfer();
 
@@ -156,35 +183,16 @@
                 // Przypisanie nowej listy plików do pola input
                 filesInput.files = newFilesList.files;
 
-                imageContainer.style.width = '150px';
-                imageContainer.style.height = '150px';
+                 
+                //alert (filesInput.files[0].name);
+                 
+                // wyświetlenie zdjęcia
+                imagePhoto.src = URL.createObjectURL(uploadedFiles[0].name);
+                imagePhoto.style.width = '150px';
+                imagePhoto.style.height = '120px';
+                //sessionStorage.clear();
             }
-
         };
-
-
-
-
-        // funkcja odpowiedzialna za wyświetlenie zdjęcia w img
-        function previewImage(event) {
-
-            imageContainer.style.width = '150px';
-            imageContainer.style.height = '150px';
-
-            const file = event.target.files[0]; // pobierz pierwszy plik
-            const reader = new FileReader();
-
-            reader.onload = function (e) {
-
-                const img = document.getElementById('imagePreview');
-                img.src = e.target.result; // ustaw źródło obrazu
-                img.style.display = 'block'; // wyświetl obraz
-            }
-
-            if (file) {
-                reader.readAsDataURL(file); // konwertuj plik na URL
-            }
-        }
 
     </script>
 }

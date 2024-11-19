@@ -10,6 +10,7 @@ using WebApplication71.DTOs;
 using WebApplication71.DTOs.Movies;
 using WebApplication71.Models;
 using WebApplication71.Repos.Abs;
+using static System.Net.WebRequestMethods;
 
 namespace WebApplication71.Repos
 {
@@ -121,11 +122,12 @@ namespace WebApplication71.Repos
                     // znajdź zalogowanego użytkownika, po to aby dodać jego id do filmu 
                     var zalogowanyUser = await _context.Users.FirstOrDefaultAsync(f => f.Email == model.Email);
                     if (zalogowanyUser != null)
-                    {
+                    { 
+                        string movieId = Guid.NewGuid ().ToString ();
                         Movie movie = new Movie(
+                            movieId: movieId,
                             title: model.Title,
                             description: model.Description,
-                            photo: await ChangeFileToBytes(model.PhotoData),
                             price: model.Price,
                             userId: zalogowanyUser.Id,
                             categoryId: model.CategoryId
@@ -133,9 +135,36 @@ namespace WebApplication71.Repos
 
                         _context.Movies.Add(movie);
                         await _context.SaveChangesAsync();
+                         
+
+
+
+                        foreach (var file in model.Files)
+                        {
+                            byte[] photoData;
+                            using (var stream = new MemoryStream())
+                            {
+                                file.CopyTo(stream);
+                                photoData = stream.ToArray();
+
+                                PhotoMovie photoMovie = new PhotoMovie()
+                                {
+                                    PhotoMovieId = Guid.NewGuid().ToString(),
+                                    PhotoData = photoData,
+                                    MovieId = movieId
+                                };
+                                _context.PhotosMovie.Add(photoMovie);
+                                await _context.SaveChangesAsync();
+                            }
+                        }
+
+
+
 
                         returnResult.Success = true;
                         returnResult.Object = model;
+                        returnResult.Message = "Nowy rekord został utworzony" + model.Files.Count.ToString();
+
                     }
                     else
                     {
@@ -162,7 +191,7 @@ namespace WebApplication71.Repos
         {
             var returnResult = new ResultViewModel<EditMovieDto>() { Success = false, Message = "", Object = new EditMovieDto() };
 
-            if (model != null)
+            /*if (model != null)
             {
                 try
                 {
@@ -201,7 +230,7 @@ namespace WebApplication71.Repos
             else
             {
                 returnResult.Message = "Model was null";
-            }
+            }*/
             return returnResult;
         }
 
@@ -245,34 +274,41 @@ namespace WebApplication71.Repos
 
 
 
+
         /// <summary>
         /// Zamienia zdjęcie na bytes
         /// </summary>
-        private async Task<byte[]> ChangeFileToBytes(IFormFile file)
+        private async Task CreateNewPhoto(List<IFormFile> files, string movieId)
         {
-            if (file == null || file.Length == 0)
-            {
-                return null;
-            }
-
             try
             {
-                byte[] photoData;
-                using (var stream = new MemoryStream())
+                if (files != null && files.Count > 0)
                 {
-                    await file.CopyToAsync(stream);
-                    photoData = stream.ToArray();
+                    foreach (var file in files)
+                    {
+                        if (file.Length > 0)
+                        {
+                            byte[] photoData;
+                            using (var stream = new MemoryStream())
+                            {
+                                file.CopyTo(stream);
+                                photoData = stream.ToArray();
+
+                                PhotoMovie photoMovie = new PhotoMovie()
+                                {
+                                    PhotoMovieId = Guid.NewGuid().ToString(),
+                                    PhotoData = photoData,
+                                    MovieId = movieId
+                                };
+                                _context.PhotosMovie.Add (photoMovie);
+                                await _context.SaveChangesAsync();
+                            }
+                        }
+                    }
                 }
-
-                return photoData;
             }
-            catch
-            {
-                return null;
-            }
+            catch { }
         }
-
-
 
     }
 }

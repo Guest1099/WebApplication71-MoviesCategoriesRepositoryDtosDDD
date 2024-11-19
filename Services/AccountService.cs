@@ -154,7 +154,6 @@ namespace WebApplication71.Services
                             dataUrodzenia: model.DataUrodzenia,
                             plec: model.Plec,
                             telefon: model.Telefon,
-                            photo: model.Photo,
                             roleName: model.RoleName,
                             password: model.Password
                             );
@@ -234,8 +233,7 @@ namespace WebApplication71.Services
                             pesel: model.Pesel,
                             dataUrodzenia: model.DataUrodzenia,
                             plec: model.Plec,
-                            telefon: model.Telefon,
-                            photo: photo
+                            telefon: model.Telefon
                             );
 
 
@@ -1565,6 +1563,7 @@ namespace WebApplication71.Services
                 return null;
             }
         }
+
 
 
 

@@ -41,6 +41,7 @@ namespace WebApplication71.Models
 
 
 
+        public List<PhotoUser>? PhotosUser { get; set; }
         public List<Movie>? Movies { get; private set; }
         public List<Logowanie>? Logowania { get; private set; }
 
@@ -56,7 +57,7 @@ namespace WebApplication71.Models
         /// <summary>
         /// Tworzenia użytkownika z bez hasła
         /// </summary>
-        public ApplicationUser(string email, string imie, string nazwisko, string ulica, string miejscowosc, string wojewodztwo, string kodPocztowy, string pesel, DateTime dataUrodzenia, Plec plec, string telefon, byte[] photo, string roleName)
+        public ApplicationUser(string email, string imie, string nazwisko, string ulica, string miejscowosc, string wojewodztwo, string kodPocztowy, string pesel, DateTime dataUrodzenia, Plec plec, string telefon, string roleName)
         {
             Id = Guid.NewGuid().ToString();
 
@@ -79,7 +80,6 @@ namespace WebApplication71.Models
             DataUrodzenia = dataUrodzenia;
             Plec = plec;
             Telefon = telefon;
-            Photo = photo;
             IloscLogowan = 0;
             DataZablokowaniaKonta = "";
             DataOstatniegoZalogowania = "";
@@ -93,7 +93,7 @@ namespace WebApplication71.Models
         /// <summary>
         /// Tworzenia użytkownika z hasłem
         /// </summary>
-        public ApplicationUser(string email, string imie, string nazwisko, string ulica, string miejscowosc, string kodPocztowy, string wojewodztwo, string pesel, DateTime dataUrodzenia, Plec plec, string telefon, byte[] photo, string roleName, string password)
+        public ApplicationUser(string email, string imie, string nazwisko, string ulica, string miejscowosc, string kodPocztowy, string wojewodztwo, string pesel, DateTime dataUrodzenia, Plec plec, string telefon, string roleName, string password)
         {
             Id = Guid.NewGuid().ToString();
 
@@ -116,7 +116,6 @@ namespace WebApplication71.Models
             DataUrodzenia = dataUrodzenia;
             Plec = plec;
             Telefon = telefon;
-            Photo = photo;
             IloscLogowan = 0;
             DataZablokowaniaKonta = "";
             DataOstatniegoZalogowania = "";
@@ -137,7 +136,7 @@ namespace WebApplication71.Models
         /// Tworzenia użytkownika z hasłem oraz datą dodania.
         /// Konstruktor wykorzystywany tylko i wyłącznie podczas resetowania hasła
         /// </summary>
-        public ApplicationUser(string email, string imie, string nazwisko, string ulica, string miejscowosc, string kodPocztowy, string wojewodztwo, string pesel, DateTime dataUrodzenia, Plec plec, string telefon, byte[] photo, string roleName, string password, DateTime dataDodania)
+        public ApplicationUser(string email, string imie, string nazwisko, string ulica, string miejscowosc, string kodPocztowy, string wojewodztwo, string pesel, DateTime dataUrodzenia, Plec plec, string telefon, string roleName, string password, DateTime dataDodania)
         {
             Id = Guid.NewGuid().ToString();
 
@@ -160,7 +159,6 @@ namespace WebApplication71.Models
             DataUrodzenia = dataUrodzenia;
             Plec = plec;
             Telefon = telefon;
-            Photo = photo;
             IloscLogowan = 0;
             DataZablokowaniaKonta = "";
             DataOstatniegoZalogowania = "";
@@ -174,7 +172,7 @@ namespace WebApplication71.Models
 
 
 
-        public void Update(string imie, string nazwisko, string ulica, string miejscowosc, string wojewodztwo, string kodPocztowy, string pesel, DateTime dataUrodzenia, Plec plec, string telefon, byte[] photo, string roleName)
+        public void Update(string imie, string nazwisko, string ulica, string miejscowosc, string wojewodztwo, string kodPocztowy, string pesel, DateTime dataUrodzenia, Plec plec, string telefon, string roleName)
         {
             Imie = imie;
             Nazwisko = nazwisko;
@@ -186,7 +184,6 @@ namespace WebApplication71.Models
             DataUrodzenia = dataUrodzenia;
             Plec = plec;
             Telefon = telefon;
-            Photo = photo;
             RoleName = roleName;
             //SecurityStamp = Guid.NewGuid ().ToString ();
         }
@@ -195,7 +192,7 @@ namespace WebApplication71.Models
         /// <summary>
         /// Metoda do aktualizacji danych zalogowanego użytkownika, bez aktualizacji jego roli
         /// </summary>
-        public void Update(string imie, string nazwisko, string ulica, string miejscowosc, string wojewodztwo, string kodPocztowy, string pesel, DateTime dataUrodzenia, Plec plec, string telefon, byte[] photo)
+        public void Update(string imie, string nazwisko, string ulica, string miejscowosc, string wojewodztwo, string kodPocztowy, string pesel, DateTime dataUrodzenia, Plec plec, string telefon)
         {
             Imie = imie;
             Nazwisko = nazwisko;
@@ -207,7 +204,6 @@ namespace WebApplication71.Models
             DataUrodzenia = dataUrodzenia;
             Plec = plec;
             Telefon = telefon;
-            Photo = photo;
             SecurityStamp = Guid.NewGuid().ToString();
         }
 
