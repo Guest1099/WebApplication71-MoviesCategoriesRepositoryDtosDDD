@@ -15,7 +15,7 @@ using WebApplication71.Services;
 
 namespace WebApplication71.Controllers
 {
-    [Authorize (Roles = "Administrator, User")]
+    [Authorize(Roles = "Administrator, User")]
     public class MoviesController : Controller
     {
         private readonly IMoviesRepository _moviesRepository;
@@ -77,6 +77,7 @@ namespace WebApplication71.Controllers
                 return View("NotFound");
 
 
+
             model.ShowPaginator = true;
             model.DisplayNumersListAndPaginatorLinks = true;
             model.DisplayButtonLeftTrzyKropki = false;
@@ -84,18 +85,12 @@ namespace WebApplication71.Controllers
             model.SortowanieOptionItems = new SelectList(new List<string>() { "Tytuł A-Z", "Tytuł Z-A", "Kategoria A-Z", "Kategoria Z-A", "Cena rosnąco", "Cena malejąco" }, "Tytuł A-Z");
 
 
-            if (model.PageSize > 20)
-            {
-                model.PageSize = 20;
-                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20", "40", "50" }, "20");
-            }
-
 
             // Wyszukiwanie
             if (!string.IsNullOrEmpty(model.q))
             {
                 movies = movies.Where(
-                    w => 
+                    w =>
                         w.Title.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
                         w.Description.Contains(model.q, StringComparison.OrdinalIgnoreCase)
                         ).ToList();
@@ -266,8 +261,6 @@ namespace WebApplication71.Controllers
                 model.DisplayButtonRightTrzyKropki = true;
 
 
-             
-
 
 
             return View(model);
@@ -294,7 +287,7 @@ namespace WebApplication71.Controllers
 
                 return View(new CreateMovieDto()
                 {
-                    Title = new Random ().Next(1,10).ToString(),
+                    Title = new Random().Next(1, 10).ToString(),
                     CategoriesList = new SelectList(categories, "CategoryId", "Name") // select lista
                 });
             }
@@ -313,16 +306,16 @@ namespace WebApplication71.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                        // przekazanie emaila zalogowanego użytkownika do modelu
-                        model.Email = User.Identity.Name;
-                        var result = await _moviesRepository.Create(model);
-                        if (result != null && result.Success)
-                            return RedirectToAction("Index", "Movies");
+                    // przekazanie emaila zalogowanego użytkownika do modelu
+                    model.Email = User.Identity.Name;
+                    var result = await _moviesRepository.Create(model);
+                    if (result != null && result.Success)
+                        return RedirectToAction("Index", "Movies");
 
-                        // zwraca komunikat błędu związanego z tworzeniem rekordu
-                        ViewData["ErrorMessage"] = result.Message;
-                     
-                } 
+                    // zwraca komunikat błędu związanego z tworzeniem rekordu
+                    ViewData["ErrorMessage"] = result.Message;
+
+                }
 
                 model.CategoriesList = new SelectList((await _categoriesRepository.GetAll()).Object, "CategoryId", "Name", model.CategoryId); // select lista
                 return View(model);
@@ -458,12 +451,12 @@ namespace WebApplication71.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> DeletePhotoMovie (string movieId, string photoMovieId)
+        public async Task<IActionResult> DeletePhotoMovie(string movieId, string photoMovieId)
         {
             try
             {
-                var result = await _moviesRepository.DeletePhotoMovie(photoMovieId); 
-                return RedirectToAction ("Edit", "Movies", new { movieId = movieId });
+                var result = await _moviesRepository.DeletePhotoMovie(photoMovieId);
+                return RedirectToAction("Edit", "Movies", new { movieId = movieId });
             }
             catch (Exception ex)
             {

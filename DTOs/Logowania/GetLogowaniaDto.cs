@@ -7,7 +7,7 @@ namespace WebApplication71.DTOs.Logowania
 {
     public class GetLogowaniaDto : BaseSearchModel<GetLogowanieDto>
     {
-        [Required]
+        /*[Required]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime DataZalogowaniaOd { get; set; } = new DateTime(
             DateTime.Now.Year,
@@ -27,7 +27,16 @@ namespace WebApplication71.DTOs.Logowania
             12,
             0,
             0
-            );
+            );*/
+
+
+        [Required]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
+        public DateTime DataZalogowaniaOd { get; set; } = DateTime.Now.AddDays (-30);
+
+        [Required]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
+        public DateTime DataZalogowaniaDo { get; set; } = DateTime.Now;
 
 
         public List<GetLogowanieDto> Logowania { get; set; }

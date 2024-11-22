@@ -7,6 +7,7 @@ namespace WebApplication71.Repos.Abs
 {
     public interface ILogowaniaRepository
     {
+        Task<ResultViewModel<List<GetLogowanieDto>>> GetAll();
         Task<ResultViewModel<List<GetLogowanieDto>>> GetAll(string email);
         Task<ResultViewModel<GetLogowanieDto>> Get(string logowanieId);
         Task<ResultViewModel<CreateLogowanieDto>> Create(CreateLogowanieDto model);

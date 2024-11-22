@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using WebApplication71.Data;
@@ -1562,6 +1563,13 @@ namespace WebApplication71.Services
             */
 
         }
+
+
+        // Scalanie wszystkich rekordów z jednego dnia na danego użytkownika
+        public async Task ScalanieRekordowZjednegoDniaDlaDanegoUzytkownika ()
+        { 
+        }
+         
 
 
 

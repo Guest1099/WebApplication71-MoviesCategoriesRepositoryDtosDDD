@@ -26,6 +26,53 @@ namespace WebApplication71.Repos
 
 
 
+        public async Task<ResultViewModel<List<GetLogowanieDto>>> GetAll()
+        {
+            var resultViewModel = new ResultViewModel<List<GetLogowanieDto>>() { Success = false, Message = "", Object = new List<GetLogowanieDto>() };
+            try
+            {
+                var logowania = await _context.Logowania
+                    .Include(i => i.User)
+                    .OrderByDescending(o => o.DataLogowania)
+                    .ToListAsync();
+
+                                    
+                    List <GetLogowanieDto> logowaniaDto = logowania.Select(
+                        s => new GetLogowanieDto()
+                        {
+                            LogowanieId = s.LogowanieId,
+                            DataLogowania = DateTime.Parse(s.DataLogowania),
+                            DataWylogowania = DateTime.Parse(s.DataWylogowania),
+                            //CzasPracy = GetCzasPracy(s.CzasPracy),
+                            CzasPracy = new TimeSpan(),
+                            Status = s.Status,
+                            ImieInazwisko = $"{s.User.Imie} {s.User.Nazwisko}",
+                            //Email = s.User.Email,
+                            Email = "abc@abc.pl",
+                        })
+                        .ToList();
+
+
+                if (logowaniaDto != null)
+                {
+                    resultViewModel.Success = true;
+                    resultViewModel.Object = logowaniaDto;
+                }
+                else
+                {
+                    resultViewModel.Message = "LogowaniaDto was null";
+                }
+            }
+            catch (Exception ex)
+            {
+                resultViewModel.Message = $"Exception: {ex.Message}";
+            }
+
+            return resultViewModel;
+        }
+
+
+
         public async Task<ResultViewModel<List<GetLogowanieDto>>> GetAll(string email)
         {
             var resultViewModel = new ResultViewModel<List<GetLogowanieDto>>() { Success = false, Message = "", Object = new List<GetLogowanieDto>() };
@@ -56,7 +103,7 @@ namespace WebApplication71.Repos
                             LogowanieId = s.LogowanieId,
                             DataLogowania = DateTime.Parse(s.DataLogowania),
                             DataWylogowania = DateTime.Parse(s.DataWylogowania),
-                            CzasPracy = GetCzasPracy (s.CzasPracy),
+                            CzasPracy = GetCzasPracy(s.CzasPracy),
                             Status = s.Status,
                             ImieInazwisko = $"{s.User.Imie} {s.User.Nazwisko}",
                             Email = s.User.Email,

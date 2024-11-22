@@ -1,50 +1,40 @@
-﻿using Application.Services.Abs;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Microsoft.VisualStudio.Web.CodeGeneration;
 using System;
-using WebApplication71.DTOs.Logowania;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using WebApplication71.DTOs.Movies;
 using WebApplication71.Models;
+using WebApplication71.Models.Enums;
 using WebApplication71.Repos.Abs;
 using WebApplication71.Services;
-using WebApplication71.Models.Enums;
-using System.Linq;
 
 namespace WebApplication71.Controllers
 {
-    [Authorize(Roles = "Administrator, User")]
-    public class LogowaniaController : Controller
+    [Authorize (Roles = "Administrator, User")]
+    public class MoviesController : Controller
     {
-        private readonly ILogowaniaRepository _logowaniaRepository;
-        private readonly IUsersService _usersService;
+        private readonly IMoviesRepository _moviesRepository;
+        private readonly ICategoriesRepository _categoriesRepository;
 
-        public LogowaniaController(ILogowaniaRepository logowaniaRepository, IUsersService usersService)
+        public MoviesController(IMoviesRepository moviesRepository, ICategoriesRepository categoriesRepository)
         {
-            _logowaniaRepository = logowaniaRepository;
-            _usersService = usersService;
+            _moviesRepository = moviesRepository;
+            _categoriesRepository = categoriesRepository;
         }
 
 
 
         [HttpGet]
-        public async Task<IActionResult> Index(GetLogowaniaDto model)
+        public async Task<IActionResult> Index(GetMoviesDto model)
         {
-            NI.Navigation = Navigation.LogowaniaIndex;
+            NI.Navigation = Navigation.MoviesIndex;
             try
             {
-                /*if (model.DataZalogowaniaOd.ToShortDateString() == "01.01.0001 00:00:00")
-                    model.DataZalogowaniaOd = DateTime.Now.AddMonths(-30);
-
-                if (model.DataZalogowaniaDo.ToShortDateString() == "01.01.0001 00:00:00")
-                    model.DataZalogowaniaDo = DateTime.Now;*/
-
-                //model.DataZalogowaniaOd = DateTime.Now.AddMonths(-30);
-                //model.DataZalogowaniaDo = DateTime.Now;
-
-
-
                 return await SearchAndFiltringResutl(model);
             }
             catch (Exception ex)
@@ -54,10 +44,9 @@ namespace WebApplication71.Controllers
         }
 
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(string s, GetLogowaniaDto model)
+        public async Task<IActionResult> Index(string s, GetMoviesDto model)
         {
             NI.Navigation = Navigation.RolesIndex;
             try
@@ -72,85 +61,86 @@ namespace WebApplication71.Controllers
 
 
 
-        private async Task<IActionResult> SearchAndFiltringResutl(GetLogowaniaDto model)
+
+        private async Task<IActionResult> SearchAndFiltringResutl(GetMoviesDto model)
         {
             if (model == null)
                 return View("NotFound");
 
-            var result = await _logowaniaRepository.GetAll(User.Identity.Name);
+            var result = await _moviesRepository.GetAll();
 
             if (result == null || !result.Success)
                 return View("NotFound");
 
-            var logowania = result.Object;
-            if (logowania == null)
+            var movies = result.Object;
+            if (movies == null)
                 return View("NotFound");
-
 
 
             model.ShowPaginator = true;
             model.DisplayNumersListAndPaginatorLinks = true;
             model.DisplayButtonLeftTrzyKropki = false;
             model.DisplayButtonRightTrzyKropki = false;
-            model.SortowanieOptionItems = new SelectList(new List<string>() { "Email A-Z", "Email Z-A", "Data zalogowania rosnąco", "Data zalogowania malejąco", "Użytkownik obecnie zalogowany" }, "Data zalogowania malejąco");
+            model.SortowanieOptionItems = new SelectList(new List<string>() { "Tytuł A-Z", "Tytuł Z-A", "Kategoria A-Z", "Kategoria Z-A", "Cena rosnąco", "Cena malejąco" }, "Tytuł A-Z");
 
-            ViewData["LogowaniaTest"] = logowania.Count;
+
+            if (model.PageSize > 20)
+            {
+                model.PageSize = 20;
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20", "40", "50" }, "20");
+            }
 
 
             // Wyszukiwanie
             if (!string.IsNullOrEmpty(model.q))
             {
-                logowania = logowania.Where(
-                    w =>
-                        w.Email.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
-                        w.ImieInazwisko.Contains(model.q, StringComparison.OrdinalIgnoreCase)
-                    ).ToList();
+                movies = movies.Where(
+                    w => 
+                        w.Title.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
+                        w.Description.Contains(model.q, StringComparison.OrdinalIgnoreCase)
+                        ).ToList();
 
-                if (logowania.Count < 5)
+                if (movies.Count < 5)
                 {
                     model.DisplayNumersListAndPaginatorLinks = false;
                 }
             }
 
 
-            // filtrowanie według daty logowania od i do
-
-            logowania = logowania.Where(
-                w =>
-                    w.DataLogowania >= model.DataZalogowaniaOd &&
-                    w.DataLogowania <= model.DataZalogowaniaDo
-                    ).ToList();
-
 
 
             // Sortowanie
             switch (model.SortowanieOption)
             {
-                case "Email A-Z":
-                    logowania = logowania.OrderBy(o => o.Email).ToList();
+                case "Tytuł A-Z":
+                    movies = movies.OrderBy(o => o.Title).ToList();
                     break;
 
-                case "Email Z-A":
-                    logowania = logowania.OrderByDescending(o => o.Email).ToList();
+                case "Tytuł Z-A":
+                    movies = movies.OrderByDescending(o => o.Title).ToList();
                     break;
 
-                case "Data zalogowania rosnąco":
-                    logowania = logowania.OrderBy(o => o.DataLogowania).ToList();
+                case "Kategoria A-Z":
+                    movies = movies.OrderBy(o => o.Category).ToList();
                     break;
 
-                case "Data zalogowania malejąco":
-                    logowania = logowania.OrderByDescending(o => o.DataLogowania).ToList();
+                case "Kategoria Z-A":
+                    movies = movies.OrderByDescending(o => o.Category).ToList();
                     break;
 
-                case "Użytkownik obecnie zalogowany":
-                    logowania = logowania.OrderBy(o => o.DataWylogowania).ToList();
+                case "Cena rosnąco":
+                    movies = movies.OrderBy(o => o.Price).ToList();
+                    break;
+
+                case "Cena malejąco":
+                    movies = movies.OrderByDescending(o => o.Price).ToList();
                     break;
             }
 
 
 
-            model.Logowania = logowania;
-            model.Paginator = Paginator<GetLogowanieDto>.CreateAsync(logowania, model.PageIndex, model.PageSize);
+            model.Movies = movies;
+            model.Paginator = Paginator<GetMovieDto>.CreateAsync(movies, model.PageIndex, model.PageSize);
 
 
 
@@ -180,13 +170,13 @@ namespace WebApplication71.Controllers
 
 
             int nextPage = 4; // + kolejne 4, czyli wartość jaką należy dodać aby uzyskać wynik kolejnej PageSize
-            int iloscWszystkichElementow = logowania.Count + nextPage;
+            int iloscWszystkichElementow = movies.Count + nextPage;
 
             // * jeśli chcesz uogólnić wyświetlanie filtrowanych wyników usuń poniższe warunki, a filtrowania nadal będzie działało poprawnie
             if (5 * model.PageIndex <= iloscWszystkichElementow)
                 model.SelectListNumberItems = new SelectList(new List<string>() { "5" });
             if (10 * model.PageIndex <= iloscWszystkichElementow)
-                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", }, "10");
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10" }, "10");
             if (15 * model.PageIndex <= iloscWszystkichElementow)
                 model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15" }, "15");
             if (20 * model.PageIndex <= iloscWszystkichElementow)
@@ -212,7 +202,7 @@ namespace WebApplication71.Controllers
                         break;
 
                     case 10:
-                        model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", }, "10");
+                        model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", });
                         break;
 
                     case 15:
@@ -237,7 +227,7 @@ namespace WebApplication71.Controllers
 
 
             // paginator wyświetlany jest tylko wtedy gdy ilość elementów tabeli wynosi minimum 5
-            if (logowania.Count <= 5 && model.PageIndex == model.Paginator.TotalPage)
+            if (movies.Count <= 5 && model.PageIndex == model.Paginator.TotalPage)
                 model.ShowPaginator = false;
 
 
@@ -251,11 +241,11 @@ namespace WebApplication71.Controllers
             // dlugość paginacji zależna od ilości elementów znajdujących się na liście, im więcej elementów tym więcej elementów w paginacji
 
             int ilosc = 9;
-            if (logowania.Count < 10)
+            if (movies.Count < 10)
                 ilosc = 5;
-            if (logowania.Count > 10 && logowania.Count < 50)
+            if (movies.Count > 10 && movies.Count < 50)
                 ilosc = 7;
-            if (logowania.Count > 50)
+            if (movies.Count > 50)
                 ilosc = 9;
 
             model.End = ilosc;
@@ -275,6 +265,8 @@ namespace WebApplication71.Controllers
             if (model.Paginator.TotalPage > ilosc)
                 model.DisplayButtonRightTrzyKropki = true;
 
+             
+
 
 
             return View(model);
@@ -288,33 +280,21 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            NI.Navigation = Navigation.LogowaniaCreate;
+            NI.Navigation = Navigation.MoviesCreate;
             try
             {
-                var result = await _usersService.GetAll();
-
+                var result = await _categoriesRepository.GetAll();
                 if (result == null || !result.Success)
                     return View("NotFound");
 
-
-                var users = result.Object;
-                if (users == null)
+                var categories = result.Object; // pobranie kategorii z obiektu
+                if (categories == null)
                     return View("NotFound");
 
-                var usersSelectList = users.Select(
-                        s => new GetUserListDto()
-                        {
-                            Id = s.Id,
-                            ImieInazwisko = $"{s.Imie} {s.Nazwisko}"
-                        });
-
-                if (usersSelectList == null)
-                    return View("NotFound");
-
-
-                return View(new CreateLogowanieDto()
+                return View(new CreateMovieDto()
                 {
-                    UsersList = new SelectList(usersSelectList, "Id", "ImieInazwisko")
+                    Title = new Random ().Next(1,10).ToString(),
+                    CategoriesList = new SelectList(categories, "CategoryId", "Name") // select lista
                 });
             }
             catch (Exception ex)
@@ -323,81 +303,62 @@ namespace WebApplication71.Controllers
             }
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateLogowanieDto model)
+        public async Task<IActionResult> Create(CreateMovieDto model)
         {
-            NI.Navigation = Navigation.LogowaniaCreate;
+            NI.Navigation = Navigation.MoviesCreate;
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _logowaniaRepository.Create(model);
-                    if (result != null && result.Success)
-                        return RedirectToAction("Index", "Logowania");
+                        // przekazanie emaila zalogowanego użytkownika do modelu
+                        model.Email = User.Identity.Name;
+                        var result = await _moviesRepository.Create(model);
+                        if (result != null && result.Success)
+                            return RedirectToAction("Index", "Movies");
 
+                        // zwraca komunikat błędu związanego z tworzeniem rekordu
+                        ViewData["ErrorMessage"] = result.Message;
+                     
+                } 
 
-                    // zwraca komunikat błędu związanego z tworzeniem rekordu
-                    ViewData["ErrorMessage"] = result.Message;
-                }
-
-                var resultUsers = await _usersService.GetAll();
-
-                if (resultUsers == null || !resultUsers.Success)
-                    return View("NotFound");
-
-
-                var users = resultUsers.Object;
-                if (users == null)
-                    return View("NotFound");
-
-                var usersSelectList = users.Select(
-                        s => new GetUserListDto()
-                        {
-                            Id = s.Id,
-                            ImieInazwisko = $"{s.Imie} {s.Nazwisko}"
-                        });
-
-                if (usersSelectList == null)
-                    return View("NotFound");
-
-
-                model.UsersList = new SelectList(usersSelectList, "Id", "ImieInazwisko", model.UserId);
+                model.CategoriesList = new SelectList((await _categoriesRepository.GetAll()).Object, "CategoryId", "Name", model.CategoryId); // select lista
                 return View(model);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
-
         }
 
 
 
 
 
+
         [HttpGet]
-        public async Task<IActionResult> Edit(string logowanieId)
+        public async Task<IActionResult> Edit(string movieId)
         {
-            NI.Navigation = Navigation.LogowaniaEdit;
+            NI.Navigation = Navigation.MoviesEdit;
             try
             {
-                if (string.IsNullOrEmpty(logowanieId))
-                    return NotFound();
+                if (string.IsNullOrEmpty(movieId))
+                    return View("NotFound");
 
-                var result = await _logowaniaRepository.Get(logowanieId);
+                var result = await _moviesRepository.Get(movieId);
 
                 if (result == null || !result.Success)
-                    return NotFound();
+                    return View("NotFound");
 
 
-                var logowanie = result.Object;
-                if (logowanie == null)
-                    return NotFound();
+                var movie = result.Object;
+                if (movie == null)
+                    return View("NotFound");
 
 
-                return View(logowanie);
+                movie.CategoriesList = new SelectList((await _categoriesRepository.GetAll()).Object, "CategoryId", "Name", movie.CategoryId);  // select lista
+                return View(movie);
             }
             catch (Exception ex)
             {
@@ -405,49 +366,63 @@ namespace WebApplication71.Controllers
             }
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(GetLogowanieDto model)
+        public async Task<IActionResult> Edit(GetMovieDto model)
         {
-            NI.Navigation = Navigation.LogowaniaEdit;
+            NI.Navigation = Navigation.MoviesEdit;
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _logowaniaRepository.Update(new EditLogowanieDto()
+                    var result = await _moviesRepository.Update(new EditMovieDto()
                     {
-                        LogowanieId = model.LogowanieId,
-                        DataLogowania = model.DataLogowania,
-                        DataWylogowania = model.DataWylogowania,
-                        Email = model.Email
+                        MovieId = model.MovieId,
+                        Title = model.Title,
+                        Description = model.Description,
+                        Price = model.Price,
+                        CategoryId = model.CategoryId,
+                        Files = model.Files
                     });
                     if (result != null && result.Success)
-                        return RedirectToAction("Index", "Logowania");
+                        return RedirectToAction("Index", "Movies");
 
 
                     // zwraca komunikat błędu związanego z aktualizacją rekordu
                     ViewData["ErrorMessage"] = result.Message;
                 }
 
+                model.CategoriesList = new SelectList((await _categoriesRepository.GetAll()).Object, "CategoryId", "Name", model.CategoryId); // select lista
                 return View(model);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
-
         }
 
 
-
         [HttpGet]
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
-            NI.Navigation = Navigation.LogowaniaDelete;
+            NI.Navigation = Navigation.MoviesDelete;
             try
             {
                 if (string.IsNullOrEmpty(id))
                     return View("NotFound");
+
+                var result = await _moviesRepository.Get(id);
+
+                if (result == null || !result.Success)
+                    return View("NotFound");
+
+
+                var category = result.Object;
+                if (category == null)
+                    return View("NotFound");
+
+
                 return View();
             }
             catch (Exception ex)
@@ -467,11 +442,11 @@ namespace WebApplication71.Controllers
                 if (string.IsNullOrEmpty(id))
                     return View("NotFound");
 
-                var result = await _logowaniaRepository.Delete(id);
+                var result = await _moviesRepository.Delete(id);
                 if (result == null || !result.Success)
                     return View("NotFound");
 
-                return RedirectToAction("Index", "Logowania");
+                return RedirectToAction("Index", "Movies");
             }
             catch (Exception ex)
             {
@@ -479,6 +454,22 @@ namespace WebApplication71.Controllers
             }
         }
 
-    }
 
+
+        [HttpGet]
+        public async Task<IActionResult> DeletePhotoMovie (string movieId, string photoMovieId)
+        {
+            try
+            {
+                var result = await _moviesRepository.DeletePhotoMovie(photoMovieId); 
+                return RedirectToAction ("Edit", "Movies", new { movieId = movieId });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+    }
 }
