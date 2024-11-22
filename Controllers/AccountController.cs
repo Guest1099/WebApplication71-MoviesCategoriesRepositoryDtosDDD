@@ -21,7 +21,7 @@ namespace WebApplication71.Controllers
 
         public AccountController(IAccountService accountService)
         {
-            _accountService = accountService;
+            _accountService = accountService; 
         }
 
 
