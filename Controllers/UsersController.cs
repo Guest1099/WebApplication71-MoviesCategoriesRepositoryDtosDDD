@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication71.DTOs.Movies;
 using WebApplication71.DTOs.Users;
 using WebApplication71.Models;
 using WebApplication71.Models.Enums;
@@ -80,8 +81,9 @@ namespace WebApplication71.Controllers
             model.DisplayButtonLeftTrzyKropki = false;
             model.DisplayButtonRightTrzyKropki = false;
             model.SelectListSearchOptionItems = new SelectList(new List<string>() { "Email", "Nazwisko", "Wszędzie" }, "Wszędzie");
-            model.SortowanieOptionItems = new SelectList(new List<string>() { "Email A-Z", "Email Z-A", "Nazwisko A-Z", "Nazwisko Z-A" }, "Nazwa A-Z");
+            model.SortowanieOptionItems = new SelectList(new List<string>() { "Email A-Z", "Email Z-A", "Nazwisko A-Z", "Nazwisko Z-A", "Rola A-Z", "Rola Z-A" }, "Nazwa A-Z");
 
+            
 
 
             // Wyszukiwanie
@@ -101,9 +103,9 @@ namespace WebApplication71.Controllers
                         users = users.Where(
                             w =>
                             w.Imie.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
-                            w.Nazwisko.Contains(model.q, StringComparison.OrdinalIgnoreCase) 
-                            /*w.Email.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
-                            w.RoleName.Contains(model.q, StringComparison.OrdinalIgnoreCase)*/
+                            w.Nazwisko.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
+                            w.Email.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
+                            w.RoleName.Contains(model.q, StringComparison.OrdinalIgnoreCase)
                             ).ToList();
                         break;
                 }
@@ -113,8 +115,6 @@ namespace WebApplication71.Controllers
                     model.DisplayNumersListAndPaginatorLinks = false;
                 }
             }
-
-
 
 
 
@@ -136,8 +136,15 @@ namespace WebApplication71.Controllers
                 case "Nazwisko Z-A":
                     users = users.OrderByDescending(o => o.Nazwisko).ToList();
                     break;
-            }
 
+                case "Rola A-Z":
+                    users = users.OrderBy(o => o.RoleName).ToList();
+                    break;
+
+                case "Rola Z-A":
+                    users = users.OrderByDescending(o => o.RoleName).ToList();
+                    break;
+            }
 
 
             model.Users = users;
@@ -265,6 +272,15 @@ namespace WebApplication71.Controllers
 
             if (model.Paginator.TotalPage > ilosc)
                 model.DisplayButtonRightTrzyKropki = true;
+
+
+            // jeżeli ktoś w przeglądarce w adresie url wpisze dowolną liczbę w PageSize lub w PageIndex to tu jest przed tym zabezpieczenie
+            if (model.PageSize > 20 || model.PageIndex > model.Paginator.TotalPage)
+            {
+                model.ShowPaginator = false;
+                model.Users = new List<GetUserDto>();
+                model.Paginator = Paginator<GetUserDto>.CreateAsync(model.Users, model.PageIndex, model.PageSize);
+            }
 
 
 

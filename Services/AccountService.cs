@@ -1375,7 +1375,7 @@ namespace WebApplication71.Services
             try
             {
                 await ZaktualizujRekordLogowaniaDopisujacDoNiegoGodzineWylogowania(email);
-
+                await SumowanieWpisowZcalegoDnia();
 
                 var zalogowanyUser = await _context.Users.FirstOrDefaultAsync(f => f.Email == email);
                 if (zalogowanyUser != null)
@@ -1569,8 +1569,85 @@ namespace WebApplication71.Services
         public async Task ScalanieRekordowZjednegoDniaDlaDanegoUzytkownika ()
         { 
         }
-         
+        /*
+                /// <summary>
+                /// Sumuje wpisy z całego dnia tworząc jeden rekord
+                /// </summary>
+                public async Task SumowanieWpisowZcalegoDnia()
+                {
+                    // przejście przez wszystkich użytkowników
 
+                    foreach (var user in await _context.Users.ToListAsync())
+                    {
+
+                        var userLogs = await _context.Logowania
+                                                .Where(log => log.UserId == user.Id) // filtrujemy po użytkowniku
+                                                .GroupBy(log => new { log.UserId, Date = log.DataLogowania }) // grupowanie po użytkowniku i dacie
+                                                .Select(group => new
+                                                {
+                                                    UserId = group.Key.UserId,
+                                                    Date = group.Key.Date,
+                                                    TotalWorkTimeInSeconds = group
+                                                        .Sum(log => EF.Functions.DateDiffSecond(DateTime.Parse(log.DataLogowania), DateTime.Parse(log.DataWylogowania))),
+                                                                                        TotalWorkTimeHours = group
+                                                        .Sum(log => EF.Functions.DateDiffSecond(DateTime.Parse(log.DataLogowania), DateTime.Parse(log.DataWylogowania))) / 3600, // godziny
+                                                                                        TotalWorkTimeMinutes = (group
+                                                        .Sum(log => EF.Functions.DateDiffSecond(DateTime.Parse(log.DataLogowania), DateTime.Parse(log.DataWylogowania))) % 3600) / 60 // minuty
+                                                })
+                                                .ToListAsync();
+
+
+                        foreach (var group in userLogs)
+                        {
+                            // Oblicz czas pracy w sekundach (możesz także obliczyć godziny/minuty, jeśli chcesz)
+                            var totalWorkTimeInSeconds = group.TotalWorkTimeInSeconds;
+
+                            // Pobierz wszystkie logowania danego użytkownika w tym dniu
+                            var logsForDay = await _context.Logowania
+                                .Where(log => log.UserId == user.Id && log.DataLogowania == group.Date)
+                                .ToListAsync();
+
+                            // Zaktualizuj CzasPracy dla każdego logowania w tym dniu
+                            foreach (var log in logsForDay)
+                            {
+                                log.CzasPracy = TimeSpan.FromSeconds(totalWorkTimeInSeconds).ToString () + " XXX"; // zakładając, że CzasPracy to TimeSpan 
+                            }
+                        }
+
+                        // Zapisz zmiany w bazie danych
+                        await _context.SaveChangesAsync();
+
+                    }
+                }
+        */
+
+        public async Task SumowanieWpisowZcalegoDnia()
+        {
+            var logowaniaUzytkownikow = await _context.Users
+                    .Include (i=> i.Logowania) 
+                    .ToListAsync ();
+
+
+            for (var i=1; i<=32; i++) // dni miesiąca
+            {
+                foreach (var logowaniaUzytkownika in logowaniaUzytkownikow)
+                {
+                    foreach (var lu in logowaniaUzytkownika.Logowania)
+                    {
+                        List <string> listaLogowanZjednegoDnia = new List<string> ();
+                        if (DateTime.Parse (lu.DataLogowania).Day == i)
+                        {
+                            listaLogowanZjednegoDnia.Add (lu.DataLogowania);
+                        }
+                        listaLogowanZjednegoDnia.OrderBy (o=> o).ToList ();
+                        //TimeSpan timeSpanCzasPracy = listaLogowanZjednegoDnia.Sum();
+
+
+                    }
+                }
+            }
+
+        }
 
 
 

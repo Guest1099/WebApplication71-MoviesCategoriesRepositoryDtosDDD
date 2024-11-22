@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication71.DTOs.Categories;
+using WebApplication71.DTOs.Logowania;
 using WebApplication71.Models;
 using WebApplication71.Models.Enums;
 using WebApplication71.Repos.Abs;
@@ -234,6 +235,15 @@ namespace WebApplication71.Controllers
 
             if (model.Paginator.TotalPage > ilosc)
                 model.DisplayButtonRightTrzyKropki = true;
+
+
+            // jeżeli ktoś w przeglądarce w adresie url wpisze dowolną liczbę w PageSize lub w PageIndex to tu jest przed tym zabezpieczenie
+            if (model.PageSize > 20 || model.PageIndex > model.Paginator.TotalPage)
+            {
+                model.ShowPaginator = false;
+                model.Categories = new List<GetCategoryDto>();
+                model.Paginator = Paginator<GetCategoryDto>.CreateAsync(model.Categories, model.PageIndex, model.PageSize);
+            }
 
 
 

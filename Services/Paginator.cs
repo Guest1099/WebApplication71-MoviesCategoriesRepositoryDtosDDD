@@ -22,6 +22,7 @@ namespace WebApplication71.Services
         public bool HasNexPage
             => PageIndex < TotalPage;
 
+
         public static Paginator<T> CreateAsync(List<T> source, int pageIndex, int pageSize)
         {
             int count = source.Count;

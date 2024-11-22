@@ -1,0 +1,18 @@
+﻿@* Pobiera tekst o określonej długości *@
+
+@model Tuple<string,int>
+
+@{
+    int length = Model.Item2;
+    string text = Model.Item1;
+
+    if (text.Length > length)
+    {
+        text = text.Substring(0, length);
+        <span>@text</span>
+    }
+    else
+    {
+        <span>@text</span>
+    }
+}

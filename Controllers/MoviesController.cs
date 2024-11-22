@@ -261,6 +261,13 @@ namespace WebApplication71.Controllers
                 model.DisplayButtonRightTrzyKropki = true;
 
 
+            // jeżeli ktoś w przeglądarce w adresie url wpisze dowolną liczbę w PageSize lub w PageIndex to tu jest przed tym zabezpieczenie
+            if (model.PageSize > 20 || model.PageIndex > model.Paginator.TotalPage) 
+            {
+                model.ShowPaginator = false;
+                model.Movies = new List<GetMovieDto>();
+                model.Paginator = Paginator<GetMovieDto>.CreateAsync(model.Movies, model.PageIndex, model.PageSize);
+            }
 
 
             return View(model);

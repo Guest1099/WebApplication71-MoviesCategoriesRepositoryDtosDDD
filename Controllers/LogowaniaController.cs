@@ -11,6 +11,7 @@ using WebApplication71.Repos.Abs;
 using WebApplication71.Services;
 using WebApplication71.Models.Enums;
 using System.Linq;
+using WebApplication71.DTOs.Roles;
 
 namespace WebApplication71.Controllers
 {
@@ -114,7 +115,6 @@ namespace WebApplication71.Controllers
 
 
             // filtrowanie według daty logowania od i do
-
             logowania = logowania.Where(
                 w =>
                     w.DataLogowania >= model.DataZalogowaniaOd &&
@@ -274,6 +274,15 @@ namespace WebApplication71.Controllers
 
             if (model.Paginator.TotalPage > ilosc)
                 model.DisplayButtonRightTrzyKropki = true;
+
+
+            // jeżeli ktoś w przeglądarce w adresie url wpisze dowolną liczbę w PageSize lub w PageIndex to tu jest przed tym zabezpieczenie
+            if (model.PageSize > 20 || model.PageIndex > model.Paginator.TotalPage)
+            {
+                model.ShowPaginator = false;
+                model.Logowania = new List<GetLogowanieDto>();
+                model.Paginator = Paginator<GetLogowanieDto>.CreateAsync(model.Logowania, model.PageIndex, model.PageSize);
+            }
 
 
 
