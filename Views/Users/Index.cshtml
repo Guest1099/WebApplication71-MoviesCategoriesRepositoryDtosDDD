@@ -21,28 +21,18 @@
         <div class="topContainer">
             <div class="df-sb">
                 <div class="w-200px centery">
-                    <a asp-action="Create" asp-controller="Users" class="buttonCreate">+ Dodaj nową pozycję</a>
+                    <a asp-action="Create" asp-controller="Users" class="buttonCreate" onclick="removeItemUploadedFiles();">+ Dodaj nową pozycję</a>
                 </div>
 
 
                 <div class="df-sb mt-20 mb-20">
 
-                    <!-- Sortowanie -->
-                    <div class="df-sb centery" style="width: 200px;">
-                        <span class="ml-10 mr-5">Szukaj w</span>
-                        <select asp-for="SearchOption" asp-items='@Model.SelectListSearchOptionItems' class="selectOption" id="searchOptionSelectList"></select>
-                    </div>
-
-
                     <!-- Wyszukiwarka -->
-                    <div class="df mr-20">
-                        <input asp-for="q" class="searchInput" id="searchInput" />
-
-
+                    <div class="df centery mr-20">
+                        <span class="ml-10 mr-5">Wyszukiwarka</span>
+                        <input asp-for="q" class="searchInput" id="searchInput" placeholder="Szukana fraza..." />
                         @* link przekazuje dane do metody post *@
-                        <input type="submit"
-                               value="Szukaj"
-                               class="searchButton" />
+                        <input type="submit" value="Szukaj" class="searchButton" />
 
 
                         @* link przekazuje dane do metody get *@
@@ -52,7 +42,13 @@
                         id="searchButton">
                         Szukaj
                         </a> *@
+                    </div>
 
+
+                    <!-- Sortowanie -->
+                    <div class="df-sb centery" style="width: 200px;">
+                        <span class="ml-10 mr-5">Szukaj w</span>
+                        <select asp-for="SearchOption" asp-items='@Model.SelectListSearchOptionItems' class="selectOption" id="searchOptionSelectList"></select>
                     </div>
 
                     <!-- Sortowanie -->
@@ -153,7 +149,8 @@
                                         <a asp-action="Edit"
                                            asp-controller="Users"
                                            asp-route-userId="@user.Id"
-                                           class="deleteButton">
+                                           class="deleteButton"
+                                           onclick="removeItemUploadedFiles();">
                                             Edytuj
                                         </a>
 
@@ -164,10 +161,17 @@
                                         }
                                         else
                                         {
-                                            <a asp-action="Delete"
+                                            @* <a asp-action="Delete"
                                                asp-controller="Users"
                                                asp-route-id="@user.Id"
                                                class="deleteButton">
+                                                Usuń
+                                            </a> *@
+
+                                            
+                                            <a href="#" 
+                                                class="deleteButton"
+                                                onclick="deletePhoto('');">
                                                 Usuń
                                             </a>
                                         }
@@ -242,25 +246,25 @@
 
                                             string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
 
-                                            <!-- przeniesienie do pierwszej strony -->
+                                                <!-- przeniesienie do pierwszej strony -->
                                             if (Model.DisplayButtonLeftTrzyKropki)
                                             {
-                                                <a asp-action="Index"
-                                                   asp-controller="Users"
-                                                   asp-route-PageSize="@Model.PageSize"
-                                                   asp-route-PageIndex="1"
-                                                   asp-route-q="@Model.q"
-                                                   asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                   class="paginator-item"
-                                                   style="backgroun-color: transparent"
-                                                   id="buttonLeftTrzyKropki">
-                                                    ...
-                                                </a>
+                                                    <a asp-action="Index"
+                                                       asp-controller="Users"
+                                                       asp-route-PageSize="@Model.PageSize"
+                                                       asp-route-PageIndex="1"
+                                                       asp-route-q="@Model.q"
+                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                       class="paginator-item"
+                                                       style="backgroun-color: transparent"
+                                                       id="buttonLeftTrzyKropki">
+                                                        ...
+                                                    </a>
                                             }
 
 
 
-                                            <!-- środkowe przyciski paginacji -->
+                                                <!-- środkowe przyciski paginacji -->
                                             for (var i = Model.Start; i <= Model.End; i++)
                                             {
                                                 if (i == Model.PageIndex)
@@ -273,35 +277,35 @@
                                                 }
                                                 if (i <= Model.Paginator.TotalPage)
                                                 {
-                                                    <a asp-action="Index"
-                                                       asp-controller="Users"
-                                                       asp-route-PageSize="@Model.PageSize"
-                                                       asp-route-PageIndex="@i"
-                                                       asp-route-q="@Model.q"
-                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                       class="paginator-item"
-                                                       style="@style"
-                                                       id="button">
-                                                        @i
-                                                    </a>
+                                                        <a asp-action="Index"
+                                                           asp-controller="Users"
+                                                           asp-route-PageSize="@Model.PageSize"
+                                                           asp-route-PageIndex="@i"
+                                                           asp-route-q="@Model.q"
+                                                           asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                           class="paginator-item"
+                                                           style="@style"
+                                                           id="button">
+                                                            @i
+                                                        </a>
                                                 }
                                             }
 
 
-                                            <!-- przeniesienie do ostatniej strony -->
+                                                <!-- przeniesienie do ostatniej strony -->
                                             if (Model.DisplayButtonRightTrzyKropki)
                                             {
-                                                <a asp-action="Index"
-                                                   asp-controller="Users"
-                                                   asp-route-PageSize="@Model.PageSize"
-                                                   asp-route-PageIndex="@Model.Paginator.TotalPage"
-                                                   asp-route-q="@Model.q"
-                                                   asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                   class="paginator-item"
-                                                   style="backgroun-color: transparent"
-                                                   id="buttonRightTrzyKropki">
-                                                    ...
-                                                </a>
+                                                    <a asp-action="Index"
+                                                       asp-controller="Users"
+                                                       asp-route-PageSize="@Model.PageSize"
+                                                       asp-route-PageIndex="@Model.Paginator.TotalPage"
+                                                       asp-route-q="@Model.q"
+                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                       class="paginator-item"
+                                                       style="backgroun-color: transparent"
+                                                       id="buttonRightTrzyKropki">
+                                                        ...
+                                                    </a>
                                             }
                                         }
                                     </div>
@@ -371,11 +375,12 @@
 
         new Paginator(
             'Users',
-        @Model.PageIndex,
+            @Model.PageIndex,
             document.getElementById('searchOptionSelectList'),
             document.getElementById('sortowanieOptionSelectList'),
             document.getElementById('pageSizeSelectList')
             );
+           
 
     </script>
 }

@@ -19,9 +19,6 @@ namespace WebApplication71.DTOs.Movies
         public string Description { get; set; }
 
 
-        public byte[] Photo { get; set; }
-
-
         [Required(ErrorMessage = "To pole jest wymagane")]
         [RegularExpression("^[0-9]+$", ErrorMessage = "Wprowadź poprawną liczbę")]
         public double Price { get; set; }
@@ -33,11 +30,13 @@ namespace WebApplication71.DTOs.Movies
 
 
 
-        public IFormFile PhotoData { get; set; }
-        public string Category { get; set; }
-        public SelectList CategoriesList { get; set; }
 
+
+
+        public List <IFormFile> Files { get; set; }
+        public string Category { get; set; }
+        public List<PhotoMovie> PhotosMovie { get; set; }
+        public SelectList CategoriesList { get; set; }
         
-        public List <PhotoUser> PhotosUser { get; set; }
     }
 }

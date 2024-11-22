@@ -10,7 +10,6 @@
 <form method="post" asp-action="Edit" asp-controller="Users" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="Email" />
-    <input type="hidden" asp-for="Photo" />
     <input type="hidden" asp-for="DataDodania" />
 
 
@@ -140,29 +139,7 @@
                     <span asp-validation-for="Telefon" class="c-red"></span>
                 </div>
             </td>
-        </tr>
-        <tr>
-            <td class="leftColumn">
-                <label asp-for="Photo"></label>
-            </td>
-            <td class="rightColumn">
-                <div class="image w-200px">
-                    <!-- wyświetla zdjęcie -->
-                    <div id="displayPhoto">
-                        <partial name="_displayPhoto" model="@Model.Photo" />
-                    </div>
-                    
-
-
-                    <!-- wybiera zdjęcie -->
-                    <div id="imageContainer" class="image">
-                        <img id="imagePreview" alt="Uploaded Photo" style="display: none;" />
-                    </div>
-                    <input asp-for="PhotoData" id="fileInput" style="border: none; padding: 0px; margin: 0px; background-color: transparent; margin-top: 15px; width: fit-content;" accept="image/*" onchange="previewImage(event); saveFiles();" />
-                     
-                </div>
-            </td>
-        </tr>
+        </tr>        
         <tr>
             <td class="leftColumn">
                 <label asp-for="Plec">Plec</label>
@@ -188,9 +165,45 @@
                 }
             </td>
         </tr>
+        @if (Model.PhotosUser != null && Model.PhotosUser.Any())
+        {
+            <tr>
+                <td>
+                    Zdjęcia
+                </td>
+                <td>
+                    <div class="db">
+                        @foreach (var photoUser in Model.PhotosUser)
+                        {
+                            <div class="image w-200px">
+                                <partial name="_displayPhoto" model="@photoUser.PhotoData" />
+                            </div>
+
+                            <a asp-action="DeletePhotoUser"
+                               asp-controller="Users"
+                               asp-route-userId="@photoUser.UserId"
+                               asp-route-photoUserId="@photoUser.PhotoUserId">
+                                Usuń zdjęcie
+                            </a>
+                        }
+                    </div>
+                </td>
+            </tr>
+        }
         <tr>
             <td class="leftColumn">
-                <span>Data dodania</span>
+                <span>Dodaj zdjęcie</span>
+            </td>
+            <td class="rightColumn">
+                <div class="db fieldEdit">
+                    <div id="imageContainer" class="db"></div>
+                    <input id="files" asp-for="Files" accept="image/*" multiple onchange="saveFiles();" />
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <span>Data utworzenia konta</span>
             </td>
             <td class="rightColumn">
                 <div class="db">
@@ -215,103 +228,7 @@
 </form>
 
 
+
+
 <!-- Zwraca komunikat błędu, o ile takowy się pojawi -->
 <span class="c-red">@ViewData["ErrorMessage"]</span>
-
-
-
-
-
-
-
-@section Scripts {
-    <script>
-        var filesInput = document.getElementById('fileInput');
-        var imagePreview = document.getElementById('imagePreview');
-        var displayPhoto = document.getElementById('displayPhoto');
-        var imageContainer = document.getElementById('imageContainer');
-
-        // Funkcja do zapisywania przesłanych plików w sessionStorage
-        function saveFiles() {
-            var files = filesInput.files;
-
-            if (files.length > 0) {
-                var filesArray = Array.from(files);
-                var filesData = filesArray.map(file => {
-                    return {
-                        name: file.name,
-                        type: file.type,
-                        size: file.size
-                    };
-                });
-
-                // Zapisywanie plików w sessionStorage
-                sessionStorage.setItem('uploadPhoto', JSON.stringify(filesData));
-
-                // Konwertowanie plików na Base64
-                var uploadedFilesBase64 = [];
-                filesArray.forEach(file => {
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-                        uploadedFilesBase64.push(e.target.result);
-                        sessionStorage.setItem('uploadedFilesBase64', JSON.stringify(uploadedFilesBase64));
-                    }
-                    reader.readAsDataURL(file);
-                });
-            }
-
-            // Ukryj displayPhoto
-            displayPhoto.style.display = 'none';
-        }
-
-        // Funkcja pobiera dane z sesji do zmiennej po załadowaniu okna
-        window.onload = function () {
-            var uploadedFilesData = sessionStorage.getItem('uploadPhoto');
-            var uploadedFilesBase64 = sessionStorage.getItem('uploadedFilesBase64');
-
-            if (uploadedFilesBase64) {
-                var base64Files = JSON.parse(uploadedFilesBase64);
-                // Wyświetlenie pierwszego obrazu w imagePreview
-                if (base64Files.length > 0) {
-                    imagePreview.src = base64Files[0];
-                    imagePreview.style.display = 'block';
-                    displayPhoto.style.display = 'none'; // Ukryj displayPhoto
-                }
-            }
-
-            if (uploadedFilesData) {
-                var uploadedFiles = JSON.parse(uploadedFilesData);
-                var newFilesList = new DataTransfer();
-
-                uploadedFiles.forEach(file => {
-                    var newFile = new File([], file.name, { type: file.type, size: file.size });
-                    newFilesList.items.add(newFile);
-                });
-
-                filesInput.files = newFilesList.files;
-
-                imageContainer.style.width = '150px';
-                imageContainer.style.height = '150px';
-                displayPhoto.style.display = 'none';
-            }
-        };
-
-        // Funkcja odpowiedzialna za wyświetlenie zdjęcia w img
-        function previewImage(event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-
-            reader.onload = function (e) {
-                imagePreview.src = e.target.result;
-                imagePreview.style.display = 'block';
-            }
-
-            if (file) {
-                reader.readAsDataURL(file);
-                displayPhoto.style.display = 'none'; // Ukryj displayPhoto
-            }
-        }
-
-
-    </script>
-}

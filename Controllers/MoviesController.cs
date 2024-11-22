@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.VisualStudio.Web.CodeGeneration;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -31,7 +32,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(GetMoviesDto model)
         {
-            NI.Navigation = Navigation.RolesIndex;
+            NI.Navigation = Navigation.MoviesIndex;
             try
             {
                 return await SearchAndFiltringResutl(model);
@@ -82,6 +83,12 @@ namespace WebApplication71.Controllers
             model.DisplayButtonRightTrzyKropki = false;
             model.SortowanieOptionItems = new SelectList(new List<string>() { "Tytuł A-Z", "Tytuł Z-A", "Kategoria A-Z", "Kategoria Z-A", "Cena rosnąco", "Cena malejąco" }, "Tytuł A-Z");
 
+
+            if (model.PageSize > 20)
+            {
+                model.PageSize = 20;
+                model.SelectListNumberItems = new SelectList(new List<string>() { "5", "10", "15", "20", "40", "50" }, "20");
+            }
 
 
             // Wyszukiwanie
@@ -259,6 +266,9 @@ namespace WebApplication71.Controllers
                 model.DisplayButtonRightTrzyKropki = true;
 
 
+             
+
+
 
             return View(model);
         }
@@ -303,15 +313,16 @@ namespace WebApplication71.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    // przekazanie emaila zalogowanego użytkownika do modelu
-                    model.Email = User.Identity.Name;
-                    var result = await _moviesRepository.Create(model);
-                    //if (result != null && result.Success)
-                    //return RedirectToAction("Index", "Movies");
+                        // przekazanie emaila zalogowanego użytkownika do modelu
+                        model.Email = User.Identity.Name;
+                        var result = await _moviesRepository.Create(model);
+                        if (result != null && result.Success)
+                            return RedirectToAction("Index", "Movies");
 
-                    // zwraca komunikat błędu związanego z tworzeniem rekordu
-                    ViewData["ErrorMessage"] = result.Message;
-                }
+                        // zwraca komunikat błędu związanego z tworzeniem rekordu
+                        ViewData["ErrorMessage"] = result.Message;
+                     
+                } 
 
                 model.CategoriesList = new SelectList((await _categoriesRepository.GetAll()).Object, "CategoryId", "Name", model.CategoryId); // select lista
                 return View(model);
@@ -371,10 +382,9 @@ namespace WebApplication71.Controllers
                         MovieId = model.MovieId,
                         Title = model.Title,
                         Description = model.Description,
-                        Photo = model.Photo,
-                        PhotoData = model.PhotoData,
                         Price = model.Price,
-                        CategoryId = model.CategoryId
+                        CategoryId = model.CategoryId,
+                        Files = model.Files
                     });
                     if (result != null && result.Success)
                         return RedirectToAction("Index", "Movies");
@@ -444,5 +454,23 @@ namespace WebApplication71.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> DeletePhotoMovie (string movieId, string photoMovieId)
+        {
+            try
+            {
+                var result = await _moviesRepository.DeletePhotoMovie(photoMovieId); 
+                return RedirectToAction ("Edit", "Movies", new { movieId = movieId });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
     }
 }

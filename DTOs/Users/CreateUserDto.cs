@@ -64,9 +64,6 @@ namespace WebApplication71.DTOs.Users
         public string Telefon { get; set; }
 
 
-        public byte[] Photo { get; set; }
-
-
         [Required(ErrorMessage = "To pole jest wymagane")]
         public string RoleName { get; set; }
 

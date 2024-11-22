@@ -12,5 +12,6 @@ namespace WebApplication71.Repos.Abs
         Task<ResultViewModel<CreateMovieDto>> Create(CreateMovieDto model);
         Task<ResultViewModel<EditMovieDto>> Update(EditMovieDto model);
         Task<ResultViewModel<bool>> Delete(string movieId);
+        Task<ResultViewModel<bool>> DeletePhotoMovie(string photoMovieId);
     }
 }

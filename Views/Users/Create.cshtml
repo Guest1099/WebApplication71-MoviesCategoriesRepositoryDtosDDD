@@ -30,7 +30,7 @@
             </td>
             <td class="rightColumn">
                 <div class="db">
-                    <input asp-for="Email" />
+                    <input asp-for="Email" placeholder="adres@email.pl" />
                     <span asp-validation-for="Email" class="c-red"></span>
                 </div>
             </td>
@@ -41,7 +41,7 @@
             </td>
             <td class="rightColumn">
                 <div class="db">
-                    <input asp-for="Password" />
+                    <input asp-for="Password" placeholder="************" />
                     <span asp-validation-for="Password" class="c-red"></span>
                 </div>
             </td>
@@ -61,7 +61,7 @@
             </td>
             <td class="rightColumn">
                 <div class="db">
-                    <input asp-for="Imie" />
+                    <input asp-for="Imie" placeholder="Jan" />
                     <span asp-validation-for="Imie" class="c-red"></span>
                 </div>
             </td>
@@ -72,7 +72,7 @@
             </td>
             <td class="rightColumn">
                 <div class="db">
-                    <input asp-for="Nazwisko" />
+                    <input asp-for="Nazwisko" placeholder="Kowalski" />
                     <span asp-validation-for="Nazwisko" class="c-red"></span>
                 </div>
             </td>
@@ -83,7 +83,7 @@
             </td>
             <td class="rightColumn">
                 <div class="db">
-                    <input asp-for="Ulica" />
+                    <input asp-for="Ulica" placeholder="Marszałkowska 15" />
                     <span asp-validation-for="Ulica" class="c-red"></span>
                 </div>
             </td>
@@ -94,7 +94,7 @@
             </td>
             <td class="rightColumn">
                 <div class="db">
-                    <input asp-for="Miejscowosc" />
+                    <input asp-for="Miejscowosc" placeholder="Warszawa" />
                     <span asp-validation-for="Miejscowosc" class="c-red"></span>
                 </div>
             </td>
@@ -105,7 +105,7 @@
             </td>
             <td class="rightColumn">
                 <div class="db">
-                    <input asp-for="Wojewodztwo" />
+                    <input asp-for="Wojewodztwo" placeholder="Mazowieckie" />
                     <span asp-validation-for="Wojewodztwo" class="c-red"></span>
                 </div>
             </td>
@@ -116,7 +116,7 @@
             </td>
             <td class="rightColumn">
                 <div class="db">
-                    <input asp-for="KodPocztowy" />
+                    <input asp-for="KodPocztowy" placeholder="21-222" />
                     <span asp-validation-for="KodPocztowy" class="c-red"></span>
                 </div>
             </td>
@@ -127,7 +127,7 @@
             </td>
             <td class="rightColumn">
                 <div class="db">
-                    <input asp-for="Pesel" />
+                    <input asp-for="Pesel" placeholder="12312312312" />
                     <span asp-validation-for="Pesel" class="c-red"></span>
                 </div>
             </td>
@@ -138,7 +138,7 @@
             </td>
             <td class="rightColumn">
                 <div class="db">
-                    <input asp-for="DataUrodzenia" />
+                    <input asp-for="DataUrodzenia" placeholder="12.12.1999" />
                     <span asp-validation-for="DataUrodzenia" class="c-red"></span>
                 </div>
             </td>
@@ -149,21 +149,8 @@
             </td>
             <td class="rightColumn">
                 <div class="db">
-                    <input asp-for="Telefon" />
+                    <input asp-for="Telefon" placeholder="346-346-236" />
                     <span asp-validation-for="Telefon" class="c-red"></span>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td class="leftColumn">
-                <label asp-for="Photo"></label>
-            </td>
-            <td class="rightColumn">
-                <div class="db">
-                    <div id="imageContainer" class="image">
-                        <img id="imagePreview" alt="Uploaded Photo" style="display: none;" />
-                    </div>
-                    <input id="files" asp-for="Files" multiple onchange="saveFiles()" />
                 </div>
             </td>
         </tr>
@@ -192,6 +179,17 @@
                 }
             </td>
         </tr>
+        <tr>
+            <td class="leftColumn">
+                <span>Dodaj zdjęcie</span>
+            </td>
+            <td class="rightColumn">
+                <div class="db fieldEdit">
+                    <div id="imageContainer" class="db"></div>
+                    <input id="files" asp-for="Files" accept="image/*" multiple onchange="saveFiles();" />
+                </div>
+            </td>
+        </tr>
     </table>
 
 
@@ -208,60 +206,9 @@
 </form>
 
 
+
+
 <!-- Zwraca komunikat błędu, o ile takowy się pojawi -->
 <span class="c-red">@ViewData["ErrorMessage"]</span>
 
 
-
-
-
-
-
-
-
-@section Scripts {
-
-    @*Skrypt pozwalający zapamiętać wybrane zdjęcia po przeładowaniu strony*@
-    <script>
-        var filesInput = document.getElementById('files');
-        // Funkcja do zapisywania przesłanych plików w sessionStorage
-        function saveFiles() {
-            var files = filesInput.files;
-
-            if (files.length > 0) {
-                var filesArray = Array.from(files);
-                var filesData = filesArray.map(file => {
-                    return {
-                        name: file.name,
-                        type: file.type,
-                        size: file.size
-                    };
-                });
-
-                sessionStorage.setItem('uploadedFiles', JSON.stringify(filesData));
-            }
-        }
-
-        // Funkcja pobiera dane z sesji do zmiennej po załadowaniu okna
-        window.onload = function () {
-            var uploadedFilesData = sessionStorage.getItem('uploadedFiles');
-            if (uploadedFilesData) {
-                var uploadedFiles = JSON.parse(uploadedFilesData); // zamienia tekst na obiekt
-
-
-                // Utworzenie nowej listy plików
-                var newFilesList = new DataTransfer();
-
-                uploadedFiles.forEach(file => {
-                    // Utworzenie nowego pliku i dodanie go do listy plików
-                    var newFile = new File([], file.name, { type: file.type, size: file.size });
-                    newFilesList.items.add(newFile);
-                });
-
-                // Przypisanie nowej listy plików do pola input
-                filesInput.files = newFilesList.files;
-                sessionStorage.clear();
-            }
-        };
-    </script>
-}

@@ -5,9 +5,11 @@
 </div>  
 <hr />
 
+
+
 <form method="post" asp-action="Edit" asp-controller="Movies" enctype="multipart/form-data">
     <input type="hidden" asp-for="MovieId" />
-    <input type="hidden" asp-for="Photo" />
+    <input type="hidden" asp-for="Files" />
 
 
     <table>
@@ -33,53 +35,6 @@
                 </div>
             </td>
         </tr>
-        @* <tr>
-            <td class="leftColumn">
-                <label asp-for="Photo"></label>
-            </td>
-            <td class="rightColumn">
-                <div class="image w-200px">
-                    <!-- wyświetla zdjęcie -->
-                    <div id="displayPhoto">
-                        <partial name="_displayPhoto" model="@Model.Photo" />
-                    </div>
-
-
-
-                    <!-- wybiera zdjęcie -->
-                    <div id="imageContainer" class="image">
-                        <img id="imagePreview" alt="Uploaded Photo" style="display: none;" />
-                    </div>
-                    <input asp-for="PhotoData" id="fileInput" style="border: none; padding: 0px; margin: 0px; background-color: transparent; margin-top: 15px; width: fit-content;" accept="image/*" onchange="previewImage(event); saveFiles();" />
-
-                </div>
-            </td>
-        </tr> *@
-        <tr>
-            <td>
-                @if (Model.PhotosUser != null && Model.PhotosUser.Any())
-                {
-                        <div class="fieldEdit">
-                            @foreach (var photoUser in Model.PhotosUser)
-                            {
-                                <div class="image w-200px">
-                                    <partial name="_displayPhoto" model="@photoUser.PhotoData" />
-                                </div>
-
-                                <a asp-action="DeletePhotoUser"
-                                   asp-controller="Users"
-                                   asp-route-userId="@photoUser.UserId"
-                                   asp-route-photoUserId="@photoUser.PhotoUserId">
-                                    Usuń zdjęcie
-                                </a>
-                            }
-                        </div>
-                            
-                              
-                }
-            </td>
-        </tr>        
-
         <tr>
             <td class="leftColumn">
                 <label asp-for="Price"></label>
@@ -102,6 +57,43 @@
                 </div>
             </td>
         </tr>
+        @if (Model.PhotosMovie != null && Model.PhotosMovie.Any())
+        {
+            <tr>
+                <td>
+                    Zdjęcia
+                </td>
+                <td>
+                    <div class="db"> 
+                        @foreach (var photoMovie in Model.PhotosMovie)
+                        {
+                            <div class="image w-200px">
+                                <partial name="_displayPhoto" model="@photoMovie.PhotoData" />
+                            </div>
+
+                            <a asp-action="DeletePhotoMovie"
+                               asp-controller="Movies"
+                               asp-route-movieId="@photoMovie.MovieId"
+                                       asp-route-photoMovieId="@photoMovie.PhotoMovieId">
+                                Usuń zdjęcie
+                            </a>
+                        }
+                    </div>
+                </td>
+            </tr> 
+        }
+        <tr>
+            <td class="leftColumn">
+                <span>Dodaj zdjęcie</span>
+            </td>
+            <td class="rightColumn">
+                <div class="db fieldEdit">
+                    <div id="imageContainer" class="db"></div>
+                    <input id="files" asp-for="Files" accept="image/*" multiple onchange="saveFiles();" />
+                </div>
+            </td>
+        </tr>
+
     </table>
 
 
@@ -115,10 +107,10 @@
 </form>
 
 
+
+
 <!-- Zwraca komunikat błędu, o ile takowy się pojawi -->
 <span class="c-red">@ViewData["ErrorMessage"]</span>
-
-
 
 
 

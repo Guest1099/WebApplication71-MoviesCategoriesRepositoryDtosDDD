@@ -26,6 +26,29 @@ class Paginator {
             searchOption = searchOptionSelectList.value;
             searchOptionSelectList.addEventListener('change', function () {
                 searchOption = this.value;
+
+                q = searchInput.value;
+                pageIndex = parseInt(modelPageIndex);
+
+
+                // tutaj jest obsługa kodu Users napisana pod kontroller Users tylko dlatego, że tam jest dodatkowy select list, którego trzeba obsłużyć, poniższy kod w warunku else jest przeznaczony dla pozostałych kontrollerów
+                if (controller == 'Users') {
+                    if (q.length > 0) {
+                        linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SearchOption=${searchOption}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
+                    }
+                    else {
+                        linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SearchOption=${searchOption}&SortowanieOption=${sortowanieOption}`;
+                    }
+                }
+                else {
+                    if (q.length > 0) {
+                        linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&q=${encodeURIComponent(q)}&SortowanieOption=${sortowanieOption}`;
+                    }
+                    else {
+                        linkUrl = `/${controller}/Index?PageSize=${pageSize}&PageIndex=${pageIndex}&SortowanieOption=${sortowanieOption}`;
+                    }
+                }
+                window.location.href = linkUrl;
             });
         }
 

@@ -44,7 +44,7 @@
                     if (await UserManager.IsInRoleAsync(zalogowanyUser, "Administrator"))
                     {
                         <li>
-                            <a asp-action="Index" asp-controller="Users" class="buttonDelete" onclick="clearSessions();">Users (@users.Count)</a>
+                            <a asp-action="Index" asp-controller="Users" class="buttonDelete" onclick="removeItemUploadedFiles();">Users (@users.Count)</a>
                         </li>
                         <li>
                             <a asp-action="Index" asp-controller="Roles" class="buttonDelete">Roles (@roles.Count)</a>
@@ -57,25 +57,10 @@
                     <a asp-action="Index" asp-controller="Categories" class="buttonEdit" onclick="removeSessionPageIndex();">Categories (@categories.Count)</a>
                 </li>
                 <li>
-                    <a asp-action="Index" asp-controller="Movies" class="buttonDelete" onclick="clearSessions();">Movies (@movies.Count)</a>
+                    <a asp-action="Index" asp-controller="Movies" class="buttonDelete" onclick="removeItemUploadedFiles();">Movies (@movies.Count)</a>
                 </li>
                 <li>
                     <a asp-action="Index" asp-controller="Logowania" class="buttonEdit">Historia logowań (@logowania.Count)</a>
-                </li>
-                <li>
-                    <div class="b mt-10">Ustawienia</div>
-                </li>
-                <li>
-                    <a asp-action="Edit" asp-controller="Account" class="buttonEdit b" onclick="clearSessions();">Edytuj dane osobowe</a>
-                </li>
-                <li>
-                    <a asp-action="ChangeEmail" asp-controller="Account" class="buttonEdit b">Zmień email</a>
-                </li>
-                <li>
-                    <a asp-action="ChangePassword" asp-controller="Account" class="buttonEdit b">Zmień hasło</a>
-                </li>
-                <li>
-                    <a asp-action="Logout" asp-controller="Account" class="buttonEdit b">Wyloguj</a>
                 </li>
 
             </ul>

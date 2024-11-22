@@ -78,8 +78,7 @@ namespace WebApplication71.Controllers
                         DataUrodzenia = model.DataUrodzenia,
                         Plec = model.Plec,
                         Telefon = model.Telefon,
-                        Photo = model.Photo,
-                        PhotoData = model.PhotoData
+                        Files = model.Files,
                     });
                     if (result != null)
                     {
@@ -267,14 +266,12 @@ namespace WebApplication71.Controllers
 
 
         [HttpGet]
-        public IActionResult Delete(string id)
+        public async Task <IActionResult> Delete()
         {
             NI.Navigation = Navigation.AccountDelete;
             try
             {
-                if (string.IsNullOrEmpty(id))
-                    return View("NotFound");
-
+                var result = await _accountService.DeleteAccountByEmail(User.Identity.Name);
                 return View();
             }
             catch (Exception ex)
@@ -287,24 +284,44 @@ namespace WebApplication71.Controllers
         [HttpPost]
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed()
         {
             try
             {
-                if (string.IsNullOrEmpty(id))
-                    return View("NotFound");
-
-                var result = await _accountService.DeleteAccountByEmail(User.Identity.Name);
+                //string email = User.Identity.Name;
+                string email = "ddd@ddd.pl";
+                var result = await _accountService.DeleteAccountByEmail(email);
                 if (result != null && result.Success)
-                    return RedirectToAction("Index", "Account");
+                    return RedirectToAction("Index", "Users");
 
-                return RedirectToAction("Delete", "Account", new { id = id });
+
+                ViewData["ErrorMessage"] = result.Message;
+
+                return View("Delete", "Account");
+                //return RedirectToAction("Index", "Account");
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> DeletePhotoUser(string photoUserId)
+        {
+            try
+            {
+                var result = await _accountService.DeletePhotoUser(photoUserId);
+                return RedirectToAction("Edit", "Account");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
 
 
 

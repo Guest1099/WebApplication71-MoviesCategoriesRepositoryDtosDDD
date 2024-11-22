@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using sib_api_v3_sdk.Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -85,7 +84,6 @@ namespace WebApplication71.Controllers
 
 
 
-
             // Wyszukiwanie
             if (!string.IsNullOrEmpty(model.q))
             {
@@ -103,8 +101,9 @@ namespace WebApplication71.Controllers
                         users = users.Where(
                             w =>
                             w.Imie.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
-                            w.Nazwisko.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
-                            w.Email.Contains(model.q, StringComparison.OrdinalIgnoreCase)
+                            w.Nazwisko.Contains(model.q, StringComparison.OrdinalIgnoreCase) 
+                            /*w.Email.Contains(model.q, StringComparison.OrdinalIgnoreCase) ||
+                            w.RoleName.Contains(model.q, StringComparison.OrdinalIgnoreCase)*/
                             ).ToList();
                         break;
                 }
@@ -389,9 +388,9 @@ namespace WebApplication71.Controllers
                         DataUrodzenia = model.DataUrodzenia,
                         Plec = model.Plec,
                         Telefon = model.Telefon,
-                        Photo = model.Photo,
-                        PhotoData = model.PhotoData,
-                        RoleName = model.RoleName
+                        RoleName = model.RoleName,
+                        //PhotosUser = model.PhotosUser,
+                        Files = model.Files
                     });
 
                     if (result != null && result.Success)
@@ -589,5 +588,59 @@ namespace WebApplication71.Controllers
 
 
 
+        /*
+                [HttpGet]
+                public async Task<IActionResult> DeletePhotoUser(string userId, string photoUserId)
+                {
+                    try
+                    {
+                        var result = await _usersService.DeletePhotoUser (photoUserId);
+                        return RedirectToAction("Edit", "Users", new { userId = userId });
+                    }
+                    catch (Exception ex)
+                    {
+                        return StatusCode(500, $"Internal server error: {ex.Message}");
+                    }
+                }*/
+
+
+        [HttpGet]
+        public async Task<IActionResult> DeletePhotoUser(string userId, string photoUserId)
+        {
+            NI.Navigation = Navigation.UsersDelete;
+            try
+            {
+                if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(photoUserId))
+                    return View("NotFound");
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        [ActionName("DeletePhotoUser")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePhotoUserConfirmed(string userId, string photoUserId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(photoUserId))
+                    return View("NotFound");
+
+                var result = await _usersService.DeletePhotoUser(photoUserId);
+                return RedirectToAction("Edit", "Users", new { userId = userId });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+    
     }
 }

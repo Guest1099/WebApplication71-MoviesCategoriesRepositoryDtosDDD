@@ -14,6 +14,7 @@ namespace WebApplication71.Services.Abs
         Task<ResultViewModel<CreateAccountDto>> CreateAccount(CreateAccountDto model);
         Task<ResultViewModel<UpdateAccountDto>> UpdateAccount(UpdateAccountDto model);
         Task<ResultViewModel<bool>> DeleteAccountByEmail(string email);
+        Task<ResultViewModel<bool>> DeletePhotoUser(string photoUserId);
         Task<ResultViewModel<ChangeEmailDto>> ChangeEmail(ChangeEmailDto model);
         Task<ResultViewModel<ChangePasswordDto>> ChangePassword(ChangePasswordDto model);
 

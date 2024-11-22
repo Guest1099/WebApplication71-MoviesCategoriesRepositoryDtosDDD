@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using WebApplication71.Models;
 using WebApplication71.Models.Enums;
 
 namespace WebApplication71.DTOs.Users
@@ -53,8 +55,6 @@ namespace WebApplication71.DTOs.Users
         public string Telefon { get; set; }
 
 
-        public byte[] Photo { get; set; }
-
 
         [Required(ErrorMessage = "To pole jest wymagane")]
         public string RoleName { get; set; }
@@ -64,7 +64,7 @@ namespace WebApplication71.DTOs.Users
 
 
 
-
-        public IFormFile PhotoData { get; set; }
+        public List <PhotoUser> PhotosUser { get; set; }
+        public List<IFormFile> Files { get; set; }
     }
 }

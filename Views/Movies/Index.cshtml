@@ -19,14 +19,14 @@
         <div class="topContainer">
             <div class="df-sb">
                 <div class="w-200px centery">
-                    <a asp-action="Create" asp-controller="Movies" class="buttonCreate">+ Dodaj nową pozycję</a>
+                    <a asp-action="Create" asp-controller="Movies" class="buttonCreate" onclick="removeItemUploadedFiles();">+ Dodaj nową pozycję</a>
                 </div>
 
 
                 <div class="df-sb mt-20 mb-20">
                     <!-- Wyszukiwarka -->
                     <div class="df mr-20">
-                        <input asp-for="q" class="searchInput" id="searchInput" />
+                        <input asp-for="q" class="searchInput" id="searchInput" placeholder="Szukana fraza..." />
 
 
                         @* link przekazuje dane do metody post *@
@@ -99,10 +99,20 @@
                                 <td class="w-40px">@index</td>
 
                                 <td class="w-50px">
-                                    <div class="image">
-                                        <partial name="_displayPhoto" model="@movie.Photo" class="rounded-image" />
-                                    </div>
-
+                                        @try
+                                        {
+                                            @if(movie.PhotosMovie != null && movie.PhotosMovie.Any())
+                                            {
+                                            var photo = movie.PhotosMovie.FirstOrDefault();
+                                                                <div class="image">
+                                                                                <partial name="_displayPhoto" model="@photo.PhotoData" class="rounded-image" />
+                                                                </div>
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                                                            
+}
                                 </td>
 
 
@@ -129,7 +139,8 @@
                                         <a asp-action="Edit"
                                            asp-controller="Movies"
                                            asp-route-movieId="@movie.MovieId"
-                                           class="deleteButton">
+                                           class="deleteButton"
+                                           onclick="removeItemUploadedFiles();">
                                             Edytuj
                                         </a>
 

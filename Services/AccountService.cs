@@ -65,9 +65,9 @@ namespace WebApplication71.Services
                         DataUrodzenia = user.DataUrodzenia,
                         Plec = user.Plec,
                         Telefon = user.Telefon,
-                        Photo = user.Photo,
                         RoleName = user.RoleName,
-                        DataDodania = user.DataDodania
+                        DataDodania = user.DataDodania,
+                        PhotosUser = user.PhotosUser
                     };
                 }
                 else
@@ -90,7 +90,10 @@ namespace WebApplication71.Services
 
             try
             {
-                var user = await _context.Users.FirstOrDefaultAsync(f => f.Email == email);
+                var user = await _context.Users
+                    .Include (i=> i.PhotosUser)
+                    .FirstOrDefaultAsync(f => f.Email == email);
+
                 if (user != null)
                 {
                     returnResult.Success = true;
@@ -108,9 +111,9 @@ namespace WebApplication71.Services
                         DataUrodzenia = user.DataUrodzenia,
                         Plec = user.Plec,
                         Telefon = user.Telefon,
-                        Photo = user.Photo,
                         RoleName = user.RoleName,
-                        DataDodania = user.DataDodania
+                        DataDodania = user.DataDodania,
+                        PhotosUser = user.PhotosUser
                     };
                 }
                 else
@@ -173,6 +176,12 @@ namespace WebApplication71.Services
                             await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, model.RoleName));
 
 
+
+                            // dodanie nowego zdjęcia
+                            await CreateNewPhoto(model.Files, user.Id);
+
+
+
                             returnResult.Success = true;
                             returnResult.Message = "Zarejestrowano nowego użytkownika";
                             returnResult.Object = model;
@@ -217,12 +226,12 @@ namespace WebApplication71.Services
             {
                 try
                 {
-                    ApplicationUser user = await _context.Users.FirstOrDefaultAsync(f => f.Id == model.Id);
+                    ApplicationUser user = await _context.Users
+                        .Include (i=> i.PhotosUser)
+                        .FirstOrDefaultAsync(f => f.Id == model.Id);
+
                     if (user != null)
                     {
-                        object photoData = model.PhotoData == null ? user.Photo : await ChangeFileToBytes(model.PhotoData);
-                        byte[] photo = photoData as byte[];
-
                         user.Update(
                             imie: model.Imie,
                             nazwisko: model.Nazwisko,
@@ -247,8 +256,8 @@ namespace WebApplication71.Services
                             await _userManager.UpdateAsync(user);
 
 
-                            // dodanie zdjęcia
-                            //await CreateNewPhoto (model.Files, user.Id);
+                            // dodanie nowego zdjęcia
+                            await CreateNewPhoto(model.Files, user.Id);
 
 
 
@@ -295,15 +304,54 @@ namespace WebApplication71.Services
             {
                 try
                 {
-                    var user = await _context.Users.FirstOrDefaultAsync(f => f.Email == email);
+                    var user = await _context.Users.FirstOrDefaultAsync (f=> f.Email == email);
                     if (user != null)
                     {
+
+                        // usunięcie zdjęć
+                        var photosUser = await _context.PhotosUser
+                            .Include(i=> i.User)
+                            .Where(w => w.User.Email == email)
+                            .ToListAsync();
+
+                        foreach (var photoUser in photosUser)
+                            _context.PhotosUser.Remove(photoUser);
+
+
+
+                        // usunięcie filmów
+                        var movies = await _context.Movies
+                            .Include(i => i.User)
+                            .Where(w => w.User.Email == email).ToListAsync();
+
+                        foreach (var movie in movies)
+                            _context.Movies.Remove(movie);
+
+
+
+                        // usunięcie logowań
+                        var logowania = await _context.Logowania
+                            .Include (i=> i.User)
+                            .Where(w => w.User.Email == email)
+                            .ToListAsync();
+
+                        foreach (var logowanie in logowania)
+                            _context.Logowania.Remove(logowanie);
+
+
+
+
                         _context.Users.Remove(user);
                         await _context.SaveChangesAsync();
 
 
+                        // wylogowanie
+                        await _signInManager.SignOutAsync ();
+
+
                         returnResult.Success = true;
                         returnResult.Object = true;
+                        returnResult.Message = "Użytkownik został usunięty poprawnie";
                     }
                     else
                     {
@@ -317,9 +365,49 @@ namespace WebApplication71.Services
             }
             else
             {
-                returnResult.Message = "Model was null";
+                returnResult.Message = "Email was null";
             }
 
+            return returnResult;
+        }
+
+
+
+
+
+
+
+        public async Task<ResultViewModel<bool>> DeletePhotoUser(string photoUserId)
+        {
+            var returnResult = new ResultViewModel<bool>() { Success = false, Message = "", Object = false };
+
+            if (!string.IsNullOrEmpty(photoUserId))
+            {
+                try
+                {
+                    var photoUser = await _context.PhotosUser.FirstOrDefaultAsync(f => f.PhotoUserId == photoUserId);
+                    if (photoUser != null)
+                    {
+                        _context.PhotosUser.Remove(photoUser);
+                        await _context.SaveChangesAsync();
+
+                        returnResult.Success = true;
+                        returnResult.Object = true;
+                    }
+                    else
+                    {
+                        returnResult.Message = "Movie was null";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    returnResult.Message = $"Exception: {ex.Message}";
+                }
+            }
+            else
+            {
+                returnResult.Message = "Id was null";
+            }
             return returnResult;
         }
 
@@ -1369,6 +1457,8 @@ namespace WebApplication71.Services
                     _context.Entry(ostatnieLogowanieUzytkownika).State = EntityState.Modified;
                     await _context.SaveChangesAsync();
                 }
+
+
             }
             catch (Exception ex)
             {
@@ -1377,119 +1467,6 @@ namespace WebApplication71.Services
         }
 
 
-
-        /*
-                /// <summary>
-                /// Przy zalogowaniu sprawdza czy do poprzedniego wylogowania została dopisana data wylogowania, jeśli nie to dopisuje
-                /// </summary>
-                private async Task SprawdzCzyZostalaDopisanaDataWylogowania(ApplicationUser user)
-                {
-                    // pobiera logowania zalogowanego użytkownika bez dopisanej daty wylogowania
-                    var logowaniaUzytkownika = await _context.Logowania
-                        .Where(w => w.UserId == user.Id && w.DataWylogowania == DateTime.Parse("01.01.0001 00:00:00"))
-                        .OrderByDescending(o => o.DataLogowania)
-                        .ToListAsync();
-
-                    if (logowaniaUzytkownika.Count > 1)
-                    {
-                        foreach (var logowanieUzytkownika in logowaniaUzytkownika)
-                        {
-                            logowanieUzytkownika.DodajDateWylogowania(
-                                dataWylogowania: DateTime.Now
-                                );
-
-                            _context.Entry(logowanieUzytkownika).State = EntityState.Modified;
-                            await _context.SaveChangesAsync();
-                        }
-                    }
-                }
-        */
-
-
-
-        /// <summary>
-        /// Przy zalogowaniu sprawdza czy do poprzedniego wylogowania została dopisana data wylogowania, jeśli nie to dopisuje
-        /// Operacja odbywa się dla wszystkich użytkowników
-        /// </summary>
-        /*private async Task SprawdzCzyZostalaDopisanaDataWylogowania()
-        {
-            foreach (var user in await _context.Users.ToListAsync())
-            {
-                foreach (var logowanie in await _context.Logowania.ToListAsync())
-                {
-
-                    var logowaniaUzytkownika = await _context.Logowania.Where(w => w.UserId == user.Id).OrderByDescending(o => o.DataLogowania).ToListAsync(); // pobranie wszytkich logowań dla danego użytkownika
-                    List<Logowanie> logowaniaUzytkownikaKopia = logowaniaUzytkownika;
-                    if (logowaniaUzytkownikaKopia.Count > 1)
-                    {
-                        logowaniaUzytkownikaKopia.RemoveAt(0); // usunięcie pierwszego rekordu i zajęcie się pozostałymi rekordami, ponieważ pierwszy rekord należy do zalogowanego użytkownika
-                        foreach (var logowanieUzytkownikaKopia in logowaniaUzytkownikaKopia)
-                        {
-                            if (logowanieUzytkownikaKopia.DataWylogowania == DateTime.Parse("01.01.0001 00:00:00"))
-                            {
-
-                                var dz = logowanieUzytkownikaKopia.DataLogowania;
-                                var dw = DateTime.Now;
-                                var cp = dw - dz;
-                                TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
-                                logowanieUzytkownikaKopia.DataWylogowania = DateTime.Now;
-                                logowanieUzytkownikaKopia.CzasPracy = czasPracy;
-
-                                _context.Entry(logowanie).State = EntityState.Modified;
-                                await _context.SaveChangesAsync();
-                            }
-
-                        }
-                    }
-                }
-            }
-
-        }
-*/
-
-
-        /*
-                private async Task SprawdzCzyZostalaDopisanaDataWylogowania()
-                {
-
-                    // Pobranie wszystkich logowań dla użytkowników z bazy danych, użyj asynchronicznego zapytania
-                    var logowaniaUzytkownikow = await _context.Logowania
-                        .Include(l => l.User) // Zakładając, że Logowanie ma referencję do User
-                        .OrderByDescending(l => l.DataLogowania) // Upewnij się, że masz odpowiednią kolejność logowań
-                        .ToListAsync();
-
-                    // Przejdź przez wszystkich użytkowników
-                    foreach (var user in await _context.Users.ToListAsync())
-                    {
-                        // Filtruj logowania dla danego użytkownika
-                        var logowaniaUzytkownika = logowaniaUzytkownikow
-                            .Where(l => l.UserId == user.Id)
-                            .ToList();
-
-
-                        foreach (var logowanieUzytkownika in logowaniaUzytkownika.Skip(0)) // Skip(1) pomija pierwszy element
-                        {
-                            // Sprawdzenie, czy nie zostało dopisane DataWylogowania
-                            if (logowanieUzytkownika.DataWylogowania == DateTime.Parse("01.01.0001 00:00:00"))
-                            {
-                                // Oblicz czas pracy
-                                var cp = DateTime.Now - logowanieUzytkownika.DataLogowania;
-                                logowanieUzytkownika.DataWylogowania = DateTime.Now;
-                                TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
-                                logowanieUzytkownika.CzasPracy = czasPracy;
-
-                                // Oznaczenie obiektu do aktualizacji
-                                _context.Entry(logowanieUzytkownika).State = EntityState.Modified;
-                            }
-                        }
-
-                    }
-
-                    // Zapisz wszystkie zmiany na raz, aby zoptymalizować wydajność
-                    await _context.SaveChangesAsync();
-                }
-
-        */
 
 
         private async Task SprawdzCzyZostalaDopisanaDataWylogowania()
@@ -1536,6 +1513,59 @@ namespace WebApplication71.Services
 
 
 
+        /// <summary>
+        /// Metoda zwracająca listę obiektów DateRange
+        /// </summary>
+        public async Task <List<DateRange>> ZestawienieDnia(List<DateTime> datas)
+        {
+
+            // Ta metoda jest w trakcie opracowywania....................
+
+
+
+            var logowania = await _context.Logowania
+                .Select(s => DateTime.Parse (s.DataLogowania))
+                .ToListAsync();
+
+            
+            return logowania
+                .GroupBy(d => d.Date)  // Grupowanie po dacie (ignorując godzinę)
+                .Select(group =>
+                {
+                    var minTime = group.Min(d => d); // Najwcześniejsza godzina
+                    var maxTime = group.Max(d => d); // Najpóźniejsza godzina
+
+                    // Zwracamy nowy obiekt DateRange, który zawiera start i end
+                    return new DateRange(minTime, maxTime);
+                })
+                .ToList();
+
+
+
+            /*
+                        var logowania = await _context.Logowania
+                            .Select (s=> s.DataLogowania)
+                            .ToListAsync ();
+
+
+                        return datas
+                            .GroupBy(d => d.Date)  // Grupowanie po dacie (ignorując godzinę)
+                            .Select(group =>
+                            {
+                                var minTime = group.Min(d => d); // Najwcześniejsza godzina
+                                var maxTime = group.Max(d => d); // Najpóźniejsza godzina
+
+                                // Zwracamy nowy obiekt DateRange, który zawiera start i end
+                                return new DateRange(minTime, maxTime);
+                            })
+                            .ToList();
+            */
+
+        }
+
+
+
+
 
         /// <summary>
         /// Zamienia zdjęcie na bytes
@@ -1563,6 +1593,45 @@ namespace WebApplication71.Services
                 return null;
             }
         }
+
+
+
+
+        /// <summary>
+        /// Zamienia zdjęcie na bytes
+        /// </summary>
+        private async Task CreateNewPhoto(List<IFormFile> files, string userId)
+        {
+            try
+            {
+                if (files != null && files.Count > 0)
+                {
+                    foreach (var file in files)
+                    {
+                        if (file.Length > 0)
+                        {
+                            byte[] photoData;
+                            using (var stream = new MemoryStream())
+                            {
+                                file.CopyTo(stream);
+                                photoData = stream.ToArray();
+
+                                PhotoUser photoUser = new PhotoUser()
+                                {
+                                    PhotoUserId = Guid.NewGuid().ToString(),
+                                    PhotoData = photoData,
+                                    UserId = userId
+                                };
+                                _context.PhotosUser.Add(photoUser);
+                                await _context.SaveChangesAsync();
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
+
 
 
 

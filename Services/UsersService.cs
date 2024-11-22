@@ -33,6 +33,7 @@ namespace WebApplication71.Services
             try
             {
                 var users = await _context.Users
+                    .Include (i=> i.PhotosUser)
                     .OrderByDescending(o => o.DataDodania)
                     .ToListAsync();
 
@@ -54,9 +55,9 @@ namespace WebApplication71.Services
                             DataUrodzenia = s.DataUrodzenia,
                             Plec = s.Plec,
                             Telefon = s.Telefon,
-                            Photo = s.Photo,
                             RoleName = s.RoleName,
-                            DataDodania = s.DataDodania
+                            DataDodania = s.DataDodania,
+                            PhotosUser = s.PhotosUser
                         }).ToList();
                 }
                 else
@@ -81,7 +82,10 @@ namespace WebApplication71.Services
             {
                 try
                 {
-                    var user = await _context.Users.FirstOrDefaultAsync(f => f.Id == userId);
+                    var user = await _context.Users
+                        .Include(i => i.PhotosUser)
+                        .FirstOrDefaultAsync(f => f.Id == userId);
+
                     if (user != null)
                     {
                         returnResult.Success = true;
@@ -99,9 +103,9 @@ namespace WebApplication71.Services
                             DataUrodzenia = user.DataUrodzenia,
                             Plec = user.Plec,
                             Telefon = user.Telefon,
-                            Photo = user.Photo,
                             RoleName = user.RoleName,
-                            DataDodania = user.DataDodania
+                            DataDodania = user.DataDodania,
+                            PhotosUser = user.PhotosUser
                         };
                     }
                     else
@@ -131,7 +135,10 @@ namespace WebApplication71.Services
             {
                 try
                 {
-                    var user = await _context.Users.FirstOrDefaultAsync(f => f.Email == email);
+                    var user = await _context.Users
+                        .Include(i => i.PhotosUser)
+                        .FirstOrDefaultAsync(f => f.Email == email);
+
                     if (user != null)
                     {
                         returnResult.Success = true;
@@ -149,9 +156,9 @@ namespace WebApplication71.Services
                             DataUrodzenia = user.DataUrodzenia,
                             Plec = user.Plec,
                             Telefon = user.Telefon,
-                            Photo = user.Photo,
                             RoleName = user.RoleName,
-                            DataDodania = user.DataDodania
+                            DataDodania = user.DataDodania,
+                            PhotosUser = user.PhotosUser
                         };
                     }
                     else
@@ -221,7 +228,7 @@ namespace WebApplication71.Services
 
 
 
-                            // dodanie zdjęcia
+                            // dodanie nowego zdjęcia
                             await CreateNewPhoto(model.Files, user.Id);
 
 
@@ -292,10 +299,6 @@ namespace WebApplication71.Services
                         await _userManager.UpdateAsync(user);
 
 
-                        // dodanie zdjęcia
-                        //await CreateNewPhoto(model.Files, user.Id);
-
-
 
                         // usunięcie użytkownika z poprzednich ról
                         var roles = _context.Roles.ToList().Select(s => s.Name).ToList();
@@ -304,6 +307,13 @@ namespace WebApplication71.Services
                         // i przypisanie do kolejnej
                         await _userManager.AddToRoleAsync(user, model.RoleName);
                         await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, model.RoleName));
+
+
+
+
+                        // dodanie nowego zdjęcia
+                        await CreateNewPhoto(model.Files, user.Id);
+
 
 
 
@@ -535,6 +545,11 @@ namespace WebApplication71.Services
                     if (user != null)
                     {
 
+                        // usunięcie zdjęć
+                        var photosUser = await _context.PhotosUser.Where(w => w.UserId == userId).ToListAsync();
+                        foreach (var photoUser in photosUser)
+                            _context.PhotosUser.Remove(photoUser);
+
                         // usunięcie filmów
                         var movies = await _context.Movies.Where(w => w.UserId == userId).ToListAsync();
                         foreach (var movie in movies)
@@ -576,10 +591,50 @@ namespace WebApplication71.Services
 
 
 
+        public async Task<ResultViewModel<bool>> DeletePhotoUser(string photoUserId)
+        {
+            var returnResult = new ResultViewModel<bool>() { Success = false, Message = "", Object = false };
+
+            if (!string.IsNullOrEmpty(photoUserId))
+            {
+                try
+                {
+                    var photoUser = await _context.PhotosUser.FirstOrDefaultAsync(f => f.PhotoUserId == photoUserId);
+                    if (photoUser != null)
+                    {
+                        _context.PhotosUser.Remove(photoUser);
+                        await _context.SaveChangesAsync();
+
+                        returnResult.Success = true;
+                        returnResult.Object = true;
+                    }
+                    else
+                    {
+                        returnResult.Message = "Movie was null";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    returnResult.Message = $"Exception: {ex.Message}";
+                }
+            }
+            else
+            {
+                returnResult.Message = "Id was null";
+            }
+            return returnResult;
+        }
+
+
+
+
+
+
+
         /// <summary>
         /// Zamienia zdjęcie na bytes
         /// </summary>
-        private async Task CreateNewPhoto (List<IFormFile> files, string userId)
+        private async Task CreateNewPhoto(List<IFormFile> files, string userId)
         {
             try
             {
@@ -589,7 +644,7 @@ namespace WebApplication71.Services
                     {
                         if (file.Length > 0)
                         {
-                            byte [] photoData;
+                            byte[] photoData;
                             using (var stream = new MemoryStream())
                             {
                                 file.CopyTo(stream);
@@ -610,7 +665,7 @@ namespace WebApplication71.Services
             }
             catch { }
         }
-         
+
 
 
     }

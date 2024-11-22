@@ -7,10 +7,7 @@
 
 
 
-
-
 <form method="post" asp-action="Create" asp-controller="Movies" enctype="multipart/form-data">
-
 
 
     <table>
@@ -36,39 +33,6 @@
                 </div>
             </td>
         </tr>
-
-
-
-
-        @* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *@
-        <tr>
-            <td class="leftColumn">
-                <span>Photo</span>
-            </td>
-            <td class="rightColumn">
-                @* <div class="db">
-                    <div id="imageContainer" class="image">
-                        <img id="imagePreview" alt="Uploaded Photo" style="display: none;" />
-                    </div>
-                    <input asp-for="Files" multiple onchange="saveFiles()" id="files" style="border: none; background-color: rgb(250,250,250);" />
-                </div> *@
-
-
-                <div class="row">
-                    <div class="fieldName">
-                        <span>Dodaj zdjęcie lub zdjęcia</span>
-                    </div>
-                    <div class="fieldEdit">
-                        <input id="files" asp-for="Files" multiple onchange="saveFiles()" />
-                    </div>
-                </div>
-
-            </td>
-        </tr>
-
-
-
-
         <tr>
             <td class="leftColumn">
                 <label asp-for="Price"></label>
@@ -91,6 +55,18 @@
                 </div>
             </td>
         </tr>
+        <tr>
+            <td class="leftColumn">
+                <span>Dodaj zdjęcie</span>
+            </td>
+            <td class="rightColumn">
+                <div class="db fieldEdit">
+                    <div id="imageContainer" class="db"></div>
+                    <input id="files" asp-for="Files" accept="image/*" multiple onchange="saveFiles();" />
+                </div>
+            </td>
+        </tr>
+
     </table> 
      
 
@@ -104,6 +80,7 @@
 </form>
 
 
+
 <!-- Zwraca komunikat błędu, o ile takowy się pojawi -->
 <span class="c-red">@ViewData["ErrorMessage"]</span>
 
@@ -112,87 +89,5 @@
 
 
 
-<img id='imagePhoto' />
 
 
-
-
-@section Scripts {
-
-    @*Skrypt pozwalający zapamiętać wybrane zdjęcia po przeładowaniu strony*@
-
-
-
-    <script>
-        var filesInput = document.getElementById('files');
-        var imagePhoto = document.getElementById('imagePhoto');
-
-
-        // Funkcja do zapisywania przesłanych plików w sessionStorage
-        function saveFiles() {
-            var files = filesInput.files;
-
-            if (files.length > 0) {
-                var filesArray = Array.from(files);
-                var filesData = filesArray.map(file => {
-                    return {
-                        file: file,
-                        name: file.name,
-                        type: file.type,
-                        size: file.size
-                    };
-                });
-
-                sessionStorage.setItem('uploadedFiles', JSON.stringify(filesData));
-
-                
-                // wyświetlenie zdjęcia
-                imagePhoto.src = URL.createObjectURL(filesData[0].file);
-                imagePhoto.style.width = '150px';
-                imagePhoto.style.height = '120px';
-
-
-                // dopisz tutaj kod pobierający dane z sesji i wyświetl je w imagePhoto
-
-
-
-
-
-
-
-
-            }
-        }
-
-        // Funkcja pobiera dane z sesji do zmiennej po załadowaniu okna
-        window.onload = function () {
-            var uploadedFilesData = sessionStorage.getItem('uploadedFiles');
-            if (uploadedFilesData) {
-                var uploadedFiles = JSON.parse(uploadedFilesData); // zamienia tekst na obiekt
-
-
-                // Utworzenie nowej listy plików
-                var newFilesList = new DataTransfer();
-
-                uploadedFiles.forEach(file => {
-                    // Utworzenie nowego pliku i dodanie go do listy plików
-                    var newFile = new File([], file.name, { type: file.type, size: file.size });
-                    newFilesList.items.add(newFile);
-                });
-
-                // Przypisanie nowej listy plików do pola input
-                filesInput.files = newFilesList.files;
-
-                 
-                //alert (filesInput.files[0].name);
-                 
-                // wyświetlenie zdjęcia
-                imagePhoto.src = URL.createObjectURL(uploadedFiles[0].name);
-                imagePhoto.style.width = '150px';
-                imagePhoto.style.height = '120px';
-                //sessionStorage.clear();
-            }
-        };
-
-    </script>
-}

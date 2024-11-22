@@ -41,7 +41,6 @@
                                     <a asp-action="ChangeEmail" asp-controller="Account">Zmień email</a>
                                     <a asp-action="ChangePassword" asp-controller="Account">Zmień hasło</a>
 
-                                    @*Opcja "Delete" nie jest dostępna dla administratora wtedy gdy ich liczba jest >= 1*@
                                     @{
                                         try
                                         {
@@ -55,11 +54,13 @@
                                             }
                                         }
                                         catch { }
+
+
+                                        <a asp-action="Edit" asp-controller="Account" onclick="clearSessions();">Zaktualizuj dane</a>
+                                        <a asp-action="Messages" asp-controller="Account">Wiadomości</a>
+                                        <a asp-action="Logout" asp-controller="Account">Wyloguj</a>
                                     }
 
-                                    <a asp-action="Edit" asp-controller="Account" onclick="clearSessions();">Zaktualizuj dane</a>
-                                    <a asp-action="Messages" asp-controller="Account">Wiadomości</a>
-                                    <a asp-action="Logout" asp-controller="Account">Wyloguj</a>
                                 </div>
                             </div>
                         </div>
@@ -97,7 +98,6 @@
     {
         @RenderBody()
     }
-
 
 
 

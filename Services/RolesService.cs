@@ -247,8 +247,7 @@ namespace WebApplication71.Services
                         Pesel = s.Pesel,
                         DataUrodzenia = s.DataUrodzenia,
                         Plec = s.Plec,
-                        Telefon = s.Telefon,
-                        Photo = s.Photo
+                        Telefon = s.Telefon
                     })
                 .ToList();
 

@@ -31,7 +31,7 @@ namespace WebApplication71.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(GetLogowaniaDto model)
         {
-            NI.Navigation = Navigation.RolesIndex;
+            NI.Navigation = Navigation.LogowaniaIndex;
             try
             {
                 /*if (model.DataZalogowaniaOd.ToShortDateString() == "01.01.0001 00:00:00")
