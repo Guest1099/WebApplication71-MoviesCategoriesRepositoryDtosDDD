@@ -152,6 +152,9 @@
                     bool hasPrevious = Model.Paginator.HasPreviousPage;
                     bool hasNext = Model.Paginator.HasNexPage;
 
+                    if (Model.PageIndex == Model.Paginator.TotalPage)
+                        hasPrevious = true;
+
 
                     <div class="df-sb mt-30 mb-50">
 
