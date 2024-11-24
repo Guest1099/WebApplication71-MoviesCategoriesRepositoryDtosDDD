@@ -777,6 +777,38 @@ button {
 
 
 
+/* Edytor tekstu ----------------------------------------------------------------------------------- */
+
+#toolbar {
+    margin-bottom: 10px;
+}
+
+button {
+    font-size: 16px;
+    padding: 5px 10px;
+    margin-right: 5px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+}
+
+#editor {
+    background-color: white;
+    border: 1px solid #ccc;
+    min-height: 300px;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #e0e0e0;
+}
+
+button:active {
+    background-color: #d0d0d0;
+}
+
+
 /* Create, edit ----------------------------------------------------------------------------------- */
 
 

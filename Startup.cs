@@ -47,7 +47,7 @@ namespace WebApplication71
                     cookie.LoginPath = "/Account/Login";
                     cookie.AccessDeniedPath = "/Account/Login";
                     cookie.Cookie.HttpOnly = true;
-                    cookie.ExpireTimeSpan = TimeSpan.FromMinutes(5); // Ustal czas wygaœniêcia ciasteczka
+                    cookie.ExpireTimeSpan = TimeSpan.FromMinutes(20); // Ustal czas wygaœniêcia ciasteczka
                     cookie.SlidingExpiration = true; // Odnawiaj czas wygaœniêcia przy aktywnoœci
                 });
             services.AddAuthorization();
@@ -57,7 +57,7 @@ namespace WebApplication71
                 cookie.LoginPath = "/Account/Login";
                 cookie.AccessDeniedPath = "/Account/Login";
                 cookie.Cookie.HttpOnly = true;
-                cookie.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+                cookie.ExpireTimeSpan = TimeSpan.FromMinutes(20);
                 cookie.SlidingExpiration = true;
             });
 
