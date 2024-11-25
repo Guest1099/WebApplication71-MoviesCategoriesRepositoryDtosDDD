@@ -21,6 +21,7 @@
             <td class="leftColumn">
                 <label asp-for="Description"></label>
             </td>
+@* 
             <td class="rightColumn">
                 <div class="db">
                     <div id="toolbar">
@@ -54,6 +55,15 @@
                     </div>
                     <div id="editor" contenteditable="true"></div>
                     <input type="hidden" id="description" name="Description" />
+                </div>
+            </td>
+ *@
+            <td class="rightColumn">
+                <div class="db">
+                    <textarea asp-for="Description" style="height: 150px;"></textarea> 
+                    
+                    @* To jest potrzebne do edytora ckeditor *@
+                    @* <textarea asp-for="Description" id="editor"></textarea> *@
                 </div>
             </td>
         </tr>
@@ -111,7 +121,19 @@
 
 
 @section Scripts {
+
+    <script src="https://cdn.ckeditor.com/ckeditor5/38.1.0/classic/ckeditor.js"></script>
+
     <script type="text/javascript">
+
+
+        ClassicEditor
+            .create(document.querySelector('#editor'))
+            .catch(error => {
+                console.error(error);
+            });
+
+
 
         let selectElement = document.getElementById("fontSizeSelect");
         for (let i = 8; i <= 36; i++) {

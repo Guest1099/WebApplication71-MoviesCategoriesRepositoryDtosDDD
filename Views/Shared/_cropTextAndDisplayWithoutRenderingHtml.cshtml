@@ -1,0 +1,56 @@
+﻿@*
+Pobiera tekst o określonej długości oraz czyści z tagów html takich jak <p></p>, <span></span>, <b></b> i tak dalej
+
+wejście : "<span style="font-size:12px; font-weight:bold; text-decoration:underline;">abc</span>"
+tekst w bazie : "<span style="font-size:12px; font-weight:bold; text-decoration:underline;">abc</span>"
+ostateczny wynik : "<span style="font-size:12px; font-weight:bold; text-decoration:underline;">abc</span>"
+
+Metoda wyświetla sam text bez renderowania do html
+*@
+
+@model Tuple<string, int>
+
+@{
+    string text = Model.Item1;
+    int length = Model.Item2;
+
+    try
+    {
+        if (!string.IsNullOrEmpty(text))
+        {
+            // Usuwamy wszystkie tagi HTML
+            text = Regex.Replace(text, "<.*?>", string.Empty);
+
+            // Jeśli tekst jest wystarczająco długi (przynajmniej 6 znaków)
+            if (text.Length >= 6)
+            {
+                for (int i = 0; i <= text.Length - 6; i++)
+                {
+                    if (text.Substring(i, 6) == "&nbsp;")
+                    {
+                        // Usuwamy "&nbsp;" z tekstu
+                        text = text.Remove(i, 6);
+                        i--; // Cofamy się o 1, aby nie pominąć następnych wystąpień
+                    }
+                }
+            }
+
+            text = text.Trim();
+
+            // Dekodowanie encji HTML, aby tagi HTML mogły być poprawnie interpretowane
+            //text = System.Net.WebUtility.HtmlDecode(text);
+
+
+            if (text.Length > length)
+            {
+                text = text.Substring(0, length);
+                <span>@text</span>
+            }
+            else
+            {
+                <span>@text</span>
+            }
+        }
+    }
+    catch { }
+}
