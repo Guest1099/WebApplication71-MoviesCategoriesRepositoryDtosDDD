@@ -9,71 +9,73 @@
         index = 0;
     }
 
-} 
+}
 
 
 
 
-<div class="overFormContainer">
+@if (Model.Roles != null && Model.Roles.Any())
+{
+    <div class="overFormContainer">
 
-    <form method="post" asp-action="Index" asp-controller="Roles" class="formContainer">
-
-
-        <div class="topContainer">
-            <div class="df-sb">
-                <div class="w-200px centery">
-                    <a asp-action="Create" asp-controller="Roles" class="buttonCreate">+ Dodaj nową pozycję</a>
-                </div>
+        <form method="post" asp-action="Index" asp-controller="Roles" class="formContainer">
 
 
-                <div class="df-sb mt-20 mb-20">
-                    <!-- Wyszukiwarka -->
-                    <div class="df mr-20">
-                        <input asp-for="q" class="searchInput" id="searchInput" placeholder="Szukana fraza..." />
+            <div class="topContainer">
+                <div class="df-sb">
+                    <div class="w-200px centery">
+                        <a asp-action="Create" asp-controller="Roles" class="buttonCreate">+ Dodaj nową pozycję</a>
+                    </div>
 
 
-                        @* link przekazuje dane do metody post *@
-                        <input type="submit" value="Szukaj" class="searchButton" />
+                    <div class="df-sb mt-20 mb-20">
+                        <!-- Wyszukiwarka -->
+                        <div class="df mr-20">
+                            <input asp-for="q" class="searchInput" id="searchInput" placeholder="Szukana fraza..." />
 
 
-                        @* link przekazuje dane do metody get *@
-                        @* <a asp-action="Index"
-                           asp-controller="Roles"
+                            @* link przekazuje dane do metody post *@
+                            <input type="submit" value="Szukaj" class="searchButton" />
+
+
+                            @* link przekazuje dane do metody get *@
+                            @* <a asp-action="Index"
+                        asp-controller="Roles"
                         class="searchButton"
                         id="searchButton">
                         Szukaj
                         </a> *@
 
+                        </div>
+
+                        <!-- Sortowanie -->
+                        <div class="df-sb centery" style="width: 220px;">
+                            <span class="ml-10 mr-5">Sortuj wg</span>
+                            <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption" id="sortowanieOptionSelectList"></select>
+                            @* <input type="submit" value="Sortuj" class="searchButton" /> *@
+                        </div>
                     </div>
 
-                    <!-- Sortowanie -->
-                    <div class="df-sb centery" style="width: 220px;">
-                        <span class="ml-10 mr-5">Sortuj wg</span>
-                        <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption" id="sortowanieOptionSelectList"></select>
-                        @* <input type="submit" value="Sortuj" class="searchButton" /> *@
-                    </div>
                 </div>
 
             </div>
 
-        </div>
 
 
 
 
 
+            <div class="tableContainer">
 
-        <div class="tableContainer">
 
-            @if (Model.Roles != null && Model.Roles.Any())
-            {
-                if (!string.IsNullOrEmpty(Model.q))
+
+                @if (!string.IsNullOrEmpty(Model.q))
                 {
-                    <h3>Wyniki wyszukiwania dla: @Model.q</h3>
-                    <div class="df">
-                        <span>Ilość znalezionych wyników</span>
-                        <h3>@Model.Roles.Count</h3>
-                    </div>
+                <h3>Wyniki wyszukiwania dla: @Model.q</h3>
+                <div class="df">
+                    <span>Ilość znalezionych wyników</span>
+                    <h3>@Model.Roles.Count</h3>
+                </div>
                 }
 
 
@@ -153,131 +155,131 @@
 
 
                 <!-- Paginator -->
-                if (Model.ShowPaginator == Model.DisplayNumersListAndPaginatorLinks)
+                @if (Model.ShowPaginator == Model.DisplayNumersListAndPaginatorLinks)
                 {
-                    bool hasPrevious = Model.Paginator.HasPreviousPage;
-                    bool hasNext = Model.Paginator.HasNexPage;
+                bool hasPrevious = Model.Paginator.HasPreviousPage;
+                bool hasNext = Model.Paginator.HasNexPage;
 
-                    if (Model.PageIndex == Model.Paginator.TotalPage)
-                        hasPrevious = true;
+                if (Model.PageIndex == Model.Paginator.TotalPage)
+                hasPrevious = true;
 
 
-                    <div class="df-sb mt-30 mb-50">
+                <div class="df-sb mt-30 mb-50">
 
-                        <div class="w-40">
-                            <div class="df centery">
-                                <p>Pokaż</p>
-                                <select asp-for="PageSize" asp-items='@Model.SelectListNumberItems' class="selectOption" id="pageSizeSelectList"></select>
-                                @* tutaj nie powinno być buttona typu input submit *@
-                                @* <input type="submit" value="Wybierz" class="selectOptionButton" id="selectButton" /> *@
-                            </div>
+                    <div class="w-40">
+                        <div class="df centery">
+                            <p>Pokaż</p>
+                            <select asp-for="PageSize" asp-items='@Model.SelectListNumberItems' class="selectOption" id="pageSizeSelectList"></select>
+                            @* tutaj nie powinno być buttona typu input submit *@
+                            @* <input type="submit" value="Wybierz" class="selectOptionButton" id="selectButton" /> *@
                         </div>
-                         
-
-                        <div class="w-60 centery">
-                            <div class="w-100 centery">
-                                <div class="df fs-11 centery">
+                    </div>
 
 
-
-                                    <!-- przycisk prev -->
-                                    @if (hasPrevious)
-                                    {
-                                        <a asp-action="Index"
-                                           asp-controller="Roles"
-                                           asp-route-PageSize="@Model.PageSize"
-                                           asp-route-PageIndex="@(Model.Paginator.PageIndex - 1)"
-                                           asp-route-q="@Model.q"
-                                           asp-route-SortowanieOption="@Model.SortowanieOption"
-                                           class="paginatorButton">
-                                            Prev
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        @* <a asp-action="Index"
-                                           asp-controller="Roles"
-                                           class="paginatorButton disable-link">
-                                            Prev
-                                        </a> *@
-                                    }
+                    <div class="w-60 centery">
+                        <div class="w-100 centery">
+                            <div class="df fs-11 centery">
 
 
-                                    <div class="df ml-10 mr-10">
-                                        @{
 
-                                            string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
+                                <!-- przycisk prev -->
+                                @if (hasPrevious)
+                                {
+                                    <a asp-action="Index"
+                                       asp-controller="Roles"
+                                       asp-route-PageSize="@Model.PageSize"
+                                       asp-route-PageIndex="@(Model.Paginator.PageIndex - 1)"
+                                       asp-route-q="@Model.q"
+                                       asp-route-SortowanieOption="@Model.SortowanieOption"
+                                       class="paginatorButton">
+                                        Prev
+                                    </a>
+                                }
+                                else
+                                {
+                                    @* <a asp-action="Index"
+                            asp-controller="Roles"
+                            class="paginatorButton disable-link">
+                            Prev
+                            </a> *@
+                                }
 
-                                                <!-- przeniesienie do pierwszej strony -->
-                                            if (Model.DisplayButtonLeftTrzyKropki)
+
+                                <div class="df ml-10 mr-10">
+                                    @{
+
+                                        string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
+
+                                        <!-- przeniesienie do pierwszej strony -->
+                                        if (Model.DisplayButtonLeftTrzyKropki)
+                                        {
+                                            <a asp-action="Index"
+                                               asp-controller="Roles"
+                                               asp-route-PageSize="@Model.PageSize"
+                                               asp-route-PageIndex="1"
+                                               asp-route-q="@Model.q"
+                                               asp-route-SortowanieOption="@Model.SortowanieOption"
+                                               class="paginator-item"
+                                               style="backgroun-color: transparent"
+                                               id="buttonLeftTrzyKropki">
+                                                ...
+                                            </a>
+                                        }
+
+
+
+                                        <!-- środkowe przyciski paginacji -->
+                                        for (var i = Model.Start; i <= Model.End; i++)
+                                        {
+                                            if (i == Model.PageIndex)
                                             {
-                                                    <a asp-action="Index"
-                                                       asp-controller="Roles"
-                                                       asp-route-PageSize="@Model.PageSize"
-                                                       asp-route-PageIndex="1"
-                                                       asp-route-q="@Model.q"
-                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                       class="paginator-item"
-                                                       style="backgroun-color: transparent"
-                                                       id="buttonLeftTrzyKropki">
-                                                        ...
-                                                    </a>
+                                                style = "padding: 7px 10px; background-color: lightgray; color: black; font-weight: bold";
                                             }
-
-
-
-                                                <!-- środkowe przyciski paginacji -->
-                                            for (var i = Model.Start; i <= Model.End; i++)
+                                            else
                                             {
-                                                if (i == Model.PageIndex)
-                                                {
-                                                    style = "padding: 7px 10px; background-color: lightgray; color: black; font-weight: bold";
-                                                }
-                                                else
-                                                {
-                                                    style = "padding: 7px 10px; background-color: white;";
-                                                }
-                                                if (i <= Model.Paginator.TotalPage)
-                                                {
-                                                        <a asp-action="Index"
-                                                           asp-controller="Roles"
-                                                           asp-route-PageSize="@Model.PageSize"
-                                                           asp-route-PageIndex="@i"
-                                                           asp-route-q="@Model.q"
-                                                           asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                           class="paginator-item"
-                                                           style="@style"
-                                                           id="button">
-                                                            @i
-                                                        </a>
-                                                }
+                                                style = "padding: 7px 10px; background-color: white;";
                                             }
-
-
-                                                <!-- przeniesienie do ostatniej strony -->
-                                            if (Model.DisplayButtonRightTrzyKropki)
+                                            if (i <= Model.Paginator.TotalPage)
                                             {
-                                                    <a asp-action="Index"
-                                                       asp-controller="Roles"
-                                                       asp-route-PageSize="@Model.PageSize"
-                                                       asp-route-PageIndex="@Model.Paginator.TotalPage"
-                                                       asp-route-q="@Model.q"
-                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                       class="paginator-item"
-                                                       style="backgroun-color: transparent"
-                                                       id="buttonRightTrzyKropki">
-                                                        ...
-                                                    </a>
+                                                <a asp-action="Index"
+                                                   asp-controller="Roles"
+                                                   asp-route-PageSize="@Model.PageSize"
+                                                   asp-route-PageIndex="@i"
+                                                   asp-route-q="@Model.q"
+                                                   asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                   class="paginator-item"
+                                                   style="@style"
+                                                   id="button">
+                                                    @i
+                                                </a>
                                             }
                                         }
-                                    </div>
+
+
+                                        <!-- przeniesienie do ostatniej strony -->
+                                        if (Model.DisplayButtonRightTrzyKropki)
+                                        {
+                                            <a asp-action="Index"
+                                               asp-controller="Roles"
+                                               asp-route-PageSize="@Model.PageSize"
+                                               asp-route-PageIndex="@Model.Paginator.TotalPage"
+                                               asp-route-q="@Model.q"
+                                               asp-route-SortowanieOption="@Model.SortowanieOption"
+                                               class="paginator-item"
+                                               style="backgroun-color: transparent"
+                                               id="buttonRightTrzyKropki">
+                                                ...
+                                            </a>
+                                        }
+                                    }
+                                </div>
 
 
 
 
-                                    <!-- przycisk next -->
-                                    @if (hasNext)
-                                    {
+                                <!-- przycisk next -->
+                                @if (hasNext)
+                                {
                                     <a asp-action="Index"
                                        asp-controller="Roles"
                                        asp-route-PageSize="@Model.PageSize"
@@ -287,45 +289,46 @@
                                        class="paginatorButton">
                                         Next
                                     </a>
-                                    }
-                                    else
-                                    {
-                                        @* <a asp-action="Index"
-                                           asp-controller="Roles"
-                                           class="paginatorButton disable-link">
-                                            Next
-                                        </a> *@
-                                    }
+                                }
+                                else
+                                {
+                                    @* <a asp-action="Index"
+                            asp-controller="Roles"
+                            class="paginatorButton disable-link">
+                            Next
+                            </a> *@
+                                }
 
 
 
-                                </div>
                             </div>
                         </div>
-
                     </div>
 
+                </div>
+
                 }
 
 
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(Model.q))
-                {
-                    <p>Nie znaleziono ról pasujących do Twojego zapytania: <strong>@Model.q</strong>.</p>
-                }
-                else
-                {
-                    <p>Brak elementów w bazie danych.</p>
-                }
-            }
 
+            </div>
+        </form>
+    </div>
+}
+else
+{
+    if (!string.IsNullOrEmpty(Model.q))
+    {
+        <p>Nie znaleziono ról pasujących do Twojego zapytania: <strong>@Model.q</strong>.</p>
+    }
+    else
+    {
+        <div class="centerxy db" style="height: 80vh;">
+            <h1 class="mb-20">Brak elementów w bazie danych...</h1>
+            <a asp-action="Create" asp-controller="Roles" class="buttonCreate">Dodaj nową pozycję</a>
         </div>
-
-    </form>
-
-</div>
+    }
+}
 
 
 
@@ -334,7 +337,7 @@
 
 @section Scripts {
     <script type="text/javascript">
- 
+
 
         new Paginator(
             'Roles',

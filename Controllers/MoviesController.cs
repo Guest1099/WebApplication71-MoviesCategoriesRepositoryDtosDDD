@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.VisualStudio.Web.CodeGeneration;
 using System;
 using System.Collections.Generic;
@@ -100,7 +101,6 @@ namespace WebApplication71.Controllers
                     model.DisplayNumersListAndPaginatorLinks = false;
                 }
             }
-
 
 
 

@@ -44,10 +44,10 @@
                     if (await UserManager.IsInRoleAsync(zalogowanyUser, "Administrator"))
                     {
                         <li>
-                            <a asp-action="Index" asp-controller="Users" class="buttonDelete" onclick="removeItemUploadedFiles();">Users (@users.Count)</a>
+                            <a asp-action="Index" asp-controller="Users" class="buttonEdit" onclick="removeItemUploadedFiles();">Users (@users.Count)</a>
                         </li>
                         <li>
-                            <a asp-action="Index" asp-controller="Roles" class="buttonDelete">Roles (@roles.Count)</a>
+                            <a asp-action="Index" asp-controller="Roles" class="buttonEdit">Roles (@roles.Count)</a>
                         </li>
                     }
                 }
@@ -57,7 +57,7 @@
                     <a asp-action="Index" asp-controller="Categories" class="buttonEdit" onclick="removeSessionPageIndex();">Categories (@categories.Count)</a>
                 </li>
                 <li>
-                    <a asp-action="Index" asp-controller="Movies" class="buttonDelete" onclick="removeItemUploadedFiles();">Movies (@movies.Count)</a>
+                    <a asp-action="Index" asp-controller="Movies" class="buttonEdit" onclick="removeItemUploadedFiles();">Movies (@movies.Count)</a>
                 </li>
                 <li>
                     <a asp-action="Index" asp-controller="Logowania" class="buttonEdit">Historia logowań (@logowania.Count)</a>

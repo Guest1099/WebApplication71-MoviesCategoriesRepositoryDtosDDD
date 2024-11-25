@@ -12,66 +12,70 @@
 
 
 
-<div class="overFormContainer">
-
-    <form method="post" asp-action="Index" asp-controller="Users" class="formContainer">
-
-
-        <div class="topContainer">
-            <div class="df-sb">
-                <div class="w-200px centery">
-                    <a asp-action="Create" asp-controller="Users" class="buttonCreate" onclick="removeItemUploadedFiles();">+ Dodaj nową pozycję</a>
-                </div>
+@if (Model.Users != null && Model.Users.Any())
+{
 
 
-                <div class="df-sb mt-20 mb-20">
+    <div class="overFormContainer">
 
-                    <!-- Wyszukiwarka -->
-                    <div class="df centery mr-20">
-                        <span class="ml-10 mr-5">Wyszukiwarka</span>
-                        <input asp-for="q" class="searchInput" id="searchInput" placeholder="Szukana fraza..." />
-                        @* link przekazuje dane do metody post *@
-                        <input type="submit" value="Szukaj" class="searchButton" />
+        <form method="post" asp-action="Index" asp-controller="Users" class="formContainer">
 
 
-                        @* link przekazuje dane do metody get *@
-                        @* <a asp-action="Index"
+            <div class="topContainer">
+                <div class="df-sb">
+                    <div class="w-200px centery">
+                        <a asp-action="Create" asp-controller="Users" class="buttonCreate" onclick="removeItemUploadedFiles();">+ Dodaj nową pozycję</a>
+                    </div>
+
+
+                    <div class="df-sb mt-20 mb-20">
+
+                        <!-- Wyszukiwarka -->
+                        <div class="df centery mr-20">
+                            <span class="ml-10 mr-5">Wyszukiwarka</span>
+                            <input asp-for="q" class="searchInput" id="searchInput" placeholder="Szukana fraza..." />
+                            @* link przekazuje dane do metody post *@
+                            <input type="submit" value="Szukaj" class="searchButton" />
+
+
+                            @* link przekazuje dane do metody get *@
+                            @* <a asp-action="Index"
                         asp-controller="Users"
                         class="searchButton"
                         id="searchButton">
                         Szukaj
                         </a> *@
-                    </div>
+                        </div>
 
 
-                    <!-- Sortowanie -->
-                    <div class="df-sb centery" style="width: 200px;">
-                        <span class="ml-10 mr-5">Szukaj w</span>
-                        <select asp-for="SearchOption" asp-items='@Model.SelectListSearchOptionItems' class="selectOption" id="searchOptionSelectList"></select>
+                        <!-- Sortowanie -->
+                        <div class="df-sb centery" style="width: 200px;">
+                            <span class="ml-10 mr-5">Szukaj w</span>
+                            <select asp-for="SearchOption" asp-items='@Model.SelectListSearchOptionItems' class="selectOption" id="searchOptionSelectList"></select>
+                        </div>
+
+                        <!-- Sortowanie -->
+                        <div class="df-sb centery" style="width: 220px;">
+                            <span class="ml-10 mr-5">Sortuj wg</span>
+                            <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption" id="sortowanieOptionSelectList"></select>
+                            @* <input type="submit" value="Sortuj" class="searchButton" /> *@
+                        </div>
                     </div>
 
-                    <!-- Sortowanie -->
-                    <div class="df-sb centery" style="width: 220px;">
-                        <span class="ml-10 mr-5">Sortuj wg</span>
-                        <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption" id="sortowanieOptionSelectList"></select>
-                        @* <input type="submit" value="Sortuj" class="searchButton" /> *@
-                    </div>
                 </div>
 
             </div>
 
-        </div>
 
 
 
 
 
+            <div class="tableContainer">
 
-        <div class="tableContainer">
 
-            @if (Model.Users != null && Model.Users.Any())
-            {
-                if (!string.IsNullOrEmpty(Model.q))
+
+                @if (!string.IsNullOrEmpty(Model.q))
                 {
                     <h3>Wyniki wyszukiwania dla: @Model.q</h3>
                     <div class="df">
@@ -161,9 +165,9 @@
                                         else
                                         {
                                             <a asp-action="Delete"
-                                                asp-controller="Users"
-                                                asp-route-id="@user.Id"
-                                                class="deleteButton">
+                                               asp-controller="Users"
+                                               asp-route-id="@user.Id"
+                                               class="deleteButton">
                                                 Usuń
                                             </a>
 
@@ -187,7 +191,7 @@
 
 
                 <!-- Paginator -->
-                if (Model.ShowPaginator == Model.DisplayNumersListAndPaginatorLinks)
+                @if (Model.ShowPaginator == Model.DisplayNumersListAndPaginatorLinks)
                 {
                     bool hasPrevious = Model.Paginator.HasPreviousPage;
                     bool hasNext = Model.Paginator.HasNexPage;
@@ -231,10 +235,10 @@
                                     else
                                     {
                                         @* <a asp-action="Index"
-                                           asp-controller="Users"
-                                           class="paginatorButton disable-link">
-                                            Prev
-                                        </a> *@
+                            asp-controller="Users"
+                            class="paginatorButton disable-link">
+                            Prev
+                            </a> *@
                                     }
 
 
@@ -330,10 +334,10 @@
                                     else
                                     {
                                         @* <a asp-action="Index"
-                                           asp-controller="Users"
-                                           class="paginatorButton disable-link">
-                                            Next
-                                        </a> *@
+                            asp-controller="Users"
+                            class="paginatorButton disable-link">
+                            Next
+                            </a> *@
                                     }
 
 
@@ -347,24 +351,26 @@
                 }
 
 
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(Model.q))
-                {
-                    <p>Nie znaleziono ról pasujących do Twojego zapytania: <strong>@Model.q</strong>.</p>
-                }
-                else
-                {
-                    <p>Brak elementów w bazie danych.</p>
-                }
-            }
-
+            </div>
+        </form>
+    </div>
+}
+else
+{
+    if (!string.IsNullOrEmpty(Model.q))
+    {
+        <p>Nie znaleziono ról pasujących do Twojego zapytania: <strong>@Model.q</strong>.</p>
+    }
+    else
+    {
+        <div class="centerxy db" style="height: 80vh;">
+            <h1 class="mb-20">Brak elementów w bazie danych...</h1>
+            <a asp-action="Create" asp-controller="Users" class="buttonCreateFirstPosition" onclick="removeItemUploadedFiles();">Dodaj nową pozycję</a>
         </div>
+    }
+}
 
-    </form>
 
-</div>
 
 
 
@@ -376,7 +382,7 @@
 
         new Paginator(
             'Users',
-            @Model.PageIndex,
+        @Model.PageIndex,
             document.getElementById('searchOptionSelectList'),
             document.getElementById('sortowanieOptionSelectList'),
             document.getElementById('pageSizeSelectList')

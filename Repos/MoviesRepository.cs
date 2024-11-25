@@ -1,25 +1,30 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Ganss.Xss;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using WebApplication71.Data;
 using WebApplication71.DTOs;
 using WebApplication71.DTOs.Movies;
 using WebApplication71.Models;
 using WebApplication71.Repos.Abs;
-
+using static System.Net.Mime.MediaTypeNames;
 
 namespace WebApplication71.Repos
 {
     public class MoviesRepository : IMoviesRepository
     {
         private readonly ApplicationDbContext _context;
-        public MoviesRepository(ApplicationDbContext context)
+        private readonly HtmlSanitizer _htmlSanitizer;
+
+        public MoviesRepository(ApplicationDbContext context, HtmlSanitizer htmlSanitizer)
         {
             _context = context;
+            _htmlSanitizer = htmlSanitizer;
         }
 
 
@@ -128,10 +133,15 @@ namespace WebApplication71.Repos
                     if (zalogowanyUser != null)
                     {
                         string movieId = Guid.NewGuid().ToString();
+                        string title = model.Title.Trim ();
+                        string description = RemoveNbsp(model.Description);
+                        description = _htmlSanitizer.Sanitize(description);
+
+
                         Movie movie = new Movie(
                             movieId: movieId,
-                            title: model.Title,
-                            description: model.Description,
+                            title: title,
+                            description: description,
                             price: model.Price,
                             userId: zalogowanyUser.Id,
                             categoryId: model.CategoryId
@@ -166,6 +176,28 @@ namespace WebApplication71.Repos
             return returnResult;
         }
 
+
+        private string RemoveNbsp (string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return text;
+            }
+
+            // Usuwanie &nbsp; z początku
+            while (text.StartsWith("&nbsp;"))
+            {
+                text = text.Substring("&nbsp;".Length);
+            }
+
+            // Usuwanie &nbsp; z końca
+            while (text.EndsWith("&nbsp;"))
+            {
+                text = text.Substring(0, text.Length - "&nbsp;".Length);
+            }
+
+            return text;
+        }
 
 
 
@@ -237,6 +269,12 @@ namespace WebApplication71.Repos
                     var movie = await _context.Movies.FirstOrDefaultAsync(f => f.MovieId == movieId);
                     if (movie != null)
                     {
+
+                        var photosMovie = await _context.PhotosMovie.Where (w=> w.MovieId == movieId).ToListAsync ();
+                        foreach (var photoMovie in photosMovie)
+                            _context.PhotosMovie.Remove (photoMovie);
+
+
                         _context.Movies.Remove(movie);
                         await _context.SaveChangesAsync();
 
@@ -339,6 +377,17 @@ namespace WebApplication71.Repos
             }
             catch { }
         }
+
+
+
+        public string RemoveHtmlTags(string input)
+        {
+            // Usuwamy treść między znacznikami < i >, w tym same znaczniki
+            return Regex.Replace(input, "<[^>]*>", string.Empty);
+        }
+
+
+
 
     }
 }

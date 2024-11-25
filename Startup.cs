@@ -1,5 +1,6 @@
 using Application.Services;
 using Application.Services.Abs;
+using Ganss.Xss;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -74,6 +75,7 @@ namespace WebApplication71
             services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddTransient (typeof (HtmlSanitizer));
 
         }
 

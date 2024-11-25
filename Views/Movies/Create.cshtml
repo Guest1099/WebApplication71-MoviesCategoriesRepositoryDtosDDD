@@ -35,25 +35,7 @@
                         <button type="button" onclick="insertUnorderedList()">•</button>
                         <button type="button" onclick="execCmd('createLink')">Link</button>
                         
-                        <select id="fontSizeSelect" onchange="changeFontSize(this.value)">
-                            <option value="8">8px</option>
-                            <option value="9">9px</option>
-                            <option value="10">10px</option>
-                            <option value="11">11px</option>
-                            <option value="12">12px</option>
-                            <option value="13">13px</option>
-                            <option value="14">14px</option>
-                            <option value="15">15px</option>
-                            <option value="16">16px</option>
-                            <option value="17">17px</option>
-                            <option value="18">18px</option>
-                            <option value="19">19px</option>
-                            <option value="20">20px</option>
-                            <option value="21">21px</option>
-                            <option value="22">22px</option>
-                            <option value="23">23px</option>
-                            <option value="24">24px</option>
-                        </select>
+                        <select id="fontSizeSelect" onchange="changeFontSize(this.value)"></select>
 
                         <select id="fontColorSelect" onchange="execCmd('foreColor', this.value)">
                             <option value="#000000">Czarny</option>
@@ -130,6 +112,16 @@
 
 @section Scripts {
     <script type="text/javascript">
+
+        let selectElement = document.getElementById("fontSizeSelect");
+        for (let i = 8; i <= 36; i++) {
+            const option = document.createElement("option");
+            option.value = i;
+            option.textContent = `${i}px`;
+            selectElement.appendChild(option);
+        }
+
+
         // Funkcja do aktualizacji ukrytego pola Description
         function updateDescription() {
             var editorContent = document.getElementById('editor').innerHTML;

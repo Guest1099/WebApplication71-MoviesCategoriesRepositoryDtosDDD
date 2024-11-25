@@ -153,11 +153,29 @@
     </div>
 </form>
 
+
+
+
+
 <!-- Zwraca komunikat błędu, o ile takowy się pojawi -->
 <span class="c-red">@ViewData["ErrorMessage"]</span>
 
+
+
+
+
 @section Scripts {
     <script type="text/javascript">
+
+        let selectElement = document.getElementById("fontSizeSelect");
+        for (let i = 8; i <= 36; i++) {
+            const option = document.createElement("option");
+            option.value = i;
+            option.textContent = `${i}px`;
+            selectElement.appendChild(option);
+        }
+
+
         // Funkcja do wczytania zawartości z bazy do edytora
         window.onload = function() {
             const editor = document.getElementById('editor');
