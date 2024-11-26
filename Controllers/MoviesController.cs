@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.VisualStudio.Web.CodeGeneration;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -368,6 +366,19 @@ namespace WebApplication71.Controllers
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
+        }
+
+
+
+
+
+        [HttpGet]
+        public IActionResult Preview (string html)
+        {
+            return View (new PreviewViewModel ()
+            {
+                Html = html
+            });
         }
 
 

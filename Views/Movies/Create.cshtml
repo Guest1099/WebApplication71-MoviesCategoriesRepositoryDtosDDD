@@ -57,10 +57,19 @@
                     </div>
                     <div id="editor" contenteditable="true"></div>
                     <input type="hidden" id="description" asp-for="Description" />
+
+
+                    <!-- button preview -->
+                    <div class="df-sb mt-30 mb-10">
+                        <div></div>
+                        <a asp-action="Preview" asp-controller="Movies" asp-route-html="BBBBBBB" class="buttonEdit" onclick="saveToSession();">
+                            Preview
+                        </a>
+                    </div>
                 </div>
             </td>
 
-            @* 
+            @*
             <td class="rightColumn">
                 <div class="db">
                     <textarea asp-for="Description" style="height: 150px;"></textarea> 
@@ -200,6 +209,18 @@
         document.getElementById('movieForm').addEventListener('submit', function () {
             updateDescription();
         });
+
+
+        function saveToSession() {
+            let item = @Model.Description;
+            sessionStorage.setItem('htmlDescription', '33');
+            alert('ok');
+        }
+
+        function removeFromSession() {
+            sessionStorage.setItem('htmlDescription', @Model.Description);
+        }
+
 
     </script>
 }

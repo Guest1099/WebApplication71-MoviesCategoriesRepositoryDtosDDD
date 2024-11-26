@@ -1,0 +1,9 @@
+﻿@model PreviewViewModel
+
+
+@if(!string.IsNullOrEmpty(Model.Html))
+{
+    <div>
+        @Html.Raw(Model.Html)
+    </div>
+}
