@@ -5,11 +5,9 @@
 </div>
 <hr />
 
-
 <form id="movieForm" method="post" asp-action="Edit" asp-controller="Movies" enctype="multipart/form-data" onsubmit="updateDescription()">
     <input type="hidden" asp-for="MovieId" />
     <input type="hidden" asp-for="Files" />
-
 
     <table>
         <tr>
@@ -23,12 +21,11 @@
                 </div>
             </td>
         </tr>
-
         <tr>
             <td class="leftColumn">
                 <label asp-for="Description"></label>
             </td>
-@* 
+
             <td class="rightColumn">
                 <div class="db">
                     <div id="toolbar">
@@ -42,26 +39,8 @@
                         <button type="button" onclick="execCmd('insertOrderedList')">1.</button>
                         <button type="button" onclick="insertUnorderedList()">•</button>
                         <button type="button" onclick="execCmd('createLink')">Link</button>
-
-                        <select id="fontSizeSelect" onchange="changeFontSize(this.value)">
-                            <option value="8">8px</option>
-                            <option value="9">9px</option>
-                            <option value="10">10px</option>
-                            <option value="11">11px</option>
-                            <option value="12">12px</option>
-                            <option value="13">13px</option>
-                            <option value="14">14px</option>
-                            <option value="15">15px</option>
-                            <option value="16">16px</option>
-                            <option value="17">17px</option>
-                            <option value="18">18px</option>
-                            <option value="19">19px</option>
-                            <option value="20">20px</option>
-                            <option value="21">21px</option>
-                            <option value="22">22px</option>
-                            <option value="23">23px</option>
-                            <option value="24">24px</option>
-                        </select>
+                        
+                        <select id="fontSizeSelect" onchange="changeFontSize(this.value)"></select>
 
                         <select id="fontColorSelect" onchange="execCmd('foreColor', this.value)">
                             <option value="#000000">Czarny</option>
@@ -79,18 +58,20 @@
                         </select>
                     </div>
                     <div id="editor" contenteditable="true"></div>
+                    <input type="hidden" id="description" asp-for="Description" />
+                </div>
+            </td>
+
+@* 
+            <td class="rightColumn">
+                <div class="db">
+                    <textarea asp-for="Description" style="height: 150px;"></textarea> 
+                    
+                    <!-- To jest potrzebne do edytora ckeditor -->
+                    <!-- <textarea asp-for="Description" id="editor"></textarea> -->
                 </div>
             </td>
  *@
-
-            <td class="rightColumn">
-                <div class="db">
-                    <textarea asp-for="Description" style="height: 150px;"></textarea>
-
-                    @* To jest potrzebne do edytora ckeditor *@
-                    @* <textarea asp-for="Description" id="editor"></textarea> *@
-                </div>
-            </td>
         </tr>
 
         <tr>
@@ -124,7 +105,7 @@
                     Zdjęcia
                 </td>
                 <td>
-                    <div class="db"> 
+                    <div class="db">
                         @foreach (var photoMovie in Model.PhotosMovie)
                         {
                             <div class="image w-200px">
@@ -140,7 +121,7 @@
                         }
                     </div>
                 </td>
-            </tr> 
+            </tr>
         }
 
         <tr>
@@ -177,19 +158,21 @@
 
 
 @section Scripts {
-
+    
+    <!-- 
     <script src="https://cdn.ckeditor.com/ckeditor5/38.1.0/classic/ckeditor.js"></script>
+    -->
 
     <script type="text/javascript">
 
 
-        ClassicEditor
-            .create(document.querySelector('#editor'))
-            .catch(error => {
-                console.error(error);
-            });
+        // ClassicEditor
+        //     .create(document.querySelector('#editor'))
+        //     .catch(error => {
+        //         console.error(error);
+        //     });
 
-        
+
 
 
 
@@ -203,7 +186,7 @@
 
 
         // Funkcja do wczytania zawartości z bazy do edytora
-        window.onload = function() {
+        window.onload = function () {
             const editor = document.getElementById('editor');
             const description = '@Model.Description';  // Pobranie zawartości z modelu
             editor.innerHTML = description;  // Wstawienie do edytora
@@ -260,5 +243,6 @@
         document.getElementById('movieForm').addEventListener('submit', function () {
             updateDescription();
         });
+
     </script>
 }

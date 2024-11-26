@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using WebApplication71.Data;
 using WebApplication71.DTOs;
 using WebApplication71.DTOs.Movies;
@@ -133,10 +134,12 @@ namespace WebApplication71.Repos
                     if (zalogowanyUser != null)
                     {
                         string movieId = Guid.NewGuid().ToString();
-                        string title = model.Title.Trim ();
-                        string description = RemoveNbsp(model.Description);
-                        description = _htmlSanitizer.Sanitize(description);
 
+                        string title = _htmlSanitizer.Sanitize(model.Title);
+                        title = HttpUtility.HtmlDecode(title);
+
+                        string description = _htmlSanitizer.Sanitize(model.Description);
+                        description = HttpUtility.HtmlDecode(description);
 
                         Movie movie = new Movie(
                             movieId: movieId,
@@ -217,9 +220,17 @@ namespace WebApplication71.Repos
                         /*object photoData = model.PhotoData == null ? movie.Photo : await ChangeFileToBytes(model.PhotoData);
                         byte[] photo = photoData as byte[];
                         */
+
+                        string title = _htmlSanitizer.Sanitize(model.Title);
+                        title = HttpUtility.HtmlDecode(title);
+
+                        string description = _htmlSanitizer.Sanitize(model.Description);
+                        description = HttpUtility.HtmlDecode(description);
+
+
                         movie.Update(
-                            title: model.Title,
-                            description: model.Description,
+                            title: title,
+                            description: description,
                             price: model.Price,
                             categoryId: model.CategoryId
                             );
