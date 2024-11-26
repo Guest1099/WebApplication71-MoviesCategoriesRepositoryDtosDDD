@@ -30,6 +30,7 @@ namespace WebApplication71.DTOs
         public bool DisplayButtonRightTrzyKropki { get; set; } = false;
         public bool ShowPaginator { get; set; } = true;
         public bool DisplayNumersListAndPaginatorLinks { get; set; } = true;
+        public bool DisplayLinksPaginator { get; set; } = true;
         public int IloscObecnychElementow5 { get; set; } = 0;
         public int IloscObecnychElementow10 { get; set; } = 0;
         public int IloscObecnychElementow15 { get; set; } = 0;

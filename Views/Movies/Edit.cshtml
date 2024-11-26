@@ -5,10 +5,11 @@
 </div>
 <hr />
 
+
 <form id="movieForm" method="post" asp-action="Edit" asp-controller="Movies" enctype="multipart/form-data" onsubmit="updateDescription()">
     <input type="hidden" asp-for="MovieId" />
     <input type="hidden" asp-for="Files" />
-    <input type="hidden" id="description" name="Description" />
+
 
     <table>
         <tr>

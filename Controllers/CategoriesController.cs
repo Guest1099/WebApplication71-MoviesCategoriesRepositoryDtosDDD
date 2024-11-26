@@ -236,6 +236,9 @@ namespace WebApplication71.Controllers
             if (model.Paginator.TotalPage > ilosc)
                 model.DisplayButtonRightTrzyKropki = true;
 
+            // jeżeli ilość elementów w bazie jest mniejsza lub równa 10 oraz jesteśmy na pierwszej stronie paginacjo oraz jest tylko jedna strona paginacji
+            if (model.Categories.Count <= 10 && model.PageIndex == 1 && model.Paginator.TotalPage == 1)
+                model.DisplayLinksPaginator = false;
 
             // jeżeli ktoś w przeglądarce w adresie url wpisze dowolną liczbę w PageSize lub w PageIndex to tu jest przed tym zabezpieczenie
             if (model.PageSize > 20 || model.PageIndex > model.Paginator.TotalPage)

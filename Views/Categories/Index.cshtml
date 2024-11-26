@@ -176,124 +176,128 @@
                                 <div class="df fs-11 centery">
 
 
+                                    @* sprawdza czy linki w paginacji powinny być wyświetlone, jeśli użytkownik jest na pierwszej stronie paginacji oraz ilość paginacji wynosi 1 wtedy paginacja nie jest wyświetlana *@
+                                    @if (Model.DisplayLinksPaginator)
+                                    {
 
-                                    <!-- przycisk prev -->
-                                    @if (hasPrevious)
-                                    {
-                                        <a asp-action="Index"
-                                           asp-controller="Categories"
-                                           asp-route-PageSize="@Model.PageSize"
-                                           asp-route-PageIndex="@(Model.Paginator.PageIndex - 1)"
-                                           asp-route-q="@Model.q"
-                                           asp-route-SortowanieOption="@Model.SortowanieOption"
-                                           class="paginatorButton">
-                                            Prev
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        @* <a asp-action="Index"
+                                        <!-- przycisk prev -->
+                                        if (hasPrevious)
+                                        {
+                                            <a asp-action="Index"
+                                               asp-controller="Categories"
+                                               asp-route-PageSize="@Model.PageSize"
+                                               asp-route-PageIndex="@(Model.Paginator.PageIndex - 1)"
+                                               asp-route-q="@Model.q"
+                                               asp-route-SortowanieOption="@Model.SortowanieOption"
+                                               class="paginatorButton">
+                                                Prev
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            @* <a asp-action="Index"
                             asp-controller="Categories"
                             class="paginatorButton disable-link">
                             Prev
                             </a> *@
-                                    }
+                                        }
 
 
-                                    <div class="df ml-10 mr-10">
-                                        @{
+                                        <div class="df ml-10 mr-10">
+                                            @{
 
-                                            string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
+                                                string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
 
-                                            <!-- przeniesienie do pierwszej strony -->
-                                            if (Model.DisplayButtonLeftTrzyKropki)
-                                            {
-                                                <a asp-action="Index"
-                                                   asp-controller="Categories"
-                                                   asp-route-PageSize="@Model.PageSize"
-                                                   asp-route-PageIndex="1"
-                                                   asp-route-q="@Model.q"
-                                                   asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                   class="paginator-item"
-                                                   style="backgroun-color: transparent"
-                                                   id="buttonLeftTrzyKropki">
-                                                    ...
-                                                </a>
-                                            }
-
-
-
-                                            <!-- środkowe przyciski paginacji -->
-                                            for (var i = Model.Start; i <= Model.End; i++)
-                                            {
-                                                if (i == Model.PageIndex)
-                                                {
-                                                    style = "padding: 7px 10px; background-color: lightgray; color: black; font-weight: bold";
-                                                }
-                                                else
-                                                {
-                                                    style = "padding: 7px 10px; background-color: white;";
-                                                }
-                                                if (i <= Model.Paginator.TotalPage)
+                                                <!-- przeniesienie do pierwszej strony -->
+                                                if (Model.DisplayButtonLeftTrzyKropki)
                                                 {
                                                     <a asp-action="Index"
                                                        asp-controller="Categories"
                                                        asp-route-PageSize="@Model.PageSize"
-                                                       asp-route-PageIndex="@i"
+                                                       asp-route-PageIndex="1"
                                                        asp-route-q="@Model.q"
                                                        asp-route-SortowanieOption="@Model.SortowanieOption"
                                                        class="paginator-item"
-                                                       style="@style"
-                                                       id="button">
-                                                        @i
+                                                       style="backgroun-color: transparent"
+                                                       id="buttonLeftTrzyKropki">
+                                                        ...
+                                                    </a>
+                                                }
+
+
+
+                                                <!-- środkowe przyciski paginacji -->
+                                                for (var i = Model.Start; i <= Model.End; i++)
+                                                {
+                                                    if (i == Model.PageIndex)
+                                                    {
+                                                        style = "padding: 7px 10px; background-color: lightgray; color: black; font-weight: bold";
+                                                    }
+                                                    else
+                                                    {
+                                                        style = "padding: 7px 10px; background-color: white;";
+                                                    }
+                                                    if (i <= Model.Paginator.TotalPage)
+                                                    {
+                                                        <a asp-action="Index"
+                                                           asp-controller="Categories"
+                                                           asp-route-PageSize="@Model.PageSize"
+                                                           asp-route-PageIndex="@i"
+                                                           asp-route-q="@Model.q"
+                                                           asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                           class="paginator-item"
+                                                           style="@style"
+                                                           id="button">
+                                                            @i
+                                                        </a>
+                                                    }
+                                                }
+
+
+                                                <!-- przeniesienie do ostatniej strony -->
+                                                if (Model.DisplayButtonRightTrzyKropki)
+                                                {
+                                                    <a asp-action="Index"
+                                                       asp-controller="Categories"
+                                                       asp-route-PageSize="@Model.PageSize"
+                                                       asp-route-PageIndex="@Model.Paginator.TotalPage"
+                                                       asp-route-q="@Model.q"
+                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                       class="paginator-item"
+                                                       style="backgroun-color: transparent"
+                                                       id="buttonRightTrzyKropki">
+                                                        ...
                                                     </a>
                                                 }
                                             }
+                                        </div>
 
 
-                                            <!-- przeniesienie do ostatniej strony -->
-                                            if (Model.DisplayButtonRightTrzyKropki)
-                                            {
-                                                <a asp-action="Index"
-                                                   asp-controller="Categories"
-                                                   asp-route-PageSize="@Model.PageSize"
-                                                   asp-route-PageIndex="@Model.Paginator.TotalPage"
-                                                   asp-route-q="@Model.q"
-                                                   asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                   class="paginator-item"
-                                                   style="backgroun-color: transparent"
-                                                   id="buttonRightTrzyKropki">
-                                                    ...
-                                                </a>
-                                            }
+
+
+                                        <!-- przycisk next -->
+                                        if (hasNext)
+                                        {
+                                            <a asp-action="Index"
+                                               asp-controller="Categories"
+                                               asp-route-PageSize="@Model.PageSize"
+                                               asp-route-PageIndex="@(Model.Paginator.PageIndex + 1)"
+                                               asp-route-q="@Model.q"
+                                               asp-route-SortowanieOption="@Model.SortowanieOption"
+                                               class="paginatorButton">
+                                                Next
+                                            </a>
                                         }
-                                    </div>
-
-
-
-
-                                    <!-- przycisk next -->
-                                    @if (hasNext)
-                                    {
-                                        <a asp-action="Index"
-                                           asp-controller="Categories"
-                                           asp-route-PageSize="@Model.PageSize"
-                                           asp-route-PageIndex="@(Model.Paginator.PageIndex + 1)"
-                                           asp-route-q="@Model.q"
-                                           asp-route-SortowanieOption="@Model.SortowanieOption"
-                                           class="paginatorButton">
-                                            Next
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        @* <a asp-action="Index"
+                                        else
+                                        {
+                                            @* <a asp-action="Index"
                             asp-controller="Categories"
                             class="paginatorButton disable-link">
                             Next
                             </a> *@
-                                    }
+                                        }
 
+                                    }
 
 
                                 </div>

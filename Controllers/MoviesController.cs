@@ -81,6 +81,7 @@ namespace WebApplication71.Controllers
 
             model.ShowPaginator = true;
             model.DisplayNumersListAndPaginatorLinks = true;
+            model.DisplayLinksPaginator = true;
             model.DisplayButtonLeftTrzyKropki = false;
             model.DisplayButtonRightTrzyKropki = false;
             model.SortowanieOptionItems = new SelectList(new List<string>() { "Tytuł A-Z", "Tytuł Z-A", "Kategoria A-Z", "Kategoria Z-A", "Cena rosnąco", "Cena malejąco" }, "Tytuł A-Z");
@@ -260,6 +261,9 @@ namespace WebApplication71.Controllers
             if (model.Paginator.TotalPage > ilosc)
                 model.DisplayButtonRightTrzyKropki = true;
 
+            // jeżeli ilość elementów w bazie jest mniejsza lub równa 10 oraz jesteśmy na pierwszej stronie paginacjo oraz jest tylko jedna strona paginacji
+            if (model.Movies.Count <= 10 && model.PageIndex == 1 && model.Paginator.TotalPage == 1)
+                model.DisplayLinksPaginator = false;
 
             // jeżeli ktoś w przeglądarce w adresie url wpisze dowolną liczbę w PageSize lub w PageIndex to tu jest przed tym zabezpieczenie
             if (model.PageSize > 20 || model.PageIndex > model.Paginator.TotalPage) 
@@ -334,6 +338,37 @@ namespace WebApplication71.Controllers
         }
 
 
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> Details(string movieId)
+        {
+            NI.Navigation = Navigation.MoviesDetails;
+            try
+            {
+                if (string.IsNullOrEmpty(movieId))
+                    return View("NotFound");
+
+                var result = await _moviesRepository.Get(movieId);
+
+                if (result == null || !result.Success)
+                    return View("NotFound");
+
+
+                var movie = result.Object;
+                if (movie == null)
+                    return View("NotFound");
+
+
+                movie.CategoriesList = new SelectList((await _categoriesRepository.GetAll()).Object, "CategoryId", "Name", movie.CategoryId);  // select lista
+                return View(movie);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
 
 
 

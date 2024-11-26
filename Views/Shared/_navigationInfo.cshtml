@@ -156,7 +156,13 @@
                 <span class="mr-10">@text</span>
                 <a asp-action="Index" asp-controller="Movies" class="actionLinkNi">Movies</a>
                 <div class="arrowNi">\</div>
-                <a asp-action="Create" asp-controller="Movies" class="actionLinkNi">Create</a>
+                <span>Create</span>
+                break;
+            case Navigation.MoviesDetails:
+                <span class="mr-10">@text</span>
+                <a asp-action="Index" asp-controller="Movies" class="actionLinkNi">Movies</a>
+                <div class="arrowNi">\</div>
+                <span>Details</span>
                 break;
             case Navigation.MoviesEdit:
                 <span class="mr-10">@text</span>
