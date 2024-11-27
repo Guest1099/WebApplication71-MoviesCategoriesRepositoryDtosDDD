@@ -1,9 +1,26 @@
-﻿@model PreviewViewModel
+﻿
+<div id="container"></div>
 
 
-@if(!string.IsNullOrEmpty(Model.Html))
-{
-    <div>
-        @Html.Raw(Model.Html)
-    </div>
+<!-- button wstecz -->
+<div class="w-100 df-sb mt-30 mb-40">
+    <div></div>
+    <a asp-action="Create" asp-controller="Movies" class="buttonAnuluj w-100px ml-2">Zamknij</a>
+</div>
+
+
+@section Scripts {
+    <script type="text/javascript">
+
+        function getInnerHtmlFromSession() {
+            let innerHtml = sessionStorage.getItem('innerHtml');
+            if (innerHtml) {
+                let container = document.getElementById('container');
+                container.innerHTML = innerHtml;
+                container.innerHTML = container.innerText;
+            }
+        }
+        getInnerHtmlFromSession();
+
+    </script>
 }

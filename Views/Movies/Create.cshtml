@@ -37,7 +37,7 @@
                         <button type="button" onclick="execCmd('insertOrderedList')">1.</button>
                         <button type="button" onclick="insertUnorderedList()">•</button>
                         <button type="button" onclick="execCmd('createLink')">Link</button>
-                        
+
                         <select id="fontSizeSelect" onchange="changeFontSize(this.value)"></select>
 
                         <select id="fontColorSelect" onchange="execCmd('foreColor', this.value)">
@@ -56,13 +56,13 @@
                         </select>
                     </div>
                     <div id="editor" contenteditable="true"></div>
-                    <input type="hidden" id="description" asp-for="Description" />
+                    <input id="description" type="hidden" asp-for="Description" />
 
 
                     <!-- button preview -->
                     <div class="df-sb mt-30 mb-10">
                         <div></div>
-                        <a asp-action="Preview" asp-controller="Movies" asp-route-html="BBBBBBB" class="buttonEdit" onclick="saveToSession();">
+                        <a asp-action="Preview" asp-controller="Movies" class="buttonEdit" onclick="saveToSession();">
                             Preview
                         </a>
                     </div>
@@ -71,14 +71,14 @@
 
             @*
             <td class="rightColumn">
-                <div class="db">
-                    <textarea asp-for="Description" style="height: 150px;"></textarea> 
-                    
-                    <!-- To jest potrzebne do edytora ckeditor -->
-                    <!-- <textarea asp-for="Description" id="editor"></textarea> -->
-                </div>
+            <div class="db">
+            <textarea asp-for="Description" style="height: 150px;"></textarea>
+
+            <!-- To jest potrzebne do edytora ckeditor -->
+            <!-- <textarea asp-for="Description" id="editor"></textarea> -->
+            </div>
             </td>
- *@
+            *@
         </tr>
         <tr>
             <td class="leftColumn">
@@ -147,7 +147,7 @@
         //         console.error(error);
         //     });
 
-         
+
         let selectElement = document.getElementById("fontSizeSelect");
         for (let i = 8; i <= 36; i++) {
             const option = document.createElement("option");
@@ -211,15 +211,27 @@
         });
 
 
+
+
+        let editor = document.getElementById('editor');
         function saveToSession() {
-            let item = @Model.Description; 
-            sessionStorage.setItem('htmlDescription', '33');
-            alert('ok');
+            // czyszczenie sesji
+            removeSessionInnerHtml();
+
+            let innerHtml = editor.innerHTML;
+            sessionStorage.setItem('innerHtml', innerHtml);
         }
 
-        function removeFromSession() {
-            sessionStorage.setItem('htmlDescription', @Model.Description);
+        // pobranie danych z sesji i osadzenie ich w edytorze html
+        function getInnerHtmlFromSession() {
+            let innerHtml = sessionStorage.getItem('innerHtml');
+            if (innerHtml) {
+                editor.innerHTML = innerHtml;
+            }
         }
+        getInnerHtmlFromSession();
+
+
 
 
     </script>

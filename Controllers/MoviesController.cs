@@ -373,13 +373,8 @@ namespace WebApplication71.Controllers
 
 
         [HttpGet]
-        public IActionResult Preview (string html)
-        {
-            return View (new PreviewViewModel ()
-            {
-                Html = html
-            });
-        }
+        public IActionResult Preview ()
+            => View ();
 
 
 

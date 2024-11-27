@@ -1488,8 +1488,8 @@ namespace WebApplication71.Services
                 {
                     /*if (DateTime.Now.Day % 2 == 0) // operacja ta jest wykonywana co drugi dzień aby nie obciążać serwera
                     {*/
-                    /*if (DateTime.Parse(logowanieUzytkownika.DataLogowania) < DateTime.Now.AddDays(-1))
-                    {*/
+                    if (DateTime.Parse(logowanieUzytkownika.DataLogowania) < DateTime.Now.AddDays(-10))
+                    {
                         logowanieUzytkownika.DataWylogowania = DateTime.Now.ToString();
                         TimeSpan cp = DateTime.Parse(logowanieUzytkownika.DataWylogowania) - DateTime.Parse(logowanieUzytkownika.DataLogowania);
                         TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
@@ -1497,7 +1497,7 @@ namespace WebApplication71.Services
 
                         // Oznaczenie obiektu do aktualizacji
                         _context.Entry(logowanieUzytkownika).State = EntityState.Modified;
-                        /*}*/
+                    }
                     /*}*/
 
                 }

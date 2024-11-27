@@ -126,4 +126,8 @@ function removeItemUploadedFiles() {
 function removeSessionPageIndex() {
     sessionStorage.removeItem('pageIndex');
 }
- 
+
+
+function removeSessionInnerHtml() {
+    sessionStorage.removeItem('innerHtml');
+}
