@@ -343,7 +343,7 @@ else if (Model.Movies != null && Model.Movies.Any ())
             {
                 @if (!string.IsNullOrEmpty(Model.q))
                 {
-                    <p>Nie znaleziono wyników wyszukiwania pasujących do Twojego zapytania: <strong>@Model.q</strong>.</p>
+                    <p>Brak wyników wyszukiwania dla zapytania: <strong>@Model.q</strong>.</p>
                 }
             }
         </form>
