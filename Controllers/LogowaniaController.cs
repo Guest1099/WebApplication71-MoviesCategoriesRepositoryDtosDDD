@@ -11,7 +11,9 @@ using WebApplication71.Repos.Abs;
 using WebApplication71.Services;
 using WebApplication71.Models.Enums;
 using System.Linq;
-using WebApplication71.DTOs.Roles;
+using WebApplication71.Services.Abs;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace WebApplication71.Controllers
 {
@@ -20,13 +22,14 @@ namespace WebApplication71.Controllers
     {
         private readonly ILogowaniaRepository _logowaniaRepository;
         private readonly IUsersService _usersService;
+        private readonly IAccountService _accountService;
 
-        public LogowaniaController(ILogowaniaRepository logowaniaRepository, IUsersService usersService)
+        public LogowaniaController(ILogowaniaRepository logowaniaRepository, IUsersService usersService, IAccountService accountService)
         {
             _logowaniaRepository = logowaniaRepository;
             _usersService = usersService;
+            _accountService = accountService;
         }
-
 
 
         [HttpGet]
@@ -35,17 +38,6 @@ namespace WebApplication71.Controllers
             NI.Navigation = Navigation.LogowaniaIndex;
             try
             {
-                /*if (model.DataZalogowaniaOd.ToShortDateString() == "01.01.0001 00:00:00")
-                    model.DataZalogowaniaOd = DateTime.Now.AddMonths(-30);
-
-                if (model.DataZalogowaniaDo.ToShortDateString() == "01.01.0001 00:00:00")
-                    model.DataZalogowaniaDo = DateTime.Now;*/
-
-                //model.DataZalogowaniaOd = DateTime.Now.AddMonths(-30);
-                //model.DataZalogowaniaDo = DateTime.Now;
-
-
-
                 return await SearchAndFiltringResutl(model);
             }
             catch (Exception ex)
@@ -93,7 +85,7 @@ namespace WebApplication71.Controllers
             model.DisplayNumersListAndPaginatorLinks = true;
             model.DisplayButtonLeftTrzyKropki = false;
             model.DisplayButtonRightTrzyKropki = false;
-            model.SortowanieOptionItems = new SelectList(new List<string>() { "Email A-Z", "Email Z-A", "Data zalogowania rosnąco", "Data zalogowania malejąco", "Użytkownik obecnie zalogowany" }, "Data zalogowania malejąco");
+            model.SortowanieOptionItems = new SelectList(new List<string>() { "Email A-Z", "Email Z-A", "Czas pracy rosnąco", "Czas pracy malejąco", "Data zalogowania rosnąco", "Data zalogowania malejąco", "Użytkownik obecnie zalogowany" }, "Email A-Z");
 
             ViewData["LogowaniaTest"] = logowania.Count;
 
@@ -132,6 +124,14 @@ namespace WebApplication71.Controllers
 
                 case "Email Z-A":
                     logowania = logowania.OrderByDescending(o => o.Email).ToList();
+                    break;
+
+                case "Czas pracy rosnąco":
+                    logowania = logowania.OrderBy(o => o.CzasPracy).ToList();
+                    break;
+
+                case "Czas pracy malejąco":
+                    logowania = logowania.OrderByDescending(o => o.CzasPracy).ToList();
                     break;
 
                 case "Data zalogowania rosnąco":
@@ -388,9 +388,94 @@ namespace WebApplication71.Controllers
 
 
 
-
+        /// <summary>
+        /// Nazwę tej akcji można interpretować jako EditUserZalogowany
+        /// </summary>
         [HttpGet]
-        public async Task<IActionResult> Edit(string logowanieId)
+        public async Task<IActionResult> Edituz(string logowanieId, string email, bool wylogowanieReczne = false)
+        {
+            NI.Navigation = Navigation.LogowaniaEdit;
+            try
+            {
+                if (string.IsNullOrEmpty(logowanieId) || string.IsNullOrEmpty(email))
+                    return NotFound();
+
+                var result = await _logowaniaRepository.Get(logowanieId);
+
+                if (result == null || !result.Success)
+                    return NotFound();
+
+
+                var logowanie = result.Object;
+                if (logowanie == null)
+                    return NotFound();
+
+
+                var user = await _usersService.GetUserByEmail(email);
+                if (user.Success)
+                {
+                    logowanie.LogowanieId = logowanieId;
+                    logowanie.ImieInazwisko = $"{user.Object.Imie} {user.Object.Nazwisko}";
+                    logowanie.Email = user.Object.Email;
+                }
+
+
+
+                // wyświetla komunikat wylogowania ręcznego, że przebiegło pomyślnie
+                if (wylogowanieReczne)
+                    ViewData["Message"] = "Użytkownik został prawidłowo wylogowany";
+
+
+
+                return View(logowanie);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edituz(GetLogowanieDto model)
+        {
+            NI.Navigation = Navigation.LogowaniaEdit;
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var result = await _logowaniaRepository.Update(new EditLogowanieDto()
+                    {
+                        LogowanieId = model.LogowanieId,
+                        DataLogowania = model.DataLogowania,
+                        DataWylogowania = model.DataWylogowania,
+                        Status = StatusZalogowania.Zalogowany,
+                        Email = model.Email
+                    });
+                    if (result != null && result.Success)
+                        return RedirectToAction("Index", "Logowania");
+
+
+                    // zwraca komunikat błędu związanego z aktualizacją rekordu
+                    ViewData["ErrorMessage"] = result.Message;
+                }
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// Nazwę tej akcji można interpretować jako EditUserNiezalogowany
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> Editun(string logowanieId, string email)
         {
             NI.Navigation = Navigation.LogowaniaEdit;
             try
@@ -419,7 +504,7 @@ namespace WebApplication71.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(GetLogowanieDto model)
+        public async Task<IActionResult> Editun(GetLogowanieDto model)
         {
             NI.Navigation = Navigation.LogowaniaEdit;
             try
@@ -431,6 +516,7 @@ namespace WebApplication71.Controllers
                         LogowanieId = model.LogowanieId,
                         DataLogowania = model.DataLogowania,
                         DataWylogowania = model.DataWylogowania,
+                        Status = StatusZalogowania.Niezalogowany,
                         Email = model.Email
                     });
                     if (result != null && result.Success)
@@ -447,8 +533,10 @@ namespace WebApplication71.Controllers
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
-
         }
+
+
+
 
 
 
@@ -490,6 +578,27 @@ namespace WebApplication71.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> LogoutHandly(string logowanieId, string email)
+        {
+            try
+            {
+                await _accountService.LogoutHandly(email);
+                return RedirectToAction("Edituz", "Logowania", new { logowanieId = logowanieId, email = email, wylogowanieReczne = true });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+
 
     }
 

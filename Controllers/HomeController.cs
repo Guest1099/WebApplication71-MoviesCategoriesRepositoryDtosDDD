@@ -1,9 +1,12 @@
 ﻿using Application.Services.Abs;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WebApplication71.Data;
 using WebApplication71.Models;
 using WebApplication71.Models.Enums;
 using WebApplication71.Repos.Abs;
@@ -14,6 +17,8 @@ namespace WebApplication71.Controllers
     [Authorize]
     public class HomeController : Controller
     {
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager <ApplicationUser> _userManager;
         private readonly IUsersService _usersService;
         private readonly IRolesService _rolesService;
         private readonly ICategoriesRepository _categoriesRepostiory;
@@ -22,15 +27,16 @@ namespace WebApplication71.Controllers
 
         private List<StatystykiViewModel> _statystyki;
 
-        public HomeController(IUsersService usersService, IRolesService rolesService, ICategoriesRepository categoriesRepostiory, IMoviesRepository moviesRepository, ILogowaniaRepository logowaniaRepository)
+        public HomeController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IUsersService usersService, IRolesService rolesService, ICategoriesRepository categoriesRepostiory, IMoviesRepository moviesRepository, ILogowaniaRepository logowaniaRepository)
         {
+            _context = context;
+            _userManager = userManager;
             _usersService = usersService;
             _rolesService = rolesService;
             _categoriesRepostiory = categoriesRepostiory;
             _moviesRepository = moviesRepository;
             _logowaniaRepository = logowaniaRepository;
         }
-
 
 
         [HttpGet]
@@ -40,6 +46,24 @@ namespace WebApplication71.Controllers
 
             try
             {
+
+                // sprawdza czy zalogowany user jest administratorem
+
+                ApplicationUser zalogowanyUser = new ApplicationUser();
+                bool userIsAdmin = false;
+                if (User != null && User.Identity != null)
+                {
+                    zalogowanyUser = await _context.Users.FirstOrDefaultAsync (f => f.Email == User.Identity.Name);
+                    if (zalogowanyUser != null)
+                    {
+                        if (await _userManager.IsInRoleAsync(zalogowanyUser, "Administrator"))
+                        {
+                            userIsAdmin = true;
+                        }
+                    }
+                }
+
+
                 var users = await _usersService.GetAll();
                 var roles = await _rolesService.GetAll();
                 var categories = await _categoriesRepostiory.GetAll();
@@ -58,39 +82,44 @@ namespace WebApplication71.Controllers
                     logowania != null && logowania.Success)
                 {
 
-                    _statystyki = new List<StatystykiViewModel>()
+                    _statystyki = new List<StatystykiViewModel> ();
+
+
+                    if (userIsAdmin)
                     {
-                        new StatystykiViewModel ()
+                        _statystyki.Add(new StatystykiViewModel()
                         {
                             TitleDisplay = "Użytkownicy systemu",
                             IloscElementow = users.Object.Count,
                             Controller = "Users"
-                        },
-                        new StatystykiViewModel ()
+                        });
+                        _statystyki.Add(new StatystykiViewModel()
                         {
                             TitleDisplay = "Role systemu",
                             IloscElementow = roles.Object.Count,
                             Controller = "Roles"
-                        },
-                        new StatystykiViewModel ()
-                        {
-                            TitleDisplay = "Kategorie systemu",
-                            IloscElementow = categories.Object.Count,
-                            Controller = "Categories"
-                        },
-                        new StatystykiViewModel ()
-                        {
-                            TitleDisplay = "Filmy systemu",
-                            IloscElementow = movies.Object.Count,
-                            Controller = "Movies"
-                        },
-                        new StatystykiViewModel ()
-                        {
-                            TitleDisplay = "Logowania użytkowników systemu",
-                            IloscElementow = logowania.Object.Count,
-                            Controller = "Logowania"
-                        },
-                    };
+                        });
+                    }
+
+                    _statystyki.Add(new StatystykiViewModel()
+                    {
+                        TitleDisplay = "Kategorie systemu",
+                        IloscElementow = categories.Object.Count,
+                        Controller = "Categories"
+                    });
+                    _statystyki.Add(new StatystykiViewModel()
+                    {
+                        TitleDisplay = "Filmy systemu",
+                        IloscElementow = movies.Object.Count,
+                        Controller = "Movies"
+                    });
+                    _statystyki.Add(new StatystykiViewModel()
+                    {
+                        TitleDisplay = "Logowania użytkowników systemu",
+                        IloscElementow = logowania.Object.Count,
+                        Controller = "Logowania"
+                    });
+
 
                     return View(_statystyki);
                 }

@@ -959,7 +959,7 @@ namespace WebApplication71.Services
 
 
                                     // aktualizuje poprzedni rekord logowania
-                                    await ZaktualizujRekordLogowaniaDopisujacDoNiegoGodzineWylogowaniaForLogin(user.Email);
+                                    await ZaktualizujDrugiRekordLogowaniaDopisujacDoNiegoGodzineWylogowaniaForLogin(user.Email);
 
 
                                     returnResult.Success = true;
@@ -1028,7 +1028,7 @@ namespace WebApplication71.Services
 
 
                                     // aktualizuje poprzedni rekord logowania
-                                    await ZaktualizujRekordLogowaniaDopisujacDoNiegoGodzineWylogowaniaForLogin(user.Email);
+                                    await ZaktualizujDrugiRekordLogowaniaDopisujacDoNiegoGodzineWylogowaniaForLogin(user.Email);
 
 
                                     returnResult.Success = true;
@@ -1123,7 +1123,7 @@ namespace WebApplication71.Services
 
 
                                 // aktualizuje poprzedni rekord logowania
-                                await ZaktualizujRekordLogowaniaDopisujacDoNiegoGodzineWylogowaniaForLogin(user.Email);
+                                await ZaktualizujDrugiRekordLogowaniaDopisujacDoNiegoGodzineWylogowaniaForLogin(user.Email);
 
 
                                 returnResult.Success = true;
@@ -1370,6 +1370,32 @@ namespace WebApplication71.Services
         }
 
 
+
+
+        /// <summary>
+        /// Wylogowanie ręczne robione wyłącznie przez administratora systemu.
+        /// Jest wykonywane tylko wtedy gdy ilość rekordów logodania dla jednego użytkownika wynosi więcej niż jeden,
+        /// tam gdzie jest zapisane "użytkownik obecnie zalogowany". 
+        /// Tutaj chodzi wyłącznie o dopisanie daty wylogowania do rekordu
+        /// </summary>
+        public async Task LogoutHandly(string email)
+        {
+            try
+            {
+                await AktualizacjaRekorduLogowania(email);
+
+                // wylogowanie
+                //await _signInManager.SignOutAsync();
+            }
+            catch (Exception ex)
+            {
+                // w przypadku niepowodzenia operacji wywoływana jest alternatywna metoda o mniej rozbudowanej strukturze bez zapisywania danych do bazy o zalogowaniu
+                //await _signInManager.SignOutAsync();
+            }
+        }
+
+
+
         private async Task AktualizacjaRekorduLogowania(string email)
         {
             try
@@ -1409,24 +1435,27 @@ namespace WebApplication71.Services
         /// Metoda wykorzystywana w metodzie Logowania i jest wywoływana tylko wtedy gdy użytkownik ma więcej niż jedno logowanie
         /// z niezapisaną datą wylogowania
         /// </summary>
-        private async Task ZaktualizujRekordLogowaniaDopisujacDoNiegoGodzineWylogowaniaForLogin(string email)
+        private async Task ZaktualizujDrugiRekordLogowaniaDopisujacDoNiegoGodzineWylogowaniaForLogin(string email)
         {
             try
             {
+
                 // wyszukuje najnowszy rekord logowania oraz dopisuje do niego datę wylogowania
+                // metoda sprawdza czy są dwa takie same rekordy logowania przypisane do jednego użytkownika, jeśli tak do tego ze starszą datą
+                // przypisywana jest data wylogowania, oraz obliczany czas pracy
                 var ostatnieLogowanieUzytkownika = await _context.Logowania
-                    .Include(i => i.User)
-                    .Where(f => f.User.Email == email)
-                    .OrderByDescending(o => o.DataLogowania)
-                    .ToListAsync();
+                    .Include (i => i.User)
+                    .Where (f => f.User.Email == email)
+                    .OrderBy (o => o.DataLogowania)
+                    .ToListAsync ();
 
                 if (ostatnieLogowanieUzytkownika.Count > 1)
                 {
-                    var secondLogin = ostatnieLogowanieUzytkownika[1];
+                    var drugieLogowanie = ostatnieLogowanieUzytkownika[1]; // pobiera drugi obiekt
 
                     // zapisanie w bazie daty wylogowania użytkownika
-                    secondLogin.DodajDateWylogowania(DateTime.Now.ToString());
-                    _context.Entry(secondLogin).State = EntityState.Modified;
+                    drugieLogowanie.DodajDateWylogowania(DateTime.Now.ToString());
+                    _context.Entry(drugieLogowanie).State = EntityState.Modified;
                     await _context.SaveChangesAsync();
                 }
             }
@@ -1460,6 +1489,25 @@ namespace WebApplication71.Services
                 }
 
 
+
+
+
+                // jeżeli do jednego użytkownika jest przypisana więcej niż jeden rekord zalogowania z polem "użytkownik obecnie zalogowany",
+                // wtedy zachowujemy jeden ten, który ma najwyższy czas zalogowania, a pozostałe usuwamy
+                var rekordyGdzieWystepujeUzytkownikObecnieZalogowany = await _context.Logowania
+                    .Include (i=> i.User)
+                    .Where(w => w.User.Email == email && w.DataWylogowania == "01.01.0001 00:00:00")
+                    .OrderBy(o => o.DataLogowania)
+                    .ToListAsync();
+
+                if (rekordyGdzieWystepujeUzytkownikObecnieZalogowany.Count > 1)
+                {
+                    foreach (var r in rekordyGdzieWystepujeUzytkownikObecnieZalogowany.Skip(1)) // pomijamy pierwszy rekord z najdłuższą datą zalogowania
+                    {
+                        _context.Logowania.Remove(r);
+                    }
+                    await _context.SaveChangesAsync();
+                }
             }
             catch (Exception ex)
             {

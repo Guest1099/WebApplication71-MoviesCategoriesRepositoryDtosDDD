@@ -27,5 +27,6 @@ namespace WebApplication71.Services.Abs
         Task<ResultViewModel<bool>> LoggedUserIsAdmin(string email);
         Task<ResultViewModel<LoginDto>> Login(LoginDto model);
         Task Logout(string email);
+        Task LogoutHandly(string email);
     }
 }

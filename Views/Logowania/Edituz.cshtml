@@ -6,8 +6,9 @@
 <hr />
 
 
-<form method="post" asp-action="Edit" asp-controller="Logowania">
+<form method="post" asp-action="Edituz" asp-controller="Logowania">
     <input type="hidden" asp-for="LogowanieId" />
+    <input type="hidden" asp-for="Status" />
 
 
     <table>
@@ -59,6 +60,16 @@
     <div class="w-100 df-sb mt-30 mb-40">
         <a asp-action="Index" asp-controller="Logowania" class="buttonWstecz w-100px">Wstecz</a>
         <div class="df">
+            @if(Model.Status == StatusZalogowania.Zalogowany)
+            {
+                <a asp-action="LogoutHandly"
+                   asp-controller="Logowania"
+                   asp-route-logowanieId="@Model.LogowanieId"
+                   asp-route-email="@Model.Email"
+                   style="width: 100px; border-radius: 30px; display: flex; justify-content: center; align-items: center; background-color: burlywood;">
+                    Wyloguj
+                </a>
+            }
             <input type="submit" value="Zapisz" class="buttonEdit w-100px" />
             <a asp-action="Index" asp-controller="Logowania" class="buttonAnuluj w-100px ml-2">Anuluj</a>
         </div>
@@ -68,3 +79,15 @@
 
 <!-- Zwraca komunikat błędu, o ile takowy się pojawi -->
 <span class="c-red">@ViewData["ErrorMessage"]</span>
+
+
+<!-- Zwraca komunikat, mówiący o tym, że nastąpiło prawidłowe ręczne wylogowanie użytkownika -->
+@{
+    string message = ViewData["Message"] as string;
+    if (!string.IsNullOrEmpty(message) && message.Count() > 0)
+    {
+        <span>
+            @message
+        </span>
+    }
+}

@@ -193,16 +193,30 @@
                                     <td class="w-50px">
                                         <div class="db">
 
-                                            <!-- jeżeli użytkownik jest dostępny edycja edycja rekordu jest niedostępna -->
-                                            @if (logowanie.DataWylogowania.ToString() != "01.01.0001 00:00:00")
+                                            <!-- 
+                                                jeżeli użytkownik jest dostępny edycja edycja rekordu jest niedostępna,
+                                                ten kod można interpretować jako Status = StatusZalogowania.Zalogowany
+                                            -->
+                                            @if (logowanie.DataWylogowania.ToString() == "01.01.0001 00:00:00")
                                             {
-                                                <a asp-action="Edit"
+                                                <a asp-action="Edituz"
+                                                   asp-controller="Logowania"
+                                                   asp-route-logowanieId="@logowanie.LogowanieId"
+                                                   asp-route-email="@logowanie.Email"
+                                                   class="deleteButton">
+                                                    Edytuj
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a asp-action="Editun"
                                                    asp-controller="Logowania"
                                                    asp-route-logowanieId="@logowanie.LogowanieId"
                                                    class="deleteButton">
                                                     Edytuj
                                                 </a>
                                             }
+
 
 
                                             <a asp-action="Delete"

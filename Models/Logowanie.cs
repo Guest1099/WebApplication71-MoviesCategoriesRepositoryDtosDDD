@@ -48,7 +48,7 @@ namespace WebApplication71.Models
 
 
 
-        public void Update(string dataLogowania, string dataWylogowania, string userId)
+        public void Update(string dataLogowania, string dataWylogowania, StatusZalogowania statusZalogowania, string userId)
         {
             DataLogowania = dataLogowania;
             DataWylogowania = dataWylogowania;
@@ -57,6 +57,7 @@ namespace WebApplication71.Models
             TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
             CzasPracy = czasPracy.Duration().ToString();
 
+            Status = statusZalogowania;
             UserId = userId;
         }
 

@@ -1,0 +1,94 @@
+﻿@model GetLogowanieDto
+
+<div class="dodawanieHeader">
+    <span class="titleHeader">Edytowanie istniejącej pozycji</span>
+</div>
+<hr />
+
+@Model.Status
+
+
+<form method="post" asp-action="Editun" asp-controller="Logowania">
+    <input type="hidden" asp-for="LogowanieId" />
+    <input type="hidden" asp-for="Status" />
+
+
+    <table>
+        <tr>
+            <td class="leftColumn">
+                <span>Imię i nazwisko</span>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <span>@Model.ImieInazwisko</span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <label asp-for="Email"></label>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <span>@Model.Email</span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <span>Data logowania</span>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="DataLogowania" />
+                    <span asp-validation-for="DataLogowania" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftColumn">
+                <span>Data wylogowania</span>
+            </td>
+            <td class="rightColumn">
+                <div class="db">
+                    <input asp-for="DataWylogowania" />
+                    <span asp-validation-for="DataWylogowania" class="c-red"></span>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+
+    <div class="w-100 df-sb mt-30 mb-40">
+        <a asp-action="Index" asp-controller="Logowania" class="buttonWstecz w-100px">Wstecz</a>
+        <div class="df">
+            @* 
+            <a asp-action="LogoutHandly"
+               asp-controller="Logowania"
+               asp-route-logowanieId="@Model.LogowanieId"
+               asp-route-email="@Model.Email"
+               style="width: 100px; border-radius: 30px; display: flex; justify-content: center; align-items: center; background-color: burlywood;">
+                Wyloguj
+            </a>
+ *@
+            <input type="submit" value="Zapisz" class="buttonEdit w-100px" />
+            <a asp-action="Index" asp-controller="Logowania" class="buttonAnuluj w-100px ml-2">Anuluj</a>
+        </div>
+    </div>
+</form>
+
+
+<!-- Zwraca komunikat błędu, o ile takowy się pojawi -->
+<span class="c-red">@ViewData["ErrorMessage"]</span>
+
+
+<!-- Zwraca komunikat, mówiący o tym, że nastąpiło prawidłowe ręczne wylogowanie użytkownika -->
+@{
+    string message = ViewData["Message"] as string;
+    if (!string.IsNullOrEmpty(message) && message.Count() > 0)
+    {
+        <span>
+            @message
+        </span>
+    }
+}
