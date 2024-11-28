@@ -13,10 +13,10 @@
     <script type="text/javascript">
 
         function getInnerHtmlFromSession() {
-            let innerHtml = sessionStorage.getItem('innerHtml');
-            if (innerHtml) {
+            let textValue = sessionStorage.getItem('textValue');
+            if (textValue) {
                 let container = document.getElementById('container');
-                container.innerHTML = innerHtml;
+                container.innerText = textValue;
                 container.innerHTML = container.innerText;
             }
         }

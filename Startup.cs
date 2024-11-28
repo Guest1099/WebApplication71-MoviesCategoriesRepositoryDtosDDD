@@ -46,19 +46,19 @@ namespace WebApplication71
                 .AddCookie(cookie =>
                 {
                     cookie.LoginPath = "/Account/Login";
-                    cookie.AccessDeniedPath = "/Account/Login";
+                    cookie.AccessDeniedPath = "/Account/AccessDenied";
                     cookie.Cookie.HttpOnly = true;
-                    cookie.ExpireTimeSpan = TimeSpan.FromHours(1); // Ustal czas wygaœniêcia ciasteczka
+                    cookie.ExpireTimeSpan = TimeSpan.FromSeconds(1115); // Ustal czas wygaœniêcia ciasteczka
                     cookie.SlidingExpiration = true; // Odnawiaj czas wygaœniêcia przy aktywnoœci
                 });
             services.AddAuthorization();
 
             services.ConfigureApplicationCookie(cookie =>
             {
-                cookie.AccessDeniedPath = "/Account/Login";
                 cookie.LoginPath = "/Account/Login";
+                cookie.AccessDeniedPath = "/Account/AccessDenied";
                 cookie.Cookie.HttpOnly = true;
-                cookie.ExpireTimeSpan = TimeSpan.FromHours(1);
+                cookie.ExpireTimeSpan = TimeSpan.FromSeconds(1115);
                 cookie.SlidingExpiration = true;
             });
 

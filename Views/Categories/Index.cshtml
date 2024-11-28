@@ -12,63 +12,61 @@
 
 
 
-@if (Model.Categories != null && Model.Categories.Any())
-{
-    <div class="overFormContainer">
 
-        <form method="post" asp-action="Index" asp-controller="Categories" class="formContainer">
+<div class="overFormContainer">
 
+    <form method="post" asp-action="Index" asp-controller="Categories" class="formContainer">
 
-
-            <div class="topContainer">
-                <div class="df-sb">
-                    <div class="w-200px centery">
-                        <a asp-action="Create" asp-controller="Categories" class="buttonCreate">+ Dodaj nową pozycję</a>
-                    </div>
+        <div class="topContainer">
+            <div class="df-sb">
+                <div class="w-200px centery">
+                    <a asp-action="Create" asp-controller="Categories" class="buttonCreate">+ Dodaj nową pozycję</a>
+                </div>
 
 
-                    <div class="df-sb mt-20 mb-20">
-                        <!-- Wyszukiwarka -->
-                        <div class="df mr-20">
-                            <input asp-for="q" class="searchInput" id="searchInput" placeholder="Szukana fraza..." />
+                <div class="df-sb mt-20 mb-20">
+                    <!-- Wyszukiwarka -->
+                    <div class="df mr-20">
+                        <input asp-for="q" class="searchInput" id="searchInput" placeholder="Szukana fraza..." />
 
 
-                            @* link przekazuje dane do metody post *@
-                            <input type="submit"
-                                   value="Szukaj"
-                                   class="searchButton" />
+                        @* link przekazuje dane do metody post *@
+                        <input type="submit"
+                               value="Szukaj"
+                               class="searchButton" />
 
 
-                            @* link przekazuje dane do metody get *@
-                            @* <a asp-action="Index"
+                        @* link przekazuje dane do metody get *@
+                        @* <a asp-action="Index"
                         asp-controller="Categories"
                         class="searchButton"
                         id="searchButton">
                         Szukaj
                         </a> *@
 
-                        </div>
-
-                        <!-- Sortowanie -->
-                        <div class="df-sb centery" style="width: 220px;">
-                            <span class="ml-10 mr-5">Sortuj wg</span>
-                            <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption" id="sortowanieOptionSelectList"></select>
-                            @* <input type="submit" value="Sortuj" class="searchButton" /> *@
-                        </div>
                     </div>
 
+                    <!-- Sortowanie -->
+                    <div class="df-sb centery" style="width: 220px;">
+                        <span class="ml-10 mr-5">Sortuj wg</span>
+                        <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption" id="sortowanieOptionSelectList"></select>
+                        @* <input type="submit" value="Sortuj" class="searchButton" /> *@
+                    </div>
                 </div>
 
             </div>
 
+        </div>
 
 
 
 
 
-            <div class="tableContainer">
 
 
+        @if (Model.Categories != null && Model.Categories.Any())
+        {
+                        <div class="tableContainer">
 
                 @if (!string.IsNullOrEmpty(Model.q))
                 {
@@ -78,6 +76,7 @@
                         <h3>@Model.Categories.Count</h3>
                     </div>
                 }
+
 
 
 
@@ -135,10 +134,6 @@
 
                     </tbody>
                 </table>
-
-
-
-
 
 
 
@@ -310,25 +305,24 @@
 
 
             </div>
+        }
+        else
+        {
+            @if (!string.IsNullOrEmpty(Model.q))
+            {
+                <p>Nie znaleziono wyników wyszukiwania pasujących do Twojego zapytania: <strong>@Model.q</strong>.</p>
+            }
+            else
+            {
+                <div class="centerxy db" style="height: 80vh;">
+                    <h1 class="mb-20">Brak elementów w bazie danych...</h1>
+                    <a asp-action="Create" asp-controller="Categories" class="buttonCreate">Dodaj nową pozycję</a>
+                </div>
+            }
+        }
+    </form>
+</div>
 
-        </form>
-
-    </div>
-}
-else
-{
-    if (!string.IsNullOrEmpty(Model.q))
-    {
-        <p>Nie znaleziono ról pasujących do Twojego zapytania: <strong>@Model.q</strong>.</p>
-    }
-    else
-    {
-        <div class="centerxy db" style="height: 80vh;">
-            <h1 class="mb-20">Brak elementów w bazie danych...</h1>
-            <a asp-action="Create" asp-controller="Categories" class="buttonCreate">Dodaj nową pozycję</a>
-        </div>
-    }
-}
 
 
 
@@ -340,7 +334,7 @@ else
 
         new Paginator(
             'Categories',
-        @Model.PageIndex,
+            @Model.PageIndex,
             null,
             document.getElementById('sortowanieOptionSelectList'),
             document.getElementById('pageSizeSelectList')

@@ -2,17 +2,16 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.VisualStudio.Web.CodeGeneration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApplication71.DTOs.Movies;
 using WebApplication71.DTOs.Roles;
 using WebApplication71.Models;
 using WebApplication71.Models.Enums;
 using WebApplication71.Services;
 using WebApplication71.Services.Abs;
+
 
 namespace WebApplication71.Controllers
 {

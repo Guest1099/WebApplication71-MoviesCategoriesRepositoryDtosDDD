@@ -62,7 +62,7 @@ namespace WebApplication71.Models
         }
 
 
-        public void DodajDateWylogowania(string dataWylogowania)
+        /*public void DodajDateWylogowania(string dataWylogowania)
         {
             DataWylogowania = dataWylogowania;
 
@@ -73,82 +73,20 @@ namespace WebApplication71.Models
             CzasPracy = czasPracy.Duration().ToString();
 
             Status = StatusZalogowania.Niezalogowany;
+        }*/
+
+        public void DodajDateWylogowania()
+        {
+            DataWylogowania = DateTime.Now.ToString ();
+
+            // obliczenie czasu pracy
+
+            TimeSpan cp = DateTime.Parse(DataLogowania) - DateTime.Parse(DataWylogowania);
+            TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
+            CzasPracy = czasPracy.Duration().ToString();
+
+            Status = StatusZalogowania.Niezalogowany;
         }
-
-
-
-
-
-
-
-
-        /*
-                public Logowanie(string userId)
-                {
-                    LogowanieId = Guid.NewGuid().ToString();
-                    DataLogowania = DateTime.Now.ToString();
-                    DataWylogowania = "DateTime.MinValue";
-                    UserId = userId;
-                }
-
-
-                public Logowanie(DateTime dataLogowania, DateTime dataWylogowania, string userId)
-                {
-                    *//*LogowanieId = Guid.NewGuid().ToString();
-                    DataLogowania = new DateTime(dataLogowania.Year, dataLogowania.Month, dataLogowania.Day, dataLogowania.Hour, dataLogowania.Minute, dataLogowania.Second);
-                    DataWylogowania = new DateTime(dataWylogowania.Year, dataWylogowania.Month, dataWylogowania.Day, dataWylogowania.Hour, dataWylogowania.Minute, dataWylogowania.Second);
-                    var cp = dataWylogowania - dataLogowania;
-                    CzasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
-                    UserId = userId;*//*
-
-                    LogowanieId = Guid.NewGuid().ToString();
-                    DataLogowania = dataLogowania;
-                    DataWylogowania = dataWylogowania; 
-                    var cp = dataWylogowania - dataLogowania;
-                    //var czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
-                    var czasPracy = new TimeSpan(11,1,1,1,1);
-                    CzasPracy = czasPracy.ToString ();
-                    UserId = userId;
-                }
-
-
-
-                public Logowanie(DateTime dataLogowania, DateTime dataWylogowania, TimeSpan czasPracy, string userId)
-                {
-                    LogowanieId = Guid.NewGuid().ToString();
-                    DataLogowania = new DateTime(dataLogowania.Year, dataLogowania.Month, dataLogowania.Day, dataLogowania.Hour, dataLogowania.Minute, dataLogowania.Second);
-                    DataWylogowania = new DateTime(dataWylogowania.Year, dataWylogowania.Month, dataWylogowania.Day, dataWylogowania.Hour, dataWylogowania.Minute, dataWylogowania.Second);
-                    CzasPracy = czasPracy;
-                    UserId = userId;
-                }
-
-
-                public void Update(DateTime dataLogowania, DateTime dataWylogowania, string userId)
-                {
-                    DataLogowania = new DateTime(dataLogowania.Year, dataLogowania.Month, dataLogowania.Day, dataLogowania.Hour, dataLogowania.Minute, dataLogowania.Second);
-                    DataWylogowania = new DateTime(dataWylogowania.Year, dataWylogowania.Month, dataWylogowania.Day, dataWylogowania.Hour, dataWylogowania.Minute, dataWylogowania.Second);
-                    UserId = userId;
-
-
-                    var cp = dataWylogowania - dataLogowania;
-                    TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
-                    CzasPracy = czasPracy;
-                }
-
-                public void DodajDateWylogowania(DateTime dataWylogowania)
-                {
-                    DataWylogowania = dataWylogowania;
-
-                    // obliczenie czasu pracy
-
-                    var dz = DataLogowania;
-                    var dw = dataWylogowania;
-                    var cp = dw - dz;
-                    TimeSpan czasPracy = new TimeSpan(cp.Days, cp.Hours, cp.Minutes, cp.Seconds);
-                    CzasPracy = czasPracy;
-                }
-        */
-
 
     }
 }

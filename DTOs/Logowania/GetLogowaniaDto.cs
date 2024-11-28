@@ -31,11 +31,11 @@ namespace WebApplication71.DTOs.Logowania
 
 
         [Required]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm:ss}", ApplyFormatInEditMode = true)]
         public DateTime DataZalogowaniaOd { get; set; } = DateTime.Now.AddDays (-30);
 
         [Required]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm:ss}", ApplyFormatInEditMode = true)]
         public DateTime DataZalogowaniaDo { get; set; } = DateTime.Now;
 
 

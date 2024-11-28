@@ -111,6 +111,44 @@ function displayPhotos(source) {
 }
 
 
+
+
+//************************************************************************** */
+// Skrypt dla kontrollera Movies. Odpowiadają za zapisywanie danych w sesjach
+// oraz wczytywaniem danych tekstowych oraz html do tagu textarea.
+// Wystepują w akcji Create oraz Edit
+//************************************************************************** */
+
+
+
+let editor = document.getElementById('editor');
+function saveToSession() {
+    // czyszczenie sesji
+    removeSessionTextValue();
+
+    let textValue = editor.value;
+    sessionStorage.setItem('textValue', textValue);
+}
+
+// pobranie danych z sesji i osadzenie ich w edytorze html
+function getInnerHtmlFromSession() {
+    let textValue = sessionStorage.getItem('textValue');
+    if (textValue) {
+        editor.value = textValue;
+    }
+}
+getInnerHtmlFromSession();
+
+
+
+
+
+//************************************************************************** */
+//
+//************************************************************************** */
+
+
+
 // czyście globalnie sesje
 function clearSessions() {
     sessionStorage.clear();
@@ -128,6 +166,6 @@ function removeSessionPageIndex() {
 }
 
 
-function removeSessionInnerHtml() {
-    sessionStorage.removeItem('innerHtml');
+function removeSessionTextValue() {
+    sessionStorage.removeItem('textValue');
 }

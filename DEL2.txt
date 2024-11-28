@@ -1,4 +1,4 @@
-﻿@model GetRolesDto
+﻿@model GetMoviesDto
 
 @{
     int index = 0;
@@ -18,26 +18,34 @@
     <form method="post" asp-action="Index" asp-controller="Roles" class="formContainer">
 
         <div class="topContainer">
-            <div class="df-sb">
-                <div class="w-200px centery">
-                    <a asp-action="Create" asp-controller="Roles" class="buttonCreate">+ Dodaj nową pozycję</a>
-                </div>
+                    <div class="df-sb">
+                        <div class="w-200px centery">
+                            <a asp-action="Create" asp-controller="Movies" class="buttonCreate" onclick="removeItemUploadedFiles();">+ Dodaj nową pozycję</a>
+                        </div>
 
-                <div class="df-sb mt-20 mb-20">
-                    <!-- Wyszukiwarka -->
-                    <div class="df mr-20">
-                        <input asp-for="q" class="searchInput" id="searchInput" placeholder="Szukana fraza..." />
-                        <input type="submit" value="Szukaj" class="searchButton" />
+
+                        <div class="df-sb mt-20 mb-20">
+                            <!-- Wyszukiwarka -->
+                            <div class="df mr-20">
+                                <input asp-for="q" class="searchInput" id="searchInput" placeholder="Szukana fraza..." />
+
+
+                                @* link przekazuje dane do metody post *@
+                                <input type="submit" value="Szukaj" class="searchButton" />
+
+                            </div>
+
+                            <!-- Sortowanie -->
+                            <div class="df-sb centery" style="width: 220px;">
+                                <span class="ml-10 mr-5">Sortuj wg</span>
+                                <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption" id="sortowanieOptionSelectList"></select>
+                                @* <input type="submit" value="Sortuj" class="searchButton" /> *@
+                            </div>
+                        </div>
+
                     </div>
 
-                    <!-- Sortowanie -->
-                    <div class="df-sb centery" style="width: 220px;">
-                        <span class="ml-10 mr-5">Sortuj wg</span>
-                        <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption" id="sortowanieOptionSelectList"></select>
-                    </div>
                 </div>
-            </div>
-        </div>
 
 
 
@@ -49,11 +57,11 @@
             <div class="tableContainer">
                 @if (!string.IsNullOrEmpty(Model.q))
                 {
-                    <h3>Wyniki wyszukiwania dla: @Model.q</h3>
-                    <div class="df">
-                        <span>Ilość znalezionych wyników</span>
-                        <h3>@Model.Roles.Count</h3>
-                    </div>
+                <h3>Wyniki wyszukiwania dla: @Model.q</h3>
+                <div class="df">
+                    <span>Ilość znalezionych wyników</span>
+                    <h3>@Model.Movies.Count</h3>
+                </div>
                 }
 
 
@@ -62,62 +70,85 @@
 
 
 
-
+                
                 <table>
                     <thead>
                         <tr>
                             <th>Lp</th>
-                            <th>Name</th>
-                            <th>Users</th>
+                            <th>Photo</th>
+                            <th>Description</th>
+                            <th>Price</th>
+                            <th>Category</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var role in Model.Paginator)
+                        @foreach (var movie in Model.Paginator)
                         {
                             index++;
 
                             <tr>
                                 <td class="w-40px">@index</td>
 
+                                <td class="w-50px">
+                                    @try
+                                    {
+                                        @if (movie.PhotosMovie != null && movie.PhotosMovie.Any())
+                                        {
+                                            var photo = movie.PhotosMovie.FirstOrDefault();
+                                            <div class="image">
+                                                <partial name="_displayPhoto" model="@photo.PhotoData" class="rounded-image" />
+                                            </div>
+                                        }
+                                    }
+                                    catch
+                                    {
+
+                                    }
+                                </td>
 
 
                                 <td style="min-width: 300px;">
-                                    @role.Name
+                                    <partial name="_cropTextAndDisplayWithoutRenderingHtml" model="@Tuple.Create(movie.Description, 240)" class="rounded-image" />
+                                </td>
+
+
+                                <td style="min-width: 100px;">
+                                    @{
+                                        string price = $"{movie.Price},00 zł";
+                                        <span>@price</span>
+                                    }
                                 </td>
 
 
                                 <td>
-                                    @if (role.Users != null && role.Users.Any())
-                                    {
-                                        @role.Users.Count
-                                    }
-                                    else
-                                    {
-                                        <span>0</span>
-                                    }
+                                    @movie.Category
                                 </td>
 
 
                                 <td class="w-50px">
                                     <div class="db">
                                         <a asp-action="Edit"
-                                           asp-controller="Roles"
-                                           asp-route-roleId="@role.Id"
-                                           class="deleteButton">
+                                           asp-controller="Movies"
+                                           asp-route-movieId="@movie.MovieId"
+                                           class="deleteButton"
+                                           onclick="removeItemUploadedFiles();">
                                             Edytuj
                                         </a>
 
-                                        <!-- jeżeli do roli jest przypisany jakikolwiek użytkownik wtedy nie można usunąc -->
-                                        @if (role.Users != null && !role.Users.Any())
-                                        {
-                                            <a asp-action="Delete"
-                                               asp-controller="Roles"
-                                               asp-route-id="@role.Id"
-                                               class="deleteButton">
-                                                Usuń
-                                            </a>
-                                        }
+                                        <a asp-action="Delete"
+                                           asp-controller="Movies"
+                                           asp-route-id="@movie.MovieId"
+                                           class="deleteButton">
+                                            Usuń
+                                        </a>
+
+                                        <a asp-action="Details"
+                                           asp-controller="Movies"
+                                           asp-route-movieId="@movie.MovieId"
+                                           class="deleteButton">
+                                            Details
+                                        </a>
                                     </div>
                                 </td>
 
@@ -125,6 +156,10 @@
                         }
                     </tbody>
                 </table>
+
+
+
+
 
 
 
@@ -161,15 +196,14 @@
 
 
                                     @* sprawdza czy linki w paginacji powinny być wyświetlone, jeśli użytkownik jest na pierwszej stronie paginacji oraz ilość paginacji wynosi 1 wtedy paginacja nie jest wyświetlana *@
-                                    @if (Model.DisplayLinksPaginator)
+                                    @if (Model.DisplayLinksPaginator)                                    
                                     {
 
-
                                         <!-- przycisk prev -->
-                                        if (hasPrevious)
+                                        @if (hasPrevious)
                                         {
                                             <a asp-action="Index"
-                                               asp-controller="Roles"
+                                               asp-controller="Movies"
                                                asp-route-PageSize="@Model.PageSize"
                                                asp-route-PageIndex="@(Model.Paginator.PageIndex - 1)"
                                                asp-route-q="@Model.q"
@@ -181,7 +215,7 @@
                                         else
                                         {
                                             @* <a asp-action="Index"
-                            asp-controller="Roles"
+                            asp-controller="Movies"
                             class="paginatorButton disable-link">
                             Prev
                             </a> *@
@@ -197,7 +231,7 @@
                                                 if (Model.DisplayButtonLeftTrzyKropki)
                                                 {
                                                     <a asp-action="Index"
-                                                       asp-controller="Roles"
+                                                       asp-controller="Movies"
                                                        asp-route-PageSize="@Model.PageSize"
                                                        asp-route-PageIndex="1"
                                                        asp-route-q="@Model.q"
@@ -225,7 +259,7 @@
                                                     if (i <= Model.Paginator.TotalPage)
                                                     {
                                                         <a asp-action="Index"
-                                                           asp-controller="Roles"
+                                                           asp-controller="Movies"
                                                            asp-route-PageSize="@Model.PageSize"
                                                            asp-route-PageIndex="@i"
                                                            asp-route-q="@Model.q"
@@ -243,7 +277,7 @@
                                                 if (Model.DisplayButtonRightTrzyKropki)
                                                 {
                                                     <a asp-action="Index"
-                                                       asp-controller="Roles"
+                                                       asp-controller="Movies"
                                                        asp-route-PageSize="@Model.PageSize"
                                                        asp-route-PageIndex="@Model.Paginator.TotalPage"
                                                        asp-route-q="@Model.q"
@@ -261,10 +295,10 @@
 
 
                                         <!-- przycisk next -->
-                                        if (hasNext)
+                                        @if (hasNext)
                                         {
                                             <a asp-action="Index"
-                                               asp-controller="Roles"
+                                               asp-controller="Movies"
                                                asp-route-PageSize="@Model.PageSize"
                                                asp-route-PageIndex="@(Model.Paginator.PageIndex + 1)"
                                                asp-route-q="@Model.q"
@@ -276,21 +310,21 @@
                                         else
                                         {
                                             @* <a asp-action="Index"
-                            asp-controller="Roles"
+                            asp-controller="Movies"
                             class="paginatorButton disable-link">
                             Next
                             </a> *@
                                         }
-
+                                        
                                     }
-
-
+                                    
 
                                 </div>
                             </div>
                         </div>
 
                     </div>
+
                 }
             </div>
         }
@@ -321,12 +355,13 @@
     <script type="text/javascript">
 
         new Paginator(
-            'Roles',
-            @Model.PageIndex,
+            'Movies',
+        @Model.PageIndex,
             null,
             document.getElementById('sortowanieOptionSelectList'),
             document.getElementById('pageSizeSelectList')
         );
+
 
     </script>
 }

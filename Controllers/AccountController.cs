@@ -380,5 +380,12 @@ namespace WebApplication71.Controllers
 
 
 
+        [HttpGet]
+        public IActionResult AccessDenied()
+            => View();
+
+
+
+
     }
 }
