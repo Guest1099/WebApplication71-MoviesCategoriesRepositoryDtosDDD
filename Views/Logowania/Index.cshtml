@@ -26,66 +26,62 @@
 }
 
 
+@if (Model.Logowania != null && Model.Logowania.Any())
+{
+    <div class="overFormContainer">
+        <form method="post" asp-action="Index" asp-controller="Logowania" class="formContainer">
 
 
-<div class="overFormContainer">
+            <div class="topContainer">
+                <div class="df-sb">
+                    <div class="w-200px centery">
+                        @if (userIsAdmin)
+                        {
+                            <a asp-action="Create" asp-controller="Logowania" class="buttonCreate">+ Dodaj nową pozycję</a>
+                        }
+                    </div>
 
-    <form method="post" asp-action="Index" asp-controller="Logowania" class="formContainer">
+                    <div class="df-sb centery mt-20 mb-20">
 
-        <div class="topContainer">
-            <div class="df-sb">
-                <div class="w-200px centery">
-                    @if (userIsAdmin)
-                    {
-                        <a asp-action="Create" asp-controller="Logowania" class="buttonCreate">+ Dodaj nową pozycję</a>
-                    }
-                </div>
-
-                <div class="df-sb centery mt-20 mb-20">
-
-                    <!-- Przedział czasu logowań -->
-                    <div class="db">
-                        <span>Przedział czasu</span>
-                        <div class="df">
-                            <!-- Data od -->
+                        <!-- Przedział czasu logowań -->
+                        <div class="db">
+                            <span>Przedział czasu</span>
                             <div class="df">
-                                <span>Od</span>
-                                <input asp-for="DataZalogowaniaOd" class="searchInput" id="dataZalogowaniaOd" />
+                                <!-- Data od -->
+                                <div class="df">
+                                    <span>Od</span>
+                                    <input asp-for="DataZalogowaniaOd" class="searchInput" id="dataZalogowaniaOd" />
+                                </div>
+                                <!-- Data do -->
+                                <div class="df">
+                                    <span>Do</span>
+                                    <input asp-for="DataZalogowaniaDo" class="searchInput" id="dataZalogowaniaDo" />
+                                </div>
                             </div>
-                            <!-- Data do -->
-                            <div class="df">
-                                <span>Do</span>
-                                <input asp-for="DataZalogowaniaDo" class="searchInput" id="dataZalogowaniaDo" />
-                            </div>
+                        </div>
+
+
+                        <!-- Wyszukiwarka -->
+                        <div class="df mr-20">
+                            <input asp-for="q" class="searchInput" id="searchInput" />
+                            <input type="submit" value="Szukaj" class="searchButton" />
+                        </div>
+
+                        <!-- Sortowanie -->
+                        <div class="df-sb centery" style="width: 220px;">
+                            <span class="ml-10 mr-5">Sortuj wg</span>
+                            <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption" id="sortowanieOptionSelectList"></select>
+                            @* <input type="submit" value="Sortuj" class="searchButton" /> *@
                         </div>
                     </div>
 
-
-                    <!-- Wyszukiwarka -->
-                    <div class="df mr-20">
-                        <input asp-for="q" class="searchInput" id="searchInput" />
-                        <input type="submit" value="Szukaj" class="searchButton" />
-                    </div>
-
-                    <!-- Sortowanie -->
-                    <div class="df-sb centery" style="width: 220px;">
-                        <span class="ml-10 mr-5">Sortuj wg</span>
-                        <select asp-for="SortowanieOption" asp-items='@Model.SortowanieOptionItems' class="selectOption" id="sortowanieOptionSelectList"></select>
-                        @* <input type="submit" value="Sortuj" class="searchButton" /> *@
-                    </div>
                 </div>
-
             </div>
-        </div>
 
 
 
 
 
-
-
-        @if (Model.Logowania != null && Model.Logowania.Any())
-        {
             <div class="tableContainer">
 
                 @if (!string.IsNullOrEmpty(Model.q))
@@ -96,9 +92,6 @@
                         <h3>@Model.Logowania.Count</h3>
                     </div>
                 }
-
-
-
 
 
 
@@ -195,30 +188,34 @@
                                         <div class="db">
 
                                             <!--
-                                                jeżeli użytkownik jest dostępny edycja edycja rekordu jest niedostępna,
-                                                ten kod można interpretować jako Status = StatusZalogowania.Zalogowany
+                                            jeżeli użytkownik jest dostępny edycja edycja rekordu jest niedostępna,
+                                            ten kod można interpretować jako Status = StatusZalogowania.Zalogowany
                                             -->
-                                            @if (logowanie.DataWylogowania.ToString() == "01.01.0001 00:00:00")
-                                            {
-                                                <a asp-action="Edituz"
-                                                   asp-controller="Logowania"
-                                                   asp-route-logowanieId="@logowanie.LogowanieId"
-                                                   asp-route-email="@logowanie.Email"
-                                                   class="deleteButton">
-                                                    Edytuj
-                                                </a>
-                                            }
-                                            else
-                                            {
-                                                <a asp-action="Editun"
-                                                   asp-controller="Logowania"
-                                                   asp-route-logowanieId="@logowanie.LogowanieId"
-                                                   class="deleteButton">
-                                                    Edytuj
-                                                </a>
-                                            }
 
+                                            <!-- jeżeli zalogowany użytkownik jest administratorem to nie może edytować swoich danych logowania -->
 
+                                            @if (zalogowanyUser.Email != logowanie.Email)
+                                            {
+                                                if (logowanie.DataWylogowania.ToString() == "01.01.0001 00:00:00")
+                                                {
+                                                    <a asp-action="Edituz"
+                                                       asp-controller="Logowania"
+                                                       asp-route-logowanieId="@logowanie.LogowanieId"
+                                                       asp-route-email="@logowanie.Email"
+                                                       class="deleteButton">
+                                                        Edytuj
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <a asp-action="Editun"
+                                                       asp-controller="Logowania"
+                                                       asp-route-logowanieId="@logowanie.LogowanieId"
+                                                       class="deleteButton">
+                                                        Edytuj
+                                                    </a>
+                                                }
+                                            }
 
                                             <a asp-action="Delete"
                                                asp-controller="Logowania"
@@ -405,24 +402,33 @@
                 }
 
 
+
+
+
+            </div>
+        </form>
+    </div>
+}
+else
+{
+    @if (Model.Logowania == null || !Model.Logowania.Any())
+    {
+        @if (Model.Logowania != null)
+        {
+            <div class="centerxy db" style="height: 80vh;">
+                <h1 class="mb-20">Brak elementów w bazie danych...</h1>
+                <a asp-action="Create" asp-controller="Logowania" class="buttonCreate">Dodaj nową pozycję</a>
             </div>
         }
-        else
+    }
+    else
+    {
+        @if (!string.IsNullOrEmpty(Model.q))
         {
-            @if (!string.IsNullOrEmpty(Model.q))
-            {
-                <p>Brak wyników wyszukiwania dla zapytania: <strong>@Model.q</strong>.</p>
-            }
-            else
-            {
-                <div class="centerxy db" style="height: 80vh;">
-                    <h1 class="mb-20">Brak elementów w bazie danych...</h1>
-                    <a asp-action="Create" asp-controller="Logowania" class="buttonCreate">Dodaj nową pozycję</a>
-                </div>
-            }
+            <p>Brak wyników wyszukiwania dla zapytania: <strong>@Model.q</strong>.</p>
         }
-    </form>
-</div>
+    }
+}
 
 
 

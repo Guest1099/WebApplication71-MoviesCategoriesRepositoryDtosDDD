@@ -21,7 +21,7 @@ namespace WebApplication71.DTOs.Movies
 
         [Required(ErrorMessage = "To pole jest wymagane")]
         [RegularExpression("^[0-9]+$", ErrorMessage = "Wprowadź poprawną liczbę")]
-        public double Price { get; set; }
+        public string Price { get; set; }
 
 
         [Required(ErrorMessage = "To pole jest wymagane")]

@@ -49,7 +49,7 @@ namespace WebApplication71.Repos
                             MovieId = s.MovieId,
                             Title = s.Title,
                             Description = s.Description,
-                            Price = s.Price,
+                            Price = s.Price.ToString(),
                             CategoryId = s.CategoryId,
                             Category = s.Category.Name,
                             PhotosMovie = s.PhotosMovie
@@ -92,7 +92,7 @@ namespace WebApplication71.Repos
                         {
                             Title = movie.Title,
                             Description = movie.Description,
-                            Price = movie.Price,
+                            Price = movie.Price.ToString(),
                             CategoryId = movie.CategoryId,
                             Category = movie.Category.Name,
                             PhotosMovie = movie.PhotosMovie
@@ -145,7 +145,7 @@ namespace WebApplication71.Repos
                             movieId: movieId,
                             title: title,
                             description: description,
-                            price: model.Price,
+                            price: double.Parse (model.Price),
                             userId: zalogowanyUser.Id,
                             categoryId: model.CategoryId
                             );
@@ -231,7 +231,7 @@ namespace WebApplication71.Repos
                         movie.Update(
                             title: title,
                             description: description,
-                            price: model.Price,
+                            price: double.Parse (model.Price),
                             categoryId: model.CategoryId
                             );
                         _context.Entry(movie).State = EntityState.Modified;

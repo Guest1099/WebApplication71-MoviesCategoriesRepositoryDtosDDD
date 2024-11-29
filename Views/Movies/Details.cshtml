@@ -8,9 +8,12 @@
 
     @if (Model.PhotosMovie != null && Model.PhotosMovie.Any())
     {
-        <div style="width: 100%; height: 150px;">
-            <partial name="_displayPhoto" model="@Model.PhotosMovie[0].PhotoData" />
-        </div>
+        // wyświetlenie pierwszego zdjęcia
+        if (Model.PhotosMovie[0].PhotoData.Length > 0)
+        {
+            var imageSource = $"data:image/png;base64,{Convert.ToBase64String(Model.PhotosMovie[0].PhotoData)}";
+            <img src="@imageSource" style="width: 100%; height: 150px;" />
+        }
     }
 
     <div class="df-sb">

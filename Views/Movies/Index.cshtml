@@ -11,22 +11,12 @@
 }
 
 
-
-
-
-            
-@if (Model.Movies != null && !Model.Movies.Any())
-{
-    <div class="centerxy db" style="height: 80vh;">
-        <h1 class="mb-20">Brak elementów w bazie danych...</h1>
-        <a asp-action="Create" asp-controller="Movies" class="buttonCreate">Dodaj nową pozycję</a>
-    </div>
-}
-else if (Model.Movies != null && Model.Movies.Any ())
+@if (Model.Movies != null && Model.Movies.Any())
 {
     <div class="overFormContainer">
-
         <form method="post" asp-action="Index" asp-controller="Movies" class="formContainer">
+
+
 
             <div class="topContainer">
                 <div class="df-sb">
@@ -61,112 +51,104 @@ else if (Model.Movies != null && Model.Movies.Any ())
 
 
 
+            <div class="tableContainer">
 
-
-            @if (Model.Movies != null && Model.Movies.Any())
-            {
-                <div class="tableContainer">
-                    @if (!string.IsNullOrEmpty(Model.q))
-                    {
-                        <h3>Wyniki wyszukiwania dla: @Model.q</h3>
-                        <div class="df">
-                            <span>Ilość znalezionych wyników</span>
-                            <h3>@Model.Movies.Count</h3>
-                        </div>
-                    }
+                @if (!string.IsNullOrEmpty(Model.q))
+                {
+                    <h3>Wyniki wyszukiwania dla: @Model.q</h3>
+                    <div class="df">
+                        <span>Ilość znalezionych wyników</span>
+                        <h3>@Model.Movies.Count</h3>
+                    </div>
+                }
 
 
 
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Lp</th>
+                            <th>Photo</th>
+                            <th>Description</th>
+                            <th>Price</th>
+                            <th>Category</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var movie in Model.Paginator)
+                        {
+                            index++;
 
-
-
-
-
-                    <table>
-                        <thead>
                             <tr>
-                                <th>Lp</th>
-                                <th>Photo</th>
-                                <th>Description</th>
-                                <th>Price</th>
-                                <th>Category</th>
-                                <th></th>
+                                <td class="w-40px">@index</td>
+
+                                <td class="w-50px">
+                                    @try
+                                    {
+                                        @if (movie.PhotosMovie != null && movie.PhotosMovie.Any())
+                                        {
+                                            var photo = movie.PhotosMovie.FirstOrDefault();
+                                            <div class="image">
+                                                <partial name="_displayPhoto" model="@photo.PhotoData" class="rounded-image" />
+                                            </div>
+                                        }
+                                    }
+                                    catch
+                                    {
+
+                                    }
+                                </td>
+
+
+                                <td style="min-width: 300px;">
+                                    <partial name="_cropTextAndDisplayWithoutRenderingHtml" model="@Tuple.Create(movie.Description, 240)" class="rounded-image" />
+                                </td>
+
+
+                                <td style="min-width: 100px;">
+                                    @{
+                                        string price = $"{movie.Price},00 zł";
+                                        <span>@price</span>
+                                    }
+                                </td>
+
+
+                                <td>
+                                    @movie.Category
+                                </td>
+
+
+                                <td class="w-50px">
+                                    <div class="db">
+                                        <a asp-action="Edit"
+                                           asp-controller="Movies"
+                                           asp-route-movieId="@movie.MovieId"
+                                           class="deleteButton"
+                                           onclick="removeItemUploadedFiles();">
+                                            Edytuj
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-controller="Movies"
+                                           asp-route-id="@movie.MovieId"
+                                           class="deleteButton">
+                                            Usuń
+                                        </a>
+
+                                        <a asp-action="Details"
+                                           asp-controller="Movies"
+                                           asp-route-movieId="@movie.MovieId"
+                                           class="deleteButton">
+                                            Details
+                                        </a>
+                                    </div>
+                                </td>
+
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var movie in Model.Paginator)
-                            {
-                                index++;
-
-                                <tr>
-                                    <td class="w-40px">@index</td>
-
-                                    <td class="w-50px">
-                                        @try
-                                        {
-                                            @if (movie.PhotosMovie != null && movie.PhotosMovie.Any())
-                                            {
-                                                var photo = movie.PhotosMovie.FirstOrDefault();
-                                                <div class="image">
-                                                    <partial name="_displayPhoto" model="@photo.PhotoData" class="rounded-image" />
-                                                </div>
-                                            }
-                                        }
-                                        catch
-                                        {
-
-                                        }
-                                    </td>
-
-
-                                    <td style="min-width: 300px;">
-                                        <partial name="_cropTextAndDisplayWithoutRenderingHtml" model="@Tuple.Create(movie.Description, 240)" class="rounded-image" />
-                                    </td>
-
-
-                                    <td style="min-width: 100px;">
-                                        @{
-                                            string price = $"{movie.Price},00 zł";
-                                            <span>@price</span>
-                                        }
-                                    </td>
-
-
-                                    <td>
-                                        @movie.Category
-                                    </td>
-
-
-                                    <td class="w-50px">
-                                        <div class="db">
-                                            <a asp-action="Edit"
-                                               asp-controller="Movies"
-                                               asp-route-movieId="@movie.MovieId"
-                                               class="deleteButton"
-                                               onclick="removeItemUploadedFiles();">
-                                                Edytuj
-                                            </a>
-
-                                            <a asp-action="Delete"
-                                               asp-controller="Movies"
-                                               asp-route-id="@movie.MovieId"
-                                               class="deleteButton">
-                                                Usuń
-                                            </a>
-
-                                            <a asp-action="Details"
-                                               asp-controller="Movies"
-                                               asp-route-movieId="@movie.MovieId"
-                                               class="deleteButton">
-                                                Details
-                                            </a>
-                                        </div>
-                                    </td>
-
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                        }
+                    </tbody>
+                </table>
 
 
 
@@ -179,178 +161,189 @@ else if (Model.Movies != null && Model.Movies.Any ())
 
 
 
-                    <!-- Paginator -->
-                    @if (Model.ShowPaginator == Model.DisplayNumersListAndPaginatorLinks)
-                    {
-                        bool hasPrevious = Model.Paginator.HasPreviousPage;
-                        bool hasNext = Model.Paginator.HasNexPage;
+                <!-- Paginator -->
+                @if (Model.ShowPaginator == Model.DisplayNumersListAndPaginatorLinks)
+                {
+                    bool hasPrevious = Model.Paginator.HasPreviousPage;
+                    bool hasNext = Model.Paginator.HasNexPage;
 
-                        if (Model.PageIndex == Model.Paginator.TotalPage)
-                            hasPrevious = true;
+                    if (Model.PageIndex == Model.Paginator.TotalPage)
+                        hasPrevious = true;
 
 
-                        <div class="df-sb mt-30 mb-50">
+                    <div class="df-sb mt-30 mb-50">
 
-                            <div class="w-40">
-                                <div class="df centery">
-                                    <p>Pokaż</p>
-                                    <select asp-for="PageSize" asp-items='@Model.SelectListNumberItems' class="selectOption" id="pageSizeSelectList"></select>
-                                    @* tutaj nie powinno być buttona typu input submit *@
-                                    @* <input type="submit" value="Wybierz" class="selectOptionButton" id="selectButton" /> *@
-                                </div>
+                        <div class="w-40">
+                            <div class="df centery">
+                                <p>Pokaż</p>
+                                <select asp-for="PageSize" asp-items='@Model.SelectListNumberItems' class="selectOption" id="pageSizeSelectList"></select>
+                                @* tutaj nie powinno być buttona typu input submit *@
+                                @* <input type="submit" value="Wybierz" class="selectOptionButton" id="selectButton" /> *@
                             </div>
+                        </div>
 
 
-                            <div class="w-60 centery">
-                                <div class="w-100 centery">
-                                    <div class="df fs-11 centery">
+                        <div class="w-60 centery">
+                            <div class="w-100 centery">
+                                <div class="df fs-11 centery">
 
 
-                                        @* sprawdza czy linki w paginacji powinny być wyświetlone, jeśli użytkownik jest na pierwszej stronie paginacji oraz ilość paginacji wynosi 1 wtedy paginacja nie jest wyświetlana *@
-                                        @if (Model.DisplayLinksPaginator)
+                                    @* sprawdza czy linki w paginacji powinny być wyświetlone, jeśli użytkownik jest na pierwszej stronie paginacji oraz ilość paginacji wynosi 1 wtedy paginacja nie jest wyświetlana *@
+                                    @if (Model.DisplayLinksPaginator)
+                                    {
+
+                                        <!-- przycisk prev -->
+                                        @if (hasPrevious)
                                         {
-
-                                            <!-- przycisk prev -->
-                                            @if (hasPrevious)
-                                            {
-                                                <a asp-action="Index"
-                                                   asp-controller="Movies"
-                                                   asp-route-PageSize="@Model.PageSize"
-                                                   asp-route-PageIndex="@(Model.Paginator.PageIndex - 1)"
-                                                   asp-route-q="@Model.q"
-                                                   asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                   class="paginatorButton">
-                                                    Prev
-                                                </a>
-                                            }
-                                            else
-                                            {
-                                                @* <a asp-action="Index"
+                                            <a asp-action="Index"
+                                               asp-controller="Movies"
+                                               asp-route-PageSize="@Model.PageSize"
+                                               asp-route-PageIndex="@(Model.Paginator.PageIndex - 1)"
+                                               asp-route-q="@Model.q"
+                                               asp-route-SortowanieOption="@Model.SortowanieOption"
+                                               class="paginatorButton">
+                                                Prev
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            @* <a asp-action="Index"
                             asp-controller="Movies"
                             class="paginatorButton disable-link">
                             Prev
                             </a> *@
-                                            }
+                                        }
 
 
-                                            <div class="df ml-10 mr-10">
-                                                @{
+                                        <div class="df ml-10 mr-10">
+                                            @{
 
-                                                    string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
+                                                string style = "padding: 3px 10px; border: 1px solid lightgray; background-color: white;";
 
-                                                    <!-- przeniesienie do pierwszej strony -->
-                                                    if (Model.DisplayButtonLeftTrzyKropki)
+                                                <!-- przeniesienie do pierwszej strony -->
+                                                if (Model.DisplayButtonLeftTrzyKropki)
+                                                {
+                                                    <a asp-action="Index"
+                                                       asp-controller="Movies"
+                                                       asp-route-PageSize="@Model.PageSize"
+                                                       asp-route-PageIndex="1"
+                                                       asp-route-q="@Model.q"
+                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                       class="paginator-item"
+                                                       style="backgroun-color: transparent"
+                                                       id="buttonLeftTrzyKropki">
+                                                        ...
+                                                    </a>
+                                                }
+
+
+
+                                                <!-- środkowe przyciski paginacji -->
+                                                for (var i = Model.Start; i <= Model.End; i++)
+                                                {
+                                                    if (i == Model.PageIndex)
+                                                    {
+                                                        style = "padding: 7px 10px; background-color: lightgray; color: black; font-weight: bold";
+                                                    }
+                                                    else
+                                                    {
+                                                        style = "padding: 7px 10px; background-color: white;";
+                                                    }
+                                                    if (i <= Model.Paginator.TotalPage)
                                                     {
                                                         <a asp-action="Index"
                                                            asp-controller="Movies"
                                                            asp-route-PageSize="@Model.PageSize"
-                                                           asp-route-PageIndex="1"
+                                                           asp-route-PageIndex="@i"
                                                            asp-route-q="@Model.q"
                                                            asp-route-SortowanieOption="@Model.SortowanieOption"
                                                            class="paginator-item"
-                                                           style="backgroun-color: transparent"
-                                                           id="buttonLeftTrzyKropki">
-                                                            ...
-                                                        </a>
-                                                    }
-
-
-
-                                                    <!-- środkowe przyciski paginacji -->
-                                                    for (var i = Model.Start; i <= Model.End; i++)
-                                                    {
-                                                        if (i == Model.PageIndex)
-                                                        {
-                                                            style = "padding: 7px 10px; background-color: lightgray; color: black; font-weight: bold";
-                                                        }
-                                                        else
-                                                        {
-                                                            style = "padding: 7px 10px; background-color: white;";
-                                                        }
-                                                        if (i <= Model.Paginator.TotalPage)
-                                                        {
-                                                            <a asp-action="Index"
-                                                               asp-controller="Movies"
-                                                               asp-route-PageSize="@Model.PageSize"
-                                                               asp-route-PageIndex="@i"
-                                                               asp-route-q="@Model.q"
-                                                               asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                               class="paginator-item"
-                                                               style="@style"
-                                                               id="button">
-                                                                @i
-                                                            </a>
-                                                        }
-                                                    }
-
-
-                                                    <!-- przeniesienie do ostatniej strony -->
-                                                    if (Model.DisplayButtonRightTrzyKropki)
-                                                    {
-                                                        <a asp-action="Index"
-                                                           asp-controller="Movies"
-                                                           asp-route-PageSize="@Model.PageSize"
-                                                           asp-route-PageIndex="@Model.Paginator.TotalPage"
-                                                           asp-route-q="@Model.q"
-                                                           asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                           class="paginator-item"
-                                                           style="backgroun-color: transparent"
-                                                           id="buttonRightTrzyKropki">
-                                                            ...
+                                                           style="@style"
+                                                           id="button">
+                                                            @i
                                                         </a>
                                                     }
                                                 }
-                                            </div>
 
 
-
-
-                                            <!-- przycisk next -->
-                                            @if (hasNext)
-                                            {
-                                                <a asp-action="Index"
-                                                   asp-controller="Movies"
-                                                   asp-route-PageSize="@Model.PageSize"
-                                                   asp-route-PageIndex="@(Model.Paginator.PageIndex + 1)"
-                                                   asp-route-q="@Model.q"
-                                                   asp-route-SortowanieOption="@Model.SortowanieOption"
-                                                   class="paginatorButton">
-                                                    Next
-                                                </a>
+                                                <!-- przeniesienie do ostatniej strony -->
+                                                if (Model.DisplayButtonRightTrzyKropki)
+                                                {
+                                                    <a asp-action="Index"
+                                                       asp-controller="Movies"
+                                                       asp-route-PageSize="@Model.PageSize"
+                                                       asp-route-PageIndex="@Model.Paginator.TotalPage"
+                                                       asp-route-q="@Model.q"
+                                                       asp-route-SortowanieOption="@Model.SortowanieOption"
+                                                       class="paginator-item"
+                                                       style="backgroun-color: transparent"
+                                                       id="buttonRightTrzyKropki">
+                                                        ...
+                                                    </a>
+                                                }
                                             }
-                                            else
-                                            {
-                                                @* <a asp-action="Index"
+                                        </div>
+
+
+
+
+                                        <!-- przycisk next -->
+                                        @if (hasNext)
+                                        {
+                                            <a asp-action="Index"
+                                               asp-controller="Movies"
+                                               asp-route-PageSize="@Model.PageSize"
+                                               asp-route-PageIndex="@(Model.Paginator.PageIndex + 1)"
+                                               asp-route-q="@Model.q"
+                                               asp-route-SortowanieOption="@Model.SortowanieOption"
+                                               class="paginatorButton">
+                                                Next
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            @* <a asp-action="Index"
                             asp-controller="Movies"
                             class="paginatorButton disable-link">
                             Next
                             </a> *@
-                                            }
-
                                         }
 
+                                    }
 
-                                    </div>
                                 </div>
                             </div>
-
                         </div>
 
-                    }
-                </div>
-            }
-            else
-            {
-                @if (!string.IsNullOrEmpty(Model.q))
-                {
-                    <p>Brak wyników wyszukiwania dla zapytania: <strong>@Model.q</strong>.</p>
+                    </div>
+
                 }
-            }
+
+
+            </div>
         </form>
     </div>
 }
-
-
+else
+{
+    @if (Model.Movies == null || !Model.Movies.Any())
+    {
+        @if (Model.Movies != null)
+        {
+            <div class="centerxy db" style="height: 80vh;">
+                <h1 class="mb-20">Brak elementów w bazie danych...</h1>
+                <a asp-action="Create" asp-controller="Movies" class="buttonCreate">Dodaj nową pozycję</a>
+            </div>
+        }
+    }
+    else
+    {
+        @if (!string.IsNullOrEmpty(Model.q))
+        {
+            <p>Brak wyników wyszukiwania dla zapytania: <strong>@Model.q</strong>.</p>
+        }
+    }
+}
 
 
 
@@ -361,12 +354,11 @@ else if (Model.Movies != null && Model.Movies.Any ())
 
         new Paginator(
             'Movies',
-            @Model.PageIndex,
+        @Model.PageIndex,
             null,
             document.getElementById('sortowanieOptionSelectList'),
             document.getElementById('pageSizeSelectList')
         );
-
 
     </script>
 }

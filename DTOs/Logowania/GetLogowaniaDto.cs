@@ -38,7 +38,6 @@ namespace WebApplication71.DTOs.Logowania
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm:ss}", ApplyFormatInEditMode = true)]
         public DateTime DataZalogowaniaDo { get; set; } = DateTime.Now;
 
-
         public List<GetLogowanieDto> Logowania { get; set; }
         public SelectList SortowanieOptionItems = new SelectList(new List<string>() { "Data zalogowania rosnąco", "Data zalogowania malejąco" });
     }

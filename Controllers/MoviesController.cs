@@ -296,7 +296,6 @@ namespace WebApplication71.Controllers
 
                 return View(new CreateMovieDto()
                 {
-                    Title = new Random().Next(1, 10).ToString(),
                     CategoriesList = new SelectList(categories, "CategoryId", "Name") // select lista
                 });
             }
